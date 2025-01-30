@@ -13,9 +13,9 @@ class Collider {
 public:
 	Vec2 GetPos() { return position; }
 	Vec2& SetPos(Vec2& pos);
-	virtual CollisionInfo IsOverlapping(Collider& other);
 
-	virtual Vec2 GetFurthestPoint(Vec2& direction) const;
+	virtual Vec2 GetFurthestPoint(Vec2& direction) const { return Vec2(); };
+
 
 protected:
 	Vec2 position;

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <string>
 class Vec2
 {
 public:
@@ -24,6 +24,8 @@ public:
 	[[nodiscard]] Vec2 GetRotatedBy(float cosAngle, float sinAngle) const;
 
 	void SetMagnitude(float mag);
+
+	std::string ToString();
 
 	Vec2& operator+=(Vec2 v);
 	Vec2& operator-=(Vec2 v);

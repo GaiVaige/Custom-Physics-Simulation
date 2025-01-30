@@ -1,7 +1,6 @@
 #include "Vec2.h"
 #include <math.h>
 
-
 float Vec2::GetMagnitude() const
 {
 	return sqrtf(x * x + y * y);
@@ -99,6 +98,15 @@ void Vec2::SetMagnitude(float mag)
 {
 	Normalise();
 	*this *= mag;
+}
+
+std::string Vec2::ToString()
+{
+	std::string s;
+	s += std::to_string(x);
+	s += ", ";
+	s += std::to_string(y);
+	return s;
 }
 
 Vec2& Vec2::operator+=(Vec2 v)

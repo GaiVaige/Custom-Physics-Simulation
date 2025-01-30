@@ -1,6 +1,12 @@
 #pragma once
 #include "Application.h"
 #include "Maths.h"
+#include <vector>
+#include "CollisionSolver.h"
+class LineRenderer;
+
+class Circle;
+
 
 class PhysicsSim : public Application {
 private:
@@ -11,12 +17,12 @@ private:
 public:
 	PhysicsSim();
 	~PhysicsSim();
+	CollisionSolver drCollision;
+	std::vector<Circle*> circles;
 
 	void Initialise() override;
 
 	void Update(float deltaTime) override;
-
-	void FixedUpdate();
 
 	void OnLeftClick() override;
 };

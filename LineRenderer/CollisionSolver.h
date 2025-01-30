@@ -17,8 +17,20 @@ public:
 
 	int size() { return arrsize; }
 
+	Simplex& operator=(std::initializer_list<Vec2> list) {
+		arrsize = 0;
+
+		for (Vec2 p : list) {
+			points[arrsize] = p;
+			arrsize++;
+		}
+		return *this;
+	}
+
+
 	void pushfront(Vec2& v) {
 		points = { v, points[0], points[1] };
+		arrsize++;
 	}
 	Vec2& operator[](int i) { return points[i]; }
 	Vec2& begin() { return points[0]; }
@@ -35,16 +47,17 @@ public:
 
 class CollisionSolver {
 public:
-	CollisionInfo CheckForCollision(const Collider& colA, const Collider& colB);
+	CollisionInfo CheckForCollision(const Collider* colA, const Collider* colB);
 
-	Vec2 Support(const Collider& colA, const Collider& colB, Vec2 direction) const;
+	Vec2 Support(const Collider* colA, const Collider* colB, Vec2 direction) const;
 
 	bool NextSimplex(Simplex& points, Vec2& direction);
+
 
 private:
 
 	//helper functions
-	bool SameDirection(Vec2& a, Vec2& b) { return Dot(a, b) > 0; }
+	bool SameDirection(const Vec2& a, const Vec2& b) const { return Dot(a, b) > 0; }
 	bool Line(Simplex& points, Vec2& direction);
 	bool Triangle(Simplex& points, Vec2& direction);
 };
