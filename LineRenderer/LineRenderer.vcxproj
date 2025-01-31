@@ -169,6 +169,7 @@
     <ClCompile Include="LineRenderer.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="PhysicsSim.cpp" />
+    <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="ApplicationHarness.cpp" />
     <ClCompile Include="Maths.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="Maths.h" />
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="PhysicsSim.h" />
+    <ClInclude Include="Polygon.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="ApplicationHarness.h" />
     <ClInclude Include="TextStream.h" />

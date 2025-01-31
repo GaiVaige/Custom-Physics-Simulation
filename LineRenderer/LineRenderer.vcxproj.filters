@@ -72,6 +72,7 @@
     <ClCompile Include="Circle.cpp">
       <Filter>Engine\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Polygon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLFWCallbacks.h">
@@ -166,6 +167,9 @@
       <Filter>Engine\Physics</Filter>
     </ClInclude>
     <ClInclude Include="CollisionSolver.h">
+      <Filter>Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Polygon.h">
       <Filter>Engine\Physics</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,7 +6,7 @@
 class LineRenderer;
 
 class Circle;
-
+class Polygon;
 
 class PhysicsSim : public Application {
 private:
@@ -19,7 +19,7 @@ public:
 	~PhysicsSim();
 	CollisionSolver drCollision;
 	std::vector<Circle*> circles;
-
+	std::vector<Polygon*> polys;
 	void Initialise() override;
 
 	void Update(float deltaTime) override;

@@ -11,8 +11,9 @@ public:
 	PhysicsObject& operator=(PhysicsObject& po) = delete;
 
 	Collider* collider = nullptr;
-	Vec2 GetPos() { return position; }
-	void SetPosition(Vec2& v) { position = v; }
+	const Vec2 GetPos() const { return position; }
+	void SetPosition(Vec2& v);
+	void OffsetPosition(Vec2& v);
 	virtual void Draw(LineRenderer* lines) {};
 
 	unsigned int GUID;

@@ -12,3 +12,17 @@ PhysicsObject::~PhysicsObject()
 {
 	delete collider;
 }
+
+void PhysicsObject::SetPosition(Vec2& v)
+{
+	position = v; 
+	collider->SetPos(position);
+}
+
+void PhysicsObject::OffsetPosition(Vec2& v)
+{
+	position += v;
+	collider->SetPos(position);
+}
+
+

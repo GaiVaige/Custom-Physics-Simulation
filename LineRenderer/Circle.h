@@ -10,18 +10,17 @@ public:
 	CircleCollider& operator=(CircleCollider& c) = delete;
 	Vec2 GetFurthestPoint(Vec2& direction) const override;
 
-	float GetRadius() { return radius; }
+	float GetRadius() const { return radius; }
 private:
 	float radius;
 };
 
 class Circle : public PhysicsObject {
 public:
-	Circle(Vec2 pos, float radius) :radius(radius) { position = pos; collider = new CircleCollider(position, radius); };
-
-	CircleCollider* collider;
+	Circle(Vec2 pos, float radius);
 
 	void Draw(LineRenderer* lines) override;
+	float GetRadius() const {return radius;}
 
 private:
 	float radius;

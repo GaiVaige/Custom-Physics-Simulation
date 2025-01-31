@@ -2,7 +2,8 @@
 #include "Vec2.h"
 #include <array>
 #include "Collider.h"
-
+class CircleCollider;
+class PolygonCollider;
 //checking structure for the overlap
 struct Simplex {
 private:
@@ -45,8 +46,10 @@ public:
 	void flush() { points = {}; }
 };
 
-class CollisionSolver {
+class GJKCollSolver {
 public:
+
+
 	CollisionInfo CheckForCollision(const Collider* colA, const Collider* colB);
 
 	Vec2 Support(const Collider* colA, const Collider* colB, Vec2 direction) const;
@@ -62,3 +65,30 @@ private:
 	bool Triangle(Simplex& points, Vec2& direction);
 };
 
+struct Projection {
+	Projection(float mi, float ma) : min(mi), max(ma) {};
+	float min;
+	float max;
+
+	bool Overlaps(Projection& p2);
+	float GetOverlap(Projection& p2);
+};
+
+class CollisionSolver{
+public:
+	CollisionInfo DetectCollision(Collider* colA, Collider* colB);
+	void ResolveCollision(CollisionInfo colInfo);
+private:
+	CollisionInfo DispatchForCorrectFunction(Collider* colA, Collider* colB);
+
+	CollisionInfo CircleToCircle(CircleCollider* colA, CircleCollider* colB) const;
+	CollisionInfo CircleToPolygon(const Collider* colA, const Collider* colB) const;
+	CollisionInfo CircleToPlane(const Collider* colA, const Collider* colB) const;
+	CollisionInfo PolygonToPolygon(PolygonCollider* colA, PolygonCollider* colB) const;
+	CollisionInfo PolygonToPlane(const Collider* colA, const Collider* colB) const;
+	CollisionInfo PlaneToPlane(const Collider* colA, const Collider* colB) const;
+
+
+	Projection ProjectOnAxis(Vec2 axis, Vec2* points, int faces) const;
+
+};
