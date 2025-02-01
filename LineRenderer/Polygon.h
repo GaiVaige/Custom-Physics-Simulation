@@ -1,34 +1,34 @@
 #pragma once
 #include "PhysicsObject.h"
 #include "Vec2.h"
-#include <array>
+#include <vector>
 class LineRenderer;
 class PolygonCollider : public Collider {
 public:
 	PolygonCollider(Vec2& centre, float mass);
-	PolygonCollider(Vec2& centre, float mass, Vec2* v, int f);
+	PolygonCollider(Vec2& centre, float mass, std::vector<Vec2> v);
 	~PolygonCollider();
 	PolygonCollider(PolygonCollider& c) = delete;
 	PolygonCollider& operator=(PolygonCollider& c) = delete;
 	void DebugDrawAxis(LineRenderer* lines);
-	Vec2* CalcNormals(Vec2* vertices);
+	void CalcNormals(std::vector<Vec2>& vertices);
+
+	Vec2& SetPos(Vec2& pos) override;
 
 	Vec2 GetAxis(int i) { return axes[i]; }
 	Vec2 GetVert(int i);
-	Vec2* GetVerts() { return verts; }
-	int faces;
+	std::vector<Vec2>& GetVerts() { return verts; }
 private:
-	Vec2* verts = nullptr;
-	Vec2* axes = nullptr;
+	std::vector<Vec2> baseVerts;
+	std::vector<Vec2> verts;
+	std::vector<Vec2> axes;
 };
 
 class Polygon : public PhysicsObject {
 public:
-	Polygon(Vec2 pos, float mass, Vec2* v, int faces);
-	~Polygon();
+	Polygon(Vec2 pos, float mass, std::vector<Vec2>& v);
 	void Draw(LineRenderer* lines) override;
 
 private:
-	Vec2* verts = nullptr;
-	int faces = 0;
+	std::vector<Vec2> verts;
 };

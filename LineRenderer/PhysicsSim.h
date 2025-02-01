@@ -11,9 +11,6 @@ class Polygon;
 class PhysicsSim : public Application {
 private:
 
-	float fixedUpdateStepThreshold = .2f;
-	float fixedUpdateTimer = .0f;
-
 public:
 	PhysicsSim();
 	~PhysicsSim();

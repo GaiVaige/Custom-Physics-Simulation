@@ -3,101 +3,6 @@
 #include "Circle.h"
 #include "Polygon.h"
 
-
-CollisionInfo GJKCollSolver::CheckForCollision(const Collider* colA, const Collider* colB)
-{
-    Simplex s;
-
-    Vec2 support = Support(colA, colB, Vec2{ 1, 0 });
-    s.pushfront(support);
-
-    Vec2 searchDirection = -support;
-
-    while (true) {
-        support = Support(colA, colB, searchDirection);
-
-        if (Dot(support, searchDirection) <= 0) return CollisionInfo(false);
-
-        s.pushfront(support);
-
-        if (NextSimplex(s, searchDirection)) {
-            return CollisionInfo(true);
-        }
-    }
-}
-Vec2 GJKCollSolver::Support(const Collider* colA, const Collider* colB, Vec2 direction) const
-{
-    return colA->GetFurthestPoint(direction) - colB->GetFurthestPoint(direction);
-}
-
-bool GJKCollSolver::NextSimplex(Simplex& points, Vec2& direction)
-{
-    switch (points.size()) {
-    case 2: return Line(points, direction);
-    case 3: return Triangle(points, direction);
-    }
-    return false;
-}
-
-bool GJKCollSolver::Line(Simplex& points, Vec2& direction)
-{
-    Vec2 a = points[0];
-    Vec2 b = points[1];
-
-    Vec2 ab = b - a;
-    Vec2 ao = -a;
-
-    if (SameDirection(ab, ao)) {
-        direction = ao;
-    }
-    else {
-        points.flush();
-        points.pushfront(a);
-        direction = ao;
-    }
-    return false;
-}
-
-bool GJKCollSolver::Triangle(Simplex& points, Vec2& direction)
-{
-
-    Vec2 a = points[0];
-    Vec2 b = points[1];
-    Vec2 c = points[2];
-
-    Vec2 ab = b - a;
-    Vec2 ac = c - a;
-    Vec2 ao = -a;
-
-    Vec2 abc = ab.GetRotatedBy90();
-
-    if (SameDirection(ab.GetRotatedBy90(), ao)) {
-        if (SameDirection(ac, ao)) {
-            points = { a, c };
-            direction = ac.GetRotatedBy90();
-        }
-        else {
-            return Line(points = {a, b}, direction);
-        }
-    }
-    else {
-        if (SameDirection(ab.GetRotatedBy90(), ao)) {
-            return Line(points = { a, b }, direction);
-        }
-        else {
-            if (SameDirection(abc, ao)) {
-                direction = abc;
-            }
-            else {
-                points = { a, c, b };
-                direction = -abc;
-            }
-        }
-    }
-
-    return true;
-}
-
 CollisionInfo CollisionSolver::DetectCollision(Collider* colA, Collider* colB)
 {
     return DispatchForCorrectFunction(colA, colB);
@@ -125,13 +30,13 @@ CollisionInfo CollisionSolver::DispatchForCorrectFunction(Collider* colA, Collid
                 case COLLIDERSHAPE::PLANE:
                     return CircleToPlane(colA, colB);
                 case COLLIDERSHAPE::POLYGON:
-                    return CircleToPolygon(colA, colB);
+                    return CircleToPolygon(static_cast<CircleCollider*>(colA), static_cast<PolygonCollider*>(colB));
             }
             break;
         case COLLIDERSHAPE::POLYGON:
             switch(colB->GetShape()){
                 case COLLIDERSHAPE::CIRCLE:
-                    return CircleToPolygon(colB, colA);
+                    return CircleToPolygon(static_cast<CircleCollider*>(colB), static_cast<PolygonCollider*>(colA));
                 case COLLIDERSHAPE::PLANE:
                     return PolygonToPlane(colA, colB);
                 case COLLIDERSHAPE::POLYGON:
@@ -169,9 +74,81 @@ CollisionInfo CollisionSolver::CircleToCircle(CircleCollider *colA, CircleCollid
     return colInf;
 }
 
-CollisionInfo CollisionSolver::CircleToPolygon(const Collider* colA, const Collider* colB) const
+CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonCollider* colB) const
 {
-    return CollisionInfo();
+    float minDist = FLT_MAX;
+    Vec2 closestDist;
+    Vec2 axis;
+
+    Vec2 offset = colB->GetPos() - colA->GetPos();
+    Vec2 vertSave;
+    for (Vec2 vert : colB->GetVerts()) {
+        Vec2 delta = Vec2(vert.x - colA->GetPos().x, vert.y - colA->GetPos().y);
+    
+        float dist = delta.GetMagnitude();
+    
+        if (dist < minDist) {
+            minDist = dist;
+            closestDist = delta;
+            vertSave = vert;
+        }
+    }
+    
+    axis = closestDist.GetNormalised();
+    
+    std::vector<Vec2> tempA = { vertSave };
+    Projection proj = ProjectOnAxis(axis, tempA);
+    //float sOff = Dot(axis, vertSave);
+    //proj.min += sOff;
+    //proj.max += sOff;
+
+
+    std::vector<Vec2> temp = { colA->GetPos() };
+    Projection circleProj = ProjectOnAxis(axis, temp);
+    circleProj.min -= colA->GetRadius();
+    circleProj.max += colA->GetRadius();
+    
+    if (!circleProj.Overlaps(proj)) {
+        float overlap = FLT_MAX;
+        Vec2 smallest;
+        for (int i = 0; i < colB->GetVerts().size(); i++) {
+            Vec2 ax = colB->GetAxis(i);
+
+            Projection p1 = ProjectOnAxis(ax, temp);
+            p1.min -= colA->GetRadius();
+            p1.max += colA->GetRadius();
+            Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
+
+            if (!p1.Overlaps(p2)) {
+                return CollisionInfo(false);
+            }
+            else {
+                float o = p1.GetOverlap(p2);
+                if (o < overlap) {
+                    overlap = o;
+                    smallest = ax;
+                }
+
+            }
+        }
+        CollisionInfo colInfo;
+        colInfo.collided = true;
+        colInfo.colliderA = colA;
+        colInfo.colliderB = colB;
+        colInfo.depth = overlap;
+        colInfo.normal = smallest;
+        return colInfo;
+
+    }
+    
+    
+    CollisionInfo colInfo;
+    colInfo.collided = true;
+    colInfo.colliderA = colA;
+    colInfo.colliderB = colB;
+    colInfo.depth = circleProj.GetOverlap(proj);
+    colInfo.normal = axis;
+    return colInfo;
 }
 
 CollisionInfo CollisionSolver::CircleToPlane(const Collider* colA, const Collider* colB) const
@@ -183,14 +160,14 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
 {
     float overlap = FLT_MAX;
     Vec2 smallest;
-    for (int i = 0; i < colA->faces; i++) {
+    for (int i = 0; i < colA->GetVerts().size(); i++) {
         Vec2 ax = colA->GetAxis(i);
-        Vec2 v = colA->GetVert(i);
-        Projection p1 = ProjectOnAxis(ax, colA->GetVerts(), colA->faces);
-        Projection p2 = ProjectOnAxis(ax, colB->GetVerts(), colB->faces);
+
+        Projection p1 = ProjectOnAxis(ax, colA->GetVerts());
+        Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
 
         if (!p1.Overlaps(p2)) {
-            return false;
+            return CollisionInfo(false);
         }
         else {
             float o = p1.GetOverlap(p2);
@@ -202,14 +179,14 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
         }
     }
 
-    for (int i = 0; i < colB->faces; i++) {
+    for (int i = 0; i < colB->GetVerts().size(); i++) {
         Vec2 ax = colB->GetAxis(i);
 
-        Projection p1 = ProjectOnAxis(ax, colA->GetVerts(), colA->faces);
-        Projection p2 = ProjectOnAxis(ax, colB->GetVerts(), colB->faces);
+        Projection p1 = ProjectOnAxis(ax, colA->GetVerts());
+        Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
 
         if (!p1.Overlaps(p2)) {
-            return false;
+            return CollisionInfo(false);
         }
         else {
             float o = p1.GetOverlap(p2);
@@ -239,15 +216,15 @@ CollisionInfo CollisionSolver::PlaneToPlane(const Collider* colA, const Collider
     return CollisionInfo();
 }
 
-Projection CollisionSolver::ProjectOnAxis(Vec2 axis, Vec2* points, int faces) const
+Projection CollisionSolver::ProjectOnAxis(Vec2 axis, std::vector<Vec2> points) const
 {
     float min = Dot(axis, points[0]);
     float max = min;
 
-    for (int i = 1; i < faces; i++) {
+    for (int i = 1; i < points.size(); i++) {
         float proj = Dot(axis, points[i]);
         if (proj < min) min = proj;
-        else if (proj > max) proj = max;
+        if (proj > max) max = proj;
     }
 
     return Projection(min, max);
@@ -255,10 +232,9 @@ Projection CollisionSolver::ProjectOnAxis(Vec2 axis, Vec2* points, int faces) co
 
 bool Projection::Overlaps(Projection& p2)
 {
-    if (max >= p2.min || p2.max >= min) {
-        return true;
-    }
-    return false;
+    float lsum = std::max(max, p2.max) - std::min(min, p2.min);
+    float ssum = (max - min) + (p2.max - p2.min);
+    return lsum <= ssum;
 }
 
 float Projection::GetOverlap(Projection& p2)

@@ -2,6 +2,7 @@
 #include "LineRenderer.h"
 #include "Circle.h"
 #include "Polygon.h"
+#include "Key.h"
 PhysicsSim::PhysicsSim()
 {
 	appInfo.appName = "Testing Out This Physics Thing";
@@ -9,14 +10,18 @@ PhysicsSim::PhysicsSim()
 
 PhysicsSim::~PhysicsSim()
 {
+	for (Circle* c : circles) {
+		delete c;
+	}
+	circles.clear();
+
+	for (Polygon* p : polys) {
+		delete p;
+	}
+	polys.clear();
 }
 
-Vec2 testVerts[4]{
-	Vec2(-1, -1),
-	Vec2(1, -1),
-	Vec2(1, 1),
-	Vec2(-1, 1)
-};
+
 
 void PhysicsSim::Initialise()
 {
@@ -27,28 +32,58 @@ void PhysicsSim::Initialise()
 	//	}
 	//}
 
-	polys.push_back(new Polygon(Vec2(0, 0), 10, testVerts, 4));
-	polys.push_back(new Polygon(Vec2(0, 0), 10, testVerts, 4));
+	std::vector<Vec2> testVerts ={
+	Vec2(-1, -1),
+	Vec2(1, -1),
+	Vec2(1, 1),
+	Vec2(-1, 1)
+	};
 
+	std::vector<Vec2> testVertsTwo = {
+		Vec2(0, 1),
+		Vec2(1, 0),
+		Vec2(-1, 0)
+	};
+
+	std::vector<Vec2> testVertsThree = {
+		Vec2(0, -1),
+		Vec2(-.6, -.6),
+		Vec2(-1, 0),
+		Vec2(-.6, .6),
+		Vec2(0, 1),
+		Vec2(.6, .6),
+		Vec2(1, 0),
+		Vec2(.6, -.6)
+	};
+
+	//polys.push_back(new Polygon(Vec2(0, 0), 100, testVertsTwo));
+	//polys.push_back(new Polygon(Vec2(0, 0), 100, testVertsThree));
+	polys.push_back(new Polygon(Vec2(0, 0), 5, testVerts));
+	circles.push_back(new Circle(Vec2(0, 0), 1));
 }
 
 void PhysicsSim::Update(float deltaTime)
 {
-	polys[0]->SetPosition(cursorPos);
+	circles[0]->SetPosition(cursorPos);
 
-	CollisionInfo check = drCollision.DetectCollision(polys[0]->collider, polys[1]->collider);
+	std::vector<CollisionInfo> allCollisions;
 
-	if (check.collided) {
-		lines->DrawText("Hello", Vec2(0, 0), 1);
+	CollisionInfo check = drCollision.DetectCollision(circles[0]->collider, polys[0]->collider);
+	allCollisions.push_back(check);
+
+
+	for (CollisionInfo& collision : allCollisions) {
+		drCollision.ResolveCollision(collision);
 	}
-	//for (Circle* c : circles) {
-	//	c->Draw(lines);
-	//}
+
+	for (Circle* c : circles) {
+		c->Draw(lines);
+	}
 
 	for (Polygon* p : polys) {
 		p->Draw(lines);
 	}
-	polys[0]->Draw(lines);
+
 }
 
 void PhysicsSim::OnLeftClick()

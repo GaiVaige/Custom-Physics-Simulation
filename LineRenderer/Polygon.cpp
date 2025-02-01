@@ -6,45 +6,54 @@ PolygonCollider::PolygonCollider(Vec2& centre, float mass)
 	inverseMass = 1.f/mass;
 }
 
-PolygonCollider::PolygonCollider(Vec2& centre, float mass, Vec2* v, int f)
+PolygonCollider::PolygonCollider(Vec2& centre, float mass, std::vector<Vec2> v)
 {
 	shape = POLYGON;
 	position = centre;
 	inverseMass = 1.f / mass;
-	verts = v;
-	faces = f;
-	axes = CalcNormals(verts);
+	for (Vec2 vec : v) {
+		verts.push_back(vec);
+	}
+	baseVerts = verts;
+	CalcNormals(verts);
 }
 
 PolygonCollider::~PolygonCollider()
 {
-	if (verts != nullptr) {
-		delete verts;
-	}
 }
 
 void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 {
 	lines->SetColour(Colour::BLUE);
-	for (int i = 0; i < faces; i++) {
+	for (Vec2& v : axes) {
 		lines->AddPointToLine(position);
-		lines->AddPointToLine(axes[i] + position);
+		lines->AddPointToLine(v + position);
 		lines->FinishLineLoop();
 	}
 	lines->SetColour(Colour::WHITE);
 }
 
-Vec2* PolygonCollider::CalcNormals(Vec2* vertices)
+void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
 {
-	Vec2* norms = new Vec2[faces];
-	for (int i = 0; i < faces; i++) {
+	for (int i = 0; i < vertices.size(); i++) {
 		int j = i + 1;
-		if (j >= faces)	j = 0;
+		if (j >= vertices.size())	j = 0;
 		Vec2 lineSeg = verts[j] - verts[i];
-		norms[i] = Vec2(-lineSeg.y, lineSeg.x).Normalise();
+		axes.push_back(Vec2(-lineSeg.y, lineSeg.x).Normalise());
 	}
 
-	return norms;
+}
+
+Vec2& PolygonCollider::SetPos(Vec2& pos)
+{
+	this->Collider::SetPos(pos);
+	verts.clear();
+
+	for (Vec2 v : baseVerts) {
+		verts.push_back(v + pos);
+	}
+
+	return pos;
 }
 
 Vec2 PolygonCollider::GetVert(int i)
@@ -53,27 +62,21 @@ Vec2 PolygonCollider::GetVert(int i)
 	return v;
 }
 
-Polygon::Polygon(Vec2 pos, float mass, Vec2* v, int f)
+Polygon::Polygon(Vec2 pos, float mass, std::vector<Vec2>& v)
 {
 	position = pos;
-	verts = new Vec2[f];
-	for (int i = 0; i < f; i++) {
-		Vec2 vc = v[i];
-		verts[i] = Vec2(vc);
+	for (Vec2 vec : v) {
+		Vec2 vc = Vec2(vec.x, vec.y);
+		verts.push_back(vc);
 	}
-	faces = f;
-	collider = new PolygonCollider(pos, mass, v, faces);
+	collider = new PolygonCollider(pos, mass, v);
+	collider->SetParent(this);
 	collider->SetPos(pos);
-}
-
-Polygon::~Polygon()
-{
-	delete collider;
 }
 
 void Polygon::Draw(LineRenderer* lines)
 {
-	for (int i = 0; i < faces; i++) {
+	for (int i = 0; i < verts.size(); i++) {
 		lines->AddPointToLine(verts[i] + position);
 	}
 	lines->FinishLineLoop();

@@ -30,7 +30,7 @@ struct CollisionInfo {
 class Collider {
 public:
 	Vec2 GetPos() const { return position; }
-	Vec2& SetPos(Vec2& pos);
+	virtual Vec2& SetPos(Vec2& pos);
 	virtual Vec2 GetFurthestPoint(Vec2& direction) const { return Vec2(); };
 	COLLIDERSHAPE GetShape() const { return shape; }
 	void SetParent(PhysicsObject* p){parent = p;};
