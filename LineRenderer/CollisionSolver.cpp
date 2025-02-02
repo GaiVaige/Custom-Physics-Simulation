@@ -167,8 +167,6 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
 {
     float overlap = FLT_MAX;
     Vec2 smallest;
-    Projection a(FLT_MAX, FLT_MIN);
-    Projection b(FLT_MAX, FLT_MIN);
     for (int i = 0; i < colA->GetVerts().size(); i++) {
         Vec2 ax = colA->GetAxis(i);
     
@@ -250,11 +248,11 @@ bool Projection::Overlaps(Projection& p2)
 
 float Projection::GetOverlap(Projection& p2)
 {
-
+    float ret = 0.0f;
     if (max >= p2.min) {
         return max - p2.min;
     }
-
+    
     if (p2.max >= min) {
         return p2.max - min;
     }

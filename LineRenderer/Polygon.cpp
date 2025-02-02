@@ -25,7 +25,7 @@ PolygonCollider::~PolygonCollider()
 void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 {
 	lines->SetColour(Colour::BLUE);
-	for (int i = 0; i < axes.size() ; i++) {
+	for (int i = 0; i < verts.size() ; i++) {
 		Vec2 v = GetAxis(i);
 		int j = i + 1;
 		if (j >= verts.size())	j = 0;
@@ -44,8 +44,9 @@ void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
 		int j = i + 1;
 		if (j >= vertices.size())	j = 0;
 		Vec2 lineSeg = verts[j] - verts[i];
-		axes.push_back(Vec2(-lineSeg.y, lineSeg.x).Normalise());
+		axes.push_back(Vec2(-lineSeg.y, lineSeg.x).GetNormalised());
 	}
+
 
 }
 

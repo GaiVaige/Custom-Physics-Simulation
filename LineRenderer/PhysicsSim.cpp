@@ -30,9 +30,9 @@ void PhysicsSim::Initialise()
 
 	std::vector<Vec2> testVerts ={
 	Vec2(-1, -1),
-	Vec2(1, -1),
+	Vec2(-1, 1),
 	Vec2(1, 1),
-	Vec2(-1, 1)
+	Vec2(1, -1)
 	};
 
 	std::vector<Vec2> testVertsTwo = {
@@ -86,7 +86,7 @@ void PhysicsSim::Update(float deltaTime)
 	allCollisions.push_back(check);
 	for (CollisionInfo& collision : allCollisions) {
 
-		//drCollision.ResolveCollision(collision);
+		//rCollision.ResolveCollision(collision);
 		if (collision.collided) {
 			lines->DrawLineWithArrow(collision.colliderB->GetPos(), collision.colliderB->GetPos() + collision.normal);
 			lines->DrawLineWithArrow(collision.colliderA->GetPos(), collision.colliderA->GetPos() - collision.normal);
