@@ -10,15 +10,11 @@ PhysicsSim::PhysicsSim()
 
 PhysicsSim::~PhysicsSim()
 {
-	for (Circle* c : circles) {
+	for (PhysicsObject* c : objects) {
 		delete c;
 	}
-	circles.clear();
+	objects.clear();
 
-	for (Polygon* p : polys) {
-		delete p;
-	}
-	polys.clear();
 }
 
 
@@ -40,9 +36,9 @@ void PhysicsSim::Initialise()
 	};
 
 	std::vector<Vec2> testVertsTwo = {
-		Vec2(0, 1),
-		Vec2(1, 0),
-		Vec2(-1, 0)
+		Vec2(-1, -.5),
+		Vec2(0, 1.5),
+		Vec2(1, -.5)
 	};
 
 	std::vector<Vec2> testVertsThree = {
@@ -55,34 +51,52 @@ void PhysicsSim::Initialise()
 		Vec2(1, 0),
 		Vec2(.6, -.6)
 	};
+	std::vector<Vec2> testVertsFour = {
+		Vec2(-1, 0),
+		Vec2(0, 1),
+		Vec2(1, 0),
+		Vec2(0, -1)
+	};
 
-	//polys.push_back(new Polygon(Vec2(0, 0), 100, testVertsTwo));
-	//polys.push_back(new Polygon(Vec2(0, 0), 100, testVertsThree));
-	polys.push_back(new Polygon(Vec2(0, 0), 5, testVerts));
-	circles.push_back(new Circle(Vec2(0, 0), 1));
+	//objects.push_back(new Circle(Vec2(0, 0), 1));
+	objects.push_back(new Polygon(Vec2(0, 0), 1, testVertsTwo));
+	//objects.push_back(new Circle(Vec2(10, 10), 2));
+	//objects.push_back(new Circle(Vec2(15, 4), 3));
+	//objects.push_back(new Circle(Vec2(8, 2), 4));
+	//objects.push_back(new Circle(Vec2(9, 2), 2));
+	//objects.push_back(new Polygon(Vec2(8, 8), 1, testVertsThree));
+	//objects.push_back(new Polygon(Vec2(12, 5), 1, testVerts));
+	objects.push_back(new Polygon(Vec2(5, 0), 1, testVertsTwo));
 }
 
 void PhysicsSim::Update(float deltaTime)
 {
-	circles[0]->SetPosition(cursorPos);
+	objects[0]->SetPosition(cursorPos);
 
 	std::vector<CollisionInfo> allCollisions;
 
-	CollisionInfo check = drCollision.DetectCollision(circles[0]->collider, polys[0]->collider);
+	//for (int i = 0; i < objects.size(); i++) {
+	//	for (int j = i + 1; j < objects.size(); j++) {
+	//		CollisionInfo check = drCollision.DetectCollision(objects[i]->collider, objects[j]->collider);
+	//		allCollisions.push_back(check);
+	//	}
+	//}
+
+	CollisionInfo check = drCollision.DetectCollision(objects[0]->collider, objects.back()->collider);
 	allCollisions.push_back(check);
-
-
 	for (CollisionInfo& collision : allCollisions) {
-		drCollision.ResolveCollision(collision);
+
+		//drCollision.ResolveCollision(collision);
+		if (collision.collided) {
+			lines->DrawLineWithArrow(collision.colliderB->GetPos(), collision.colliderB->GetPos() + collision.normal);
+			lines->DrawLineWithArrow(collision.colliderA->GetPos(), collision.colliderA->GetPos() - collision.normal);
+		}
 	}
 
-	for (Circle* c : circles) {
+	for (PhysicsObject* c : objects) {
 		c->Draw(lines);
 	}
 
-	for (Polygon* p : polys) {
-		p->Draw(lines);
-	}
 
 }
 

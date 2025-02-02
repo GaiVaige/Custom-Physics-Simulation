@@ -25,10 +25,15 @@ PolygonCollider::~PolygonCollider()
 void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 {
 	lines->SetColour(Colour::BLUE);
-	for (Vec2& v : axes) {
-		lines->AddPointToLine(position);
-		lines->AddPointToLine(v + position);
-		lines->FinishLineLoop();
+	for (int i = 0; i < axes.size() ; i++) {
+		Vec2 v = GetAxis(i);
+		int j = i + 1;
+		if (j >= verts.size())	j = 0;
+		Vec2 lineSeg = verts[j] - verts[i];
+		lineSeg /= 2;
+
+		lines->DrawLineWithArrow(verts[i] + lineSeg, verts[i] + lineSeg + v);
+
 	}
 	lines->SetColour(Colour::WHITE);
 }
@@ -83,5 +88,5 @@ void Polygon::Draw(LineRenderer* lines)
 
 	PolygonCollider* p = static_cast<PolygonCollider*>(collider);
 
-	//p->DebugDrawAxis(lines);
+	p->DebugDrawAxis(lines);
 }

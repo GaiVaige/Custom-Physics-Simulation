@@ -11,7 +11,7 @@ CollisionInfo CollisionSolver::DetectCollision(Collider* colA, Collider* colB)
 void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
 {
     if (!colInfo.collided) return;
-
+    
     float totalInvMass = colInfo.colliderA->GetInvMass() + colInfo.colliderB->GetInvMass();
     Vec2 BOffset = colInfo.normal * colInfo.depth * colInfo.colliderB->GetInvMass() / totalInvMass;
     colInfo.colliderB->Move(BOffset);
@@ -95,60 +95,67 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
     }
     
     axis = closestDist.GetNormalised();
-    
-    std::vector<Vec2> tempA = { vertSave };
-    Projection proj = ProjectOnAxis(axis, tempA);
-    //float sOff = Dot(axis, vertSave);
-    //proj.min += sOff;
-    //proj.max += sOff;
+    float overlap = FLT_MAX;
+    Vec2 smallest;
+
+    std::vector<Vec2> tempC = { colA->GetPos() };
+    Projection p = ProjectOnAxis(axis, tempC);
+    p.min -= colA->GetRadius();
+    p.max += colA->GetRadius();
 
 
-    std::vector<Vec2> temp = { colA->GetPos() };
-    Projection circleProj = ProjectOnAxis(axis, temp);
-    circleProj.min -= colA->GetRadius();
-    circleProj.max += colA->GetRadius();
-    
-    if (!circleProj.Overlaps(proj)) {
-        float overlap = FLT_MAX;
-        Vec2 smallest;
-        for (int i = 0; i < colB->GetVerts().size(); i++) {
-            Vec2 ax = colB->GetAxis(i);
+    for (int i = 0; i < colB->GetVerts().size(); i++) {
 
-            Projection p1 = ProjectOnAxis(ax, temp);
-            p1.min -= colA->GetRadius();
-            p1.max += colA->GetRadius();
-            Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
+        Projection p2 = ProjectOnAxis(axis, colB->GetVerts());
 
-            if (!p1.Overlaps(p2)) {
-                return CollisionInfo(false);
-            }
-            else {
-                float o = p1.GetOverlap(p2);
-                if (o < overlap) {
-                    overlap = o;
-                    smallest = ax;
-                }
-
-            }
+        if (!p.Overlaps(p2)) {
+            return CollisionInfo(false);
         }
-        CollisionInfo colInfo;
-        colInfo.collided = true;
-        colInfo.colliderA = colA;
-        colInfo.colliderB = colB;
-        colInfo.depth = overlap;
-        colInfo.normal = smallest;
-        return colInfo;
+        else {
+            float o = p.GetOverlap(p2);
+            if (o < overlap) {
+                overlap = o;
+                smallest = axis;
+            }
 
+        }
     }
+
+
+
     
-    
+        
+    for (int i = 0; i < colB->GetVerts().size(); i++) {
+        Vec2 ax = colB->GetAxis(i);
+
+        Projection p1 = ProjectOnAxis(ax, tempC);
+        p1.min -= colA->GetRadius();
+        p1.max += colA->GetRadius();
+        Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
+
+        if (!p1.Overlaps(p2)) {
+            return CollisionInfo(false);
+        }
+        else {
+            float o = p1.GetOverlap(p2);
+            if (o < overlap) {
+                overlap = o;
+                smallest = ax;
+            }
+
+        }
+    }
+
+
     CollisionInfo colInfo;
     colInfo.collided = true;
     colInfo.colliderA = colA;
     colInfo.colliderB = colB;
-    colInfo.depth = circleProj.GetOverlap(proj);
-    colInfo.normal = axis;
+    colInfo.depth = overlap;
+    colInfo.normal = smallest;
     return colInfo;
+
+
 }
 
 CollisionInfo CollisionSolver::CircleToPlane(const Collider* colA, const Collider* colB) const
@@ -160,12 +167,14 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
 {
     float overlap = FLT_MAX;
     Vec2 smallest;
+    Projection a(FLT_MAX, FLT_MIN);
+    Projection b(FLT_MAX, FLT_MIN);
     for (int i = 0; i < colA->GetVerts().size(); i++) {
         Vec2 ax = colA->GetAxis(i);
-
+    
         Projection p1 = ProjectOnAxis(ax, colA->GetVerts());
         Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
-
+        
         if (!p1.Overlaps(p2)) {
             return CollisionInfo(false);
         }
@@ -175,16 +184,17 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
                 overlap = o;
                 smallest = ax;
             }
-
+        
         }
+    
     }
 
     for (int i = 0; i < colB->GetVerts().size(); i++) {
         Vec2 ax = colB->GetAxis(i);
-
+    
         Projection p1 = ProjectOnAxis(ax, colA->GetVerts());
         Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
-
+    
         if (!p1.Overlaps(p2)) {
             return CollisionInfo(false);
         }
@@ -194,8 +204,9 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
                 overlap = o;
                 smallest = ax;
             }
-
+    
         }
+    
     }
     CollisionInfo colInfo;
     colInfo.collided = true;

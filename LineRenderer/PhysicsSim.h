@@ -15,8 +15,7 @@ public:
 	PhysicsSim();
 	~PhysicsSim();
 	CollisionSolver drCollision;
-	std::vector<Circle*> circles;
-	std::vector<Polygon*> polys;
+	std::vector<PhysicsObject*> objects;
 	void Initialise() override;
 
 	void Update(float deltaTime) override;
