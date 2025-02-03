@@ -25,16 +25,10 @@ PolygonCollider::~PolygonCollider()
 void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 {
 	lines->SetColour(Colour::BLUE);
-	for (int i = 0; i < verts.size() ; i++) {
-		Vec2 v = GetAxis(i);
-		int j = i + 1;
-		if (j >= verts.size())	j = 0;
-		Vec2 lineSeg = verts[j] - verts[i];
-		lineSeg /= 2;
-
-		lines->DrawLineWithArrow(verts[i] + lineSeg, verts[i] + lineSeg + v);
-
+	for (Vec2 v : contactPoints) {
+		lines->DrawCircle(v, .2);
 	}
+	contactPoints.clear();
 	lines->SetColour(Colour::WHITE);
 }
 
@@ -68,7 +62,7 @@ Vec2 PolygonCollider::GetVert(int i)
 	return v;
 }
 
-Polygon::Polygon(Vec2 pos, float mass, std::vector<Vec2>& v)
+Polygon::Polygon(Vec2 pos, float mass, std::vector<Vec2>& v, PHYSICSTYPE t)
 {
 	position = pos;
 	for (Vec2 vec : v) {
@@ -78,9 +72,13 @@ Polygon::Polygon(Vec2 pos, float mass, std::vector<Vec2>& v)
 	collider = new PolygonCollider(pos, mass, v);
 	collider->SetParent(this);
 	collider->SetPos(pos);
+	type = t;
+	if (type == STATIC) {
+		collider->SetInvMass(0);
+	}
 }
 
-void Polygon::Draw(LineRenderer* lines)
+void Polygon::Draw(LineRenderer* lines) const
 {
 	for (int i = 0; i < verts.size(); i++) {
 		lines->AddPointToLine(verts[i] + position);

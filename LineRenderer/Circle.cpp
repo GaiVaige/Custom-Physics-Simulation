@@ -6,6 +6,7 @@ CircleCollider::CircleCollider(Vec2& pos, float& rad)
     position = pos;
     radius = rad;
     shape = CIRCLE;
+
 }
 CircleCollider::~CircleCollider()
 {
@@ -18,16 +19,22 @@ Vec2 CircleCollider::GetFurthestPoint(Vec2& direction) const
     return position + (nDir * radius);
 }
 
-Circle::Circle(Vec2 pos, float radius)
+Circle::Circle(Vec2 pos, float radius, PHYSICSTYPE t)
     : radius(radius)
 {
     position = pos;
     collider = new CircleCollider(position, radius);
-    collider->SetInvMass(1.0f/(radius * radius));
     collider->SetParent(this);
+    type = t;
+    if (type == STATIC) {
+        collider->SetInvMass(0);
+    }
+    else {
+        collider->SetInvMass(1.0f / (radius * radius));
+    }
 }
 
-void Circle::Draw(LineRenderer* lines)
+void Circle::Draw(LineRenderer* lines) const
 {
     lines->DrawCircle(position, radius);
 }

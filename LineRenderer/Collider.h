@@ -3,11 +3,6 @@
 
 class Collider;
 
-enum COLLIDERTYPE{
-	STATIC,
-	DYNAMIC,
-	TRIGGER
-};
 
 enum COLLIDERSHAPE{
 	CIRCLE,
@@ -22,6 +17,7 @@ struct CollisionInfo {
 	CollisionInfo(bool collided, Vec2 norm, float depth) : collided(collided), normal(norm), depth(depth) {};
 	bool collided;
 	Vec2 normal;
+	Vec2 contactPoint;
 	float depth;
 	Collider* colliderA;
 	Collider* colliderB;
@@ -46,4 +42,5 @@ protected:
 	COLLIDERSHAPE shape;
 	Vec2 position;
 	PhysicsObject* parent;
+
 };

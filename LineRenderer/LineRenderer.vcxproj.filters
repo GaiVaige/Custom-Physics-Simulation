@@ -72,7 +72,10 @@
     <ClCompile Include="Circle.cpp">
       <Filter>Engine\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Polygon.cpp" />
+    <ClCompile Include="Polygon.cpp">
+      <Filter>Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Plane.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLFWCallbacks.h">
@@ -156,7 +159,6 @@
     <ClInclude Include="Key.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsSim.h" />
     <ClInclude Include="PhysicsObject.h">
       <Filter>Engine\Physics</Filter>
     </ClInclude>
@@ -170,6 +172,12 @@
       <Filter>Engine\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Polygon.h">
+      <Filter>Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSim.h">
+      <Filter>Engine\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
       <Filter>Engine\Physics</Filter>
     </ClInclude>
   </ItemGroup>

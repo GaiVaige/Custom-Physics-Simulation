@@ -1,6 +1,5 @@
 #pragma once
 #include "PhysicsObject.h"
-#include "Vec2.h"
 #include <vector>
 class LineRenderer;
 class PolygonCollider : public Collider {
@@ -18,6 +17,7 @@ public:
 	Vec2 GetAxis(int i) { return axes[i]; }
 	Vec2 GetVert(int i);
 	std::vector<Vec2>& GetVerts() { return verts; }
+	std::vector<Vec2> contactPoints;
 private:
 	std::vector<Vec2> baseVerts;
 	std::vector<Vec2> verts;
@@ -26,9 +26,10 @@ private:
 
 class Polygon : public PhysicsObject {
 public:
-	Polygon(Vec2 pos, float mass, std::vector<Vec2>& v);
-	void Draw(LineRenderer* lines) override;
+	Polygon(Vec2 pos, float mass, std::vector<Vec2>& v, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
+	void Draw(LineRenderer* lines) const override;
 
 private:
 	std::vector<Vec2> verts;
+
 };

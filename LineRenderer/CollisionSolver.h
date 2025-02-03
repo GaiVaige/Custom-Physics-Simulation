@@ -4,9 +4,15 @@
 #include "Collider.h"
 class CircleCollider;
 class PolygonCollider;
+class PlaneCollider;
+
 //checking structure for the overlap
 
-
+struct Edge {
+	Edge() {};
+	Edge(Vec2 max, Vec2 v1, Vec2 v2) : max(max), v1(v1), v2(v2) {};
+	Vec2 max, v1, v2;
+};
 
 struct Projection {
 	Projection(float mi, float ma) : min(mi), max(ma) {};
@@ -26,12 +32,13 @@ private:
 
 	CollisionInfo CircleToCircle(CircleCollider* colA, CircleCollider* colB) const;
 	CollisionInfo CircleToPolygon(CircleCollider* colA, PolygonCollider* colB) const;
-	CollisionInfo CircleToPlane(const Collider* colA, const Collider* colB) const;
+	CollisionInfo CircleToPlane(CircleCollider* colA, PlaneCollider* colB) const;
 	CollisionInfo PolygonToPolygon(PolygonCollider* colA, PolygonCollider* colB) const;
-	CollisionInfo PolygonToPlane(const Collider* colA, const Collider* colB) const;
-	CollisionInfo PlaneToPlane(const Collider* colA, const Collider* colB) const;
+	CollisionInfo PolygonToPlane(PolygonCollider* colA, PlaneCollider* colB) const;
 
 
 	Projection ProjectOnAxis(Vec2 axis, std::vector<Vec2> points) const;
 
+	Edge Best(std::vector<Vec2> verts, Vec2 axis) const;
+	std::vector<Vec2> Clip(Vec2 incEdgeA, Vec2 incEdgeB, Vec2 refEdge, float amnt) const;
 };

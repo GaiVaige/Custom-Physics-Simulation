@@ -2,6 +2,13 @@
 #include "Vec2.h"
 #include "Collider.h"
 class LineRenderer;
+
+enum PHYSICSTYPE {
+	STATIC,
+	DYNAMIC,
+	TRIGGER
+};
+
 class PhysicsObject {
 public:
 
@@ -14,11 +21,14 @@ public:
 	const Vec2 GetPos() const { return position; }
 	void SetPosition(Vec2& v);
 	void OffsetPosition(Vec2& v);
-	virtual void Draw(LineRenderer* lines) {};
+	virtual void Draw(LineRenderer* lines) const = 0;
 
 	unsigned int GUID;
+	PHYSICSTYPE GetType() { return type; }
 private:
 protected:
+	PHYSICSTYPE type;
 	Vec2 position, velocity;
 	float mass;
+
 };

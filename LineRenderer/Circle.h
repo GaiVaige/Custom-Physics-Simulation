@@ -1,6 +1,5 @@
 #pragma once
 #include "PhysicsObject.h"
-#include <memory>
 class LineRenderer;
 class CircleCollider : public Collider {
 public:
@@ -17,9 +16,9 @@ private:
 
 class Circle : public PhysicsObject {
 public:
-	Circle(Vec2 pos, float radius);
+	Circle(Vec2 pos, float radius, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
 
-	void Draw(LineRenderer* lines) override;
+	void Draw(LineRenderer* lines) const override;
 	float GetRadius() const {return radius;}
 
 private:
