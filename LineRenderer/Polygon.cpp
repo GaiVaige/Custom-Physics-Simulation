@@ -29,6 +29,9 @@ void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 		lines->DrawCircle(v, .2);
 	}
 	contactPoints.clear();
+	lines->DrawLineSegment(start, end);
+	start = Vec2(0, 0);
+	end = Vec2(0, 0);
 	lines->SetColour(Colour::WHITE);
 }
 

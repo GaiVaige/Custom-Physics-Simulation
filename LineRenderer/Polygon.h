@@ -18,6 +18,7 @@ public:
 	Vec2 GetVert(int i);
 	std::vector<Vec2>& GetVerts() { return verts; }
 	std::vector<Vec2> contactPoints;
+	Vec2 start, end;
 private:
 	std::vector<Vec2> baseVerts;
 	std::vector<Vec2> verts;

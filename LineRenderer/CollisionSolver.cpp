@@ -223,6 +223,7 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
 {
     float overlap = FLT_MAX;
     Vec2 smallest;
+    int which = 0;
     for (int i = 0; i < colA->GetVerts().size(); i++) {
         Vec2 ax = colA->GetAxis(i);
 
@@ -237,6 +238,7 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
             if (o < overlap) {
                 overlap = o;
                 smallest = ax;
+                which = 1;
             }
 
         }
@@ -257,62 +259,48 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
             if (o < overlap) {
                 overlap = o;
                 smallest = -ax;
+                which = 2;
             }
 
         }
 
     }
 
-    /*Edge e1 = Best(colA->GetVerts(), smallest);
-
-    Edge e2 = Best(colB->GetVerts(), -smallest);
-
-    Edge ref, inc;
-
-    bool flip = false;
-
-    if (abs(Dot(e1.v1 - e1.v2, smallest) <= abs(Dot(e2.v1 - e2.v2, smallest)))) {
-        ref = e1;
-        inc = e2;
+    if (which == 1) {
+        colA->start = colA->GetPos();
+        colA->end = colA->GetPos() + smallest * 5;
     }
     else {
-        ref = e2;
-        inc = e1;
-        flip = true;
+        colB->start = colB->GetPos();
+        colB->end = colB->GetPos() + smallest * 5;
     }
 
-    Vec2 refV = ref.v2 - ref.v1;
-    refV.Normalise();
-
-    float overlapA = Dot(refV, ref.v1);
-    std::vector<Vec2> cpA = Clip(inc.v1, inc.v2, refV, overlapA);
-
-    if (cpA.size() < 2) return CollisionInfo(false);
-
-    float overlapB = Dot(refV, ref.v2);
-    cpA = Clip(cpA[0], cpA[1], -refV, -overlapB);
-
-    if (cpA.size() < 2) return CollisionInfo(false);
-
-    Vec2 refNormal = Vec2(-refV.y, refV.x);
-
-    if (flip) refNormal *= -1;
-
-    float max = Dot(refNormal, ref.max);
-
-    if (Dot(refNormal, cpA[0]) - max < 0.0){
-        cpA.erase(cpA.begin());
-        if (Dot(refNormal, cpA[0]) - max < 0.0) {
-            cpA.erase(cpA.begin());
+    Vec2 incident;
+    float ch = FLT_MAX;
+    if (which == 1) {
+        for (int i = 0; i < colB->GetVerts().size(); i++) {
+            float o = Dot(smallest, colB->GetAxis(i));
+            if (o < ch) {
+                incident = colB->GetAxis(i);
+                ch = o;
+            }
         }
+        colB->start = colB->GetPos();
+        colB->end = colB->GetPos() + incident * 5;
+
     }
-    else if (Dot(refNormal, cpA[1]) - max < 0.0) {
-        cpA.erase(cpA.begin() + 1);
+    else {
+
+        for (int i = 0; i < colA->GetVerts().size(); i++) {
+            float o = Dot(smallest, colA->GetAxis(i));
+            if (o < ch) {
+                incident = colA->GetAxis(i);
+                ch = o;
+            }
+        }
+        colA->start = colA->GetPos();
+        colA->end = colA->GetPos() + incident * 5;
     }
-    for (Vec2 v : cpA) {
-        colA->contactPoints.push_back(v);
-        colB->contactPoints.push_back(v);
-    }*/
 
 
     CollisionInfo colInfo;

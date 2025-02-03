@@ -62,8 +62,8 @@ void PhysicsSim::Initialise()
 	};
 
 	//objects.push_back(new Circle(Vec2(0, 0), 1));
-	objects.push_back(new Polygon(Vec2(0, 0), 1, testVertsFour));
-	objects.push_back(new Polygon(Vec2(8, 8), 1, testVerts));
+	objects.push_back(new Polygon(Vec2(0, 0), 1, testVertsTwo));
+	objects.push_back(new Polygon(Vec2(0, 0), 1, testVerts));
 	//objects.push_back(new Plane(Vec2(-1, 1), 15));
 	//objects.push_back(new Plane(Vec2(1, 1), 15));
 	//objects.push_back(new Plane(Vec2(-1, -1), 15));
@@ -95,7 +95,7 @@ void PhysicsSim::Update(float deltaTime)
 	}
 
 	for (CollisionInfo& collision : allCollisions) {
-		drCollision.ResolveCollision(collision);
+		//drCollision.ResolveCollision(collision);
 	}
 
 	for (PhysicsObject* c : objects) {
