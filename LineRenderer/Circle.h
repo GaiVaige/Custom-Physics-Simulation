@@ -8,7 +8,7 @@ public:
 	CircleCollider(CircleCollider& c) = delete;
 	CircleCollider& operator=(CircleCollider& c) = delete;
 	Vec2 GetFurthestPoint(Vec2& direction) const override;
-
+	void DrawContactPoints(LineRenderer* lines);
 	float GetRadius() const { return radius; }
 private:
 	float radius;

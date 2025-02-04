@@ -4,7 +4,15 @@
 #include "Polygon.h"
 #include "Plane.h"
 
+bool IsInside(Vec2 p, std::pair<Vec2, Vec2> edge) {
 
+    Vec2 check = edge.first - edge.second;
+
+    float f = PseudoCross(check, p) - PseudoCross(edge.first, edge.second);
+
+
+    return f <= 0.0f;
+}
 
 Edge CollisionSolver::Best(std::vector<Vec2> verts, Vec2 axis) const {
     float max = -FLT_MAX;
@@ -116,7 +124,12 @@ CollisionInfo CollisionSolver::CircleToCircle(CircleCollider *colA, CircleCollid
     if (distance > sumOfRadii) {
         return CollisionInfo(false);
     }
+
+
+
     Vec2 normal = (colB->GetPos() - colA->GetPos()).GetNormalised();
+    colA->contactPoints.push_back(normal * colA->GetRadius() + colA->GetPos());
+    colB->contactPoints.push_back(-normal * colB->GetRadius() + colB->GetPos());
     float penAmnt = sumOfRadii - distance;
     colInf.collided = true;
     colInf.colliderA = colA;
@@ -192,6 +205,14 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
         }
     }
 
+    Vec2 circleClosestPoint = (smallest * colA->GetRadius() + colA->GetPos());
+    colA->contactPoints.push_back(circleClosestPoint);
+
+        for (int i = 0; i < colB->GetVerts().size(); i++) {
+            if (!IsInside(circleClosestPoint, colB->GetEdge(i))) break;
+            if (i == colB->GetVerts().size() - 1) colB->contactPoints.push_back(circleClosestPoint);
+        }
+
 
     CollisionInfo colInfo;
     colInfo.collided = true;
@@ -210,6 +231,10 @@ CollisionInfo CollisionSolver::CircleToPlane(CircleCollider* colA, PlaneCollider
 
     CollisionInfo colInfo;
     colInfo.collided = distance < colA->GetRadius();
+    if (colInfo.collided) {
+        Vec2 circleClosestPoint = (-colB->GetAxis() * colA->GetRadius() + colA->GetPos());
+        colA->contactPoints.push_back(circleClosestPoint);
+    }
     colInfo.colliderA = colA;
     colInfo.colliderB = colB;
     colInfo.normal = colB->GetAxis();
@@ -219,16 +244,25 @@ CollisionInfo CollisionSolver::CircleToPlane(CircleCollider* colA, PlaneCollider
 }
 
 
+
 CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCollider* colB) const
 {
+    if (colA == nullptr || colB == nullptr) return CollisionInfo(false);
+
     float overlap = FLT_MAX;
     Vec2 smallest;
-    int which = 0;
-    for (int i = 0; i < colA->GetVerts().size(); i++) {
-        Vec2 ax = colA->GetAxis(i);
+    int index = -1;
+    PolygonCollider* which = nullptr;
+    PolygonCollider* notWhich = nullptr;
 
-        Projection p1 = ProjectOnAxis(ax, colA->GetVerts());
-        Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
+    Vec2 ax;
+    Projection p1;
+    Projection p2;
+    for (int i = 0; i < colA->GetVerts().size(); i++) {
+        ax = colA->GetAxis(i);
+
+        p1 = ProjectOnAxis(ax, colA->GetVerts());
+        p2 = ProjectOnAxis(ax, colB->GetVerts());
 
         if (!p1.Overlaps(p2)) {
             return CollisionInfo(false);
@@ -238,7 +272,9 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
             if (o < overlap) {
                 overlap = o;
                 smallest = ax;
-                which = 1;
+                index = i;
+                which = colA;
+                notWhich = colB;
             }
 
         }
@@ -246,10 +282,10 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
     }
 
     for (int i = 0; i < colB->GetVerts().size(); i++) {
-        Vec2 ax = colB->GetAxis(i);
+        ax = colB->GetAxis(i);
 
-        Projection p1 = ProjectOnAxis(ax, colA->GetVerts());
-        Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
+        p1 = ProjectOnAxis(ax, colA->GetVerts());
+        p2 = ProjectOnAxis(ax, colB->GetVerts());
 
         if (!p1.Overlaps(p2)) {
             return CollisionInfo(false);
@@ -259,48 +295,102 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
             if (o < overlap) {
                 overlap = o;
                 smallest = -ax;
-                which = 2;
+                index = i;
+                which = colB;
+                notWhich = colA;
             }
 
         }
 
     }
+    /*Vec2 edgeR, edgeI;
+    if (which == colA) {
+        edgeR = (colA->GetEdge(index).second - colA->GetEdge(index).first);
+        colA->start = colA->GetEdge(index).second;
+        colA->end = colA->GetEdge(index).first;
 
-    if (which == 1) {
-        colA->start = colA->GetPos();
-        colA->end = colA->GetPos() + smallest * 5;
-    }
-    else {
-        colB->start = colB->GetPos();
-        colB->end = colB->GetPos() + smallest * 5;
-    }
-
-    Vec2 incident;
-    float ch = FLT_MAX;
-    if (which == 1) {
+        float amnt = FLT_MAX;
+        int ind = -1;
         for (int i = 0; i < colB->GetVerts().size(); i++) {
-            float o = Dot(smallest, colB->GetAxis(i));
-            if (o < ch) {
-                incident = colB->GetAxis(i);
-                ch = o;
+            float c = Dot(smallest, colB->GetAxis(i));
+            if (c < amnt) {
+                amnt = c;
+                ind = i;
             }
         }
-        colB->start = colB->GetPos();
-        colB->end = colB->GetPos() + incident * 5;
+        edgeI = (colB->GetEdge(ind).second - colB->GetEdge(ind).first);
+        colB->start = colB->GetEdge(ind).second;
+        colB->end = colB->GetEdge(ind).first;
 
-    }
-    else {
+        if (index >= colB->GetVerts().size()) index -= colB->GetVerts().size();
 
         for (int i = 0; i < colA->GetVerts().size(); i++) {
-            float o = Dot(smallest, colA->GetAxis(i));
-            if (o < ch) {
-                incident = colA->GetAxis(i);
-                ch = o;
+            if (!IsInside(colB->GetEdge(index).first, colA->GetEdge(i))) break;
+            if (i == colA->GetVerts().size() - 1) colB->contactPoints.push_back(colB->GetEdge(index).first);
+        }
+       
+
+        for (int i = 0; i < colA->GetVerts().size(); i++) {
+            if (!IsInside(colB->GetEdge(index).second, colA->GetEdge(i))) break;
+            if (i == colA->GetVerts().size() - 1) colB->contactPoints.push_back(colB->GetEdge(index).second);
+        }
+       
+
+
+
+    }
+    if (which == colB) {
+        edgeR = (colB->GetEdge(index).second - colB->GetEdge(index).first);
+        colB->start = colB->GetEdge(index).second;
+        colB->end = colB->GetEdge(index).first;
+
+        float amnt = FLT_MAX;
+        int ind = -1;
+        for (int i = 0; i < colA->GetVerts().size(); i++) {
+            float c = Dot(-smallest, colA->GetAxis(i));
+            if (c < amnt) {
+                amnt = c;
+                ind = i;
             }
         }
-        colA->start = colA->GetPos();
-        colA->end = colA->GetPos() + incident * 5;
+        edgeI = (colA->GetEdge(ind).second - colA->GetEdge(ind).first);
+        colA->start = colA->GetEdge(ind).second;
+        colA->end = colA->GetEdge(ind).first;
+
+        if (index >= colA->GetVerts().size()) index -= colA->GetVerts().size();
+
+        for (int i = 0; i < colB->GetVerts().size(); i++) {
+            if (!IsInside(colA->GetEdge(index).first, colB->GetEdge(i))) break;
+            if (i == colB->GetVerts().size() - 1) colA->contactPoints.push_back(colA->GetEdge(index).first);
+        }
+
+
+        for (int i = 0; i < colB->GetVerts().size(); i++) {
+            if (!IsInside(colA->GetEdge(index).second, colB->GetEdge(i))) break;
+            if (i == colB->GetVerts().size() - 1) colA->contactPoints.push_back(colA->GetEdge(index).second);
+        }
+        
+
+
+
+    }*/
+    if (which && notWhich) {
+        for (int repeat = 0; repeat < 2; repeat++) {
+            for (int i = 0; i < notWhich->GetVerts().size(); i++) {
+                for (int j = 0; j < which->GetVerts().size(); j++) {
+                    if (!IsInside(notWhich->GetVert(i), which->GetEdge(j))) break;
+                    if (j == which->GetVerts().size() - 1) which->contactPoints.push_back(notWhich->GetVert(i));
+                }
+            }
+            PolygonCollider* s = which;
+            which = notWhich;
+            notWhich = s;
+        }
+
     }
+
+
+
 
 
     CollisionInfo colInfo;
@@ -315,14 +405,23 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
 CollisionInfo CollisionSolver::PolygonToPlane(PolygonCollider* colA, PlaneCollider* colB) const
 {
     float overlap = FLT_MAX;
+    std::vector<int> inds;
     for (int i = 0; i < colA->GetVerts().size(); i++) {
         float dist = Dot(colA->GetVert(i), colB->GetAxis()) + colB->GetDisplacement();
         if (dist < overlap) {
             overlap = dist;
+            inds.push_back(i);
         }
     }
     CollisionInfo colInfo;
     colInfo.collided = (overlap <= 0);
+    if (colInfo.collided) {
+        for (int i : inds) {
+            if((Dot(colA->GetVert(i), colB->GetAxis()) + colB->GetDisplacement()) < 0)
+            colA->contactPoints.push_back(colA->GetVert(i));
+        }
+
+    }
     colInfo.colliderA = colA;
     colInfo.colliderB = colB;
     colInfo.normal = colB->GetAxis();

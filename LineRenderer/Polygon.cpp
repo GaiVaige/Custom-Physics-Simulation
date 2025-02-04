@@ -28,10 +28,6 @@ void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 	for (Vec2 v : contactPoints) {
 		lines->DrawCircle(v, .2);
 	}
-	contactPoints.clear();
-	lines->DrawLineSegment(start, end);
-	start = Vec2(0, 0);
-	end = Vec2(0, 0);
 	lines->SetColour(Colour::WHITE);
 }
 
@@ -42,6 +38,7 @@ void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
 		if (j >= vertices.size())	j = 0;
 		Vec2 lineSeg = verts[j] - verts[i];
 		axes.push_back(Vec2(-lineSeg.y, lineSeg.x).GetNormalised());
+		edges.push_back(std::pair<Vec2, Vec2>(verts[j] + position, verts[i] + position));
 	}
 
 
@@ -49,11 +46,21 @@ void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
 
 Vec2& PolygonCollider::SetPos(Vec2& pos)
 {
+	for (std::pair<Vec2, Vec2>& v : edges) {
+		v.first -= position;
+		v.second -= position;
+	}
+
 	this->Collider::SetPos(pos);
 	verts.clear();
 
 	for (Vec2 v : baseVerts) {
 		verts.push_back(v + pos);
+	}
+
+	for (std::pair<Vec2, Vec2>& v : edges) {
+		v.first += position;
+		v.second += position;
 	}
 
 	return pos;

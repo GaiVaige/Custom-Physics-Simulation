@@ -19,6 +19,15 @@ Vec2 CircleCollider::GetFurthestPoint(Vec2& direction) const
     return position + (nDir * radius);
 }
 
+void CircleCollider::DrawContactPoints(LineRenderer* lines)
+{
+    lines->SetColour(Colour::BLUE);
+    for (Vec2 v : contactPoints) {
+        lines->DrawCircle(v, .2);
+    }
+    lines->SetColour(Colour::WHITE);
+}
+
 Circle::Circle(Vec2 pos, float radius, PHYSICSTYPE t)
     : radius(radius)
 {
@@ -37,4 +46,7 @@ Circle::Circle(Vec2 pos, float radius, PHYSICSTYPE t)
 void Circle::Draw(LineRenderer* lines) const
 {
     lines->DrawCircle(position, radius);
+
+    CircleCollider* p = static_cast<CircleCollider*>(collider);
+    p->DrawContactPoints(lines);
 }

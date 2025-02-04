@@ -1,6 +1,6 @@
 #pragma once
 #include "vec2.h"
-
+#include <vector>
 class Collider;
 
 
@@ -36,6 +36,9 @@ public:
 	
 	void SetInvMass(float m) { inverseMass = m; } 
 	float GetInvMass() { return inverseMass; }
+	std::vector<Vec2> contactPoints;
+
+	void EndTick();
 
 protected:
 	float inverseMass;

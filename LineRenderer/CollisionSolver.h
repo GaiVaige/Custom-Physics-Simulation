@@ -15,6 +15,7 @@ struct Edge {
 };
 
 struct Projection {
+	Projection() {};
 	Projection(float mi, float ma) : min(mi), max(ma) {};
 	float min;
 	float max;

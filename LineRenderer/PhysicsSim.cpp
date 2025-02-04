@@ -61,20 +61,20 @@ void PhysicsSim::Initialise()
 		Vec2(-5, -1)
 	};
 
-	//objects.push_back(new Circle(Vec2(0, 0), 1));
-	objects.push_back(new Polygon(Vec2(0, 0), 1, testVertsTwo));
-	objects.push_back(new Polygon(Vec2(0, 0), 1, testVerts));
-	//objects.push_back(new Plane(Vec2(-1, 1), 15));
-	//objects.push_back(new Plane(Vec2(1, 1), 15));
-	//objects.push_back(new Plane(Vec2(-1, -1), 15));
-	//objects.push_back(new Plane(Vec2(1, -1), 15));
-	//objects.push_back(new Circle(Vec2(10, 10), 2));
+	objects.push_back(new Circle(Vec2(0, 0), 1));
+	objects.push_back(new Polygon(Vec2(0, -2), 1, testVertsTwo));
+	//objects.push_back(new Polygon(Vec2(0, 0), 1, testVerts));
+	objects.push_back(new Plane(Vec2(-1, 1), 15));
+	objects.push_back(new Plane(Vec2(1, 1), 15));
+	objects.push_back(new Plane(Vec2(-1, -1), 15));
+	objects.push_back(new Plane(Vec2(1, -1), 15));
+	objects.push_back(new Circle(Vec2(10, 10), 2));
 	//objects.push_back(new Circle(Vec2(15, 4), 3));
 	//objects.push_back(new Circle(Vec2(8, 2), 4, STATIC));
 	////objects.push_back(new Circle(Vec2(9, 2), 2));
-	//objects.push_back(new Polygon(Vec2(12, 5), 1, testVerts));
-	//objects.push_back(new Polygon(Vec2(5, 0), 1, testVertsFour));
-	//objects.push_back(new Polygon(Vec2( - 10, 0), 1, testVertsFive, STATIC));
+	objects.push_back(new Polygon(Vec2(12, 5), 1, testVerts));
+	objects.push_back(new Polygon(Vec2(5, 0), 1, testVertsFour));
+	objects.push_back(new Polygon(Vec2( - 10, 0), 1, testVertsFive, STATIC));
 
 	for (PhysicsObject* object : objects) {
 		std::cout << object->GUID << '\n';
@@ -95,11 +95,12 @@ void PhysicsSim::Update(float deltaTime)
 	}
 
 	for (CollisionInfo& collision : allCollisions) {
-		//drCollision.ResolveCollision(collision);
+		drCollision.ResolveCollision(collision);
 	}
 
 	for (PhysicsObject* c : objects) {
 		c->Draw(lines);
+		c->collider->EndTick();
 	}
 
 
