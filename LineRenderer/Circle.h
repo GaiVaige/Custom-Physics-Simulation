@@ -20,6 +20,7 @@ public:
 
 	void Draw(LineRenderer* lines) const override;
 	float GetRadius() const {return radius;}
+	float CalculateMass() override;
 
 private:
 	float radius;

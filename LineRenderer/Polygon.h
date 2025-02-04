@@ -27,9 +27,12 @@ private:
 
 class Polygon : public PhysicsObject {
 public:
-	Polygon(Vec2 pos, float mass, std::vector<Vec2>& v, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
+	Polygon(Vec2 pos, std::vector<Vec2>& v, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
 	void Draw(LineRenderer* lines) const override;
 
+	float CalculateMass() override;
+	bool IsInside(Vec2 p, std::vector<Vec2> verts);
+	std::vector<Vec2> GetVerts() { return verts; }
 private:
 	std::vector<Vec2> verts;
 

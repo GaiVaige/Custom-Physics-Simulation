@@ -72,13 +72,14 @@ Vec2 PolygonCollider::GetVert(int i)
 	return v;
 }
 
-Polygon::Polygon(Vec2 pos, float mass, std::vector<Vec2>& v, PHYSICSTYPE t)
+Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, PHYSICSTYPE t)
 {
 	position = pos;
 	for (Vec2 vec : v) {
 		Vec2 vc = Vec2(vec.x, vec.y);
 		verts.push_back(vc);
 	}
+	mass = CalculateMass();
 	collider = new PolygonCollider(pos, mass, v);
 	collider->SetParent(this);
 	collider->SetPos(pos);
@@ -95,7 +96,75 @@ void Polygon::Draw(LineRenderer* lines) const
 	}
 	lines->FinishLineLoop();
 
-	PolygonCollider* p = static_cast<PolygonCollider*>(collider);
+	//PolygonCollider* p = static_cast<PolygonCollider*>(collider);
+	//for (Vec2 v : testDraw) {
+	//	lines->DrawCircle(v + position, .1f);
+	//}
+	//p->DebugDrawAxis(lines);
 
-	p->DebugDrawAxis(lines);
+	
+
+}
+
+bool Polygon::IsInside(Vec2 p, std::vector<Vec2> verts) {
+
+	for (int i = 0; i < verts.size(); i++) {
+		int j = i + 1;
+		if (j == verts.size()) j = 0;
+		Vec2 check = verts[j] - verts[i];
+		if ((PseudoCross(check, p) - PseudoCross(verts[j], verts[i])) <= 0.0f){
+			continue;
+		};
+		return false;
+
+	}
+	return true;
+
+}
+
+bool operator!=(Vec2& v, Vec2& v2) {
+	float a = abs(v.x - v2.x);
+	float b = abs(v.y - v2.y);
+
+	return a + b < .01;
+}
+
+float Polygon::CalculateMass()
+{
+
+	Vec2 min, max;
+	for (Vec2 v : verts) {
+		if (v.x < min.x) min.x = v.x;
+		if (v.y < min.y) min.y = v.y;
+		if (v.x > max.x) max.x = v.x;
+		if (v.y > max.y) max.y = v.y;
+	}
+	Vec2 start = Vec2(min.x, min.y);
+	Vec2 end = Vec2(max.x, max.y);
+	Vec2 dispAmnt = Vec2(.25, 0);
+	Vec2 vertDispAmnt = Vec2(0, .25);
+	float baseFloatWeight = .04f;
+
+	std::vector<Vec2> containedVectors;
+	Vec2 track = start;
+	bool finished = false;
+	while(!finished) {
+		if (IsInside(track, verts)) {
+			containedVectors.push_back(track);
+		}
+
+		if (track.x >= max.x) {
+			track += vertDispAmnt;
+			track.x = min.x;
+			if (track.y > max.y) finished = true;
+		}
+		else {
+			track += dispAmnt;
+		}
+	}
+	
+	
+
+
+	return containedVectors.size() * baseFloatWeight;
 }

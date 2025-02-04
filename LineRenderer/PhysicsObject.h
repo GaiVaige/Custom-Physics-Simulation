@@ -3,6 +3,7 @@
 #include "Collider.h"
 class LineRenderer;
 
+
 enum PHYSICSTYPE {
 	STATIC,
 	DYNAMIC,
@@ -21,7 +22,15 @@ public:
 	const Vec2 GetPos() const { return position; }
 	void SetPosition(Vec2& v);
 	void OffsetPosition(Vec2& v);
+	void Update(float dt);
 	virtual void Draw(LineRenderer* lines) const = 0;
+	virtual float CalculateMass();
+
+	void SetVelocity(Vec2 force) { velocity = force; }
+	void ApplyForce(Vec2 force);
+	void ApplyImpulse(Vec2 force);
+	Vec2 GetVelocity() { return velocity; }
+	Vec2 GetVelocityNormalised() { return velocity.GetNormalised(); }
 
 	unsigned int GUID;
 	PHYSICSTYPE GetType() { return type; }
@@ -30,5 +39,9 @@ protected:
 	PHYSICSTYPE type;
 	Vec2 position, velocity;
 	float mass;
+
+	float orientation;
+	float angularVelocity;
+	float momentOfIntertia;
 
 };

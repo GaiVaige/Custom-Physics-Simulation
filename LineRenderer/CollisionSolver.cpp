@@ -73,10 +73,15 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     if (!colInfo.collided) return;
     
     float totalInvMass = colInfo.colliderA->GetInvMass() + colInfo.colliderB->GetInvMass();
+    if (totalInvMass == 0) {
+        return;
+    }
     Vec2 BOffset = colInfo.normal * colInfo.depth * colInfo.colliderB->GetInvMass() / totalInvMass;
     colInfo.colliderB->Move(BOffset);
+    colInfo.colliderB->GetParent()->ApplyForce(colInfo.normal);
     Vec2 AOffset = -(colInfo.normal * colInfo.depth * colInfo.colliderA->GetInvMass() / totalInvMass);
     colInfo.colliderA->Move(AOffset);
+    colInfo.colliderA->GetParent()->ApplyForce(-colInfo.normal);
     return;
 }
 
@@ -417,7 +422,7 @@ CollisionInfo CollisionSolver::PolygonToPlane(PolygonCollider* colA, PlaneCollid
     colInfo.collided = (overlap <= 0);
     if (colInfo.collided) {
         for (int i : inds) {
-            if((Dot(colA->GetVert(i), colB->GetAxis()) + colB->GetDisplacement()) < 0)
+            if(Dot(colA->GetVert(i), colB->GetAxis()) + colB->GetDisplacement() < 0)
             colA->contactPoints.push_back(colA->GetVert(i));
         }
 

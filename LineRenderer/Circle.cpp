@@ -39,7 +39,7 @@ Circle::Circle(Vec2 pos, float radius, PHYSICSTYPE t)
         collider->SetInvMass(0);
     }
     else {
-        collider->SetInvMass(1.0f / (radius * radius));
+        collider->SetInvMass(1.0f / CalculateMass());
     }
 }
 
@@ -47,6 +47,11 @@ void Circle::Draw(LineRenderer* lines) const
 {
     lines->DrawCircle(position, radius);
 
-    CircleCollider* p = static_cast<CircleCollider*>(collider);
-    p->DrawContactPoints(lines);
+    //CircleCollider* p = static_cast<CircleCollider*>(collider);
+    //p->DrawContactPoints(lines);
+}
+
+float Circle::CalculateMass()
+{
+    return PI * (radius * radius);
 }
