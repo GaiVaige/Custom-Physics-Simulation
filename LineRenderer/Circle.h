@@ -3,7 +3,7 @@
 class LineRenderer;
 class CircleCollider : public Collider {
 public:
-	CircleCollider(Vec2& pos, float& rad);
+	CircleCollider(Vec2 pos, float rad);
 	~CircleCollider();
 	CircleCollider(CircleCollider& c) = delete;
 	CircleCollider& operator=(CircleCollider& c) = delete;
@@ -16,7 +16,7 @@ private:
 
 class Circle : public PhysicsObject {
 public:
-	Circle(Vec2 pos, float radius, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
+	Circle(Vec2 pos, float radius, float elas, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
 
 	void Draw(LineRenderer* lines) const override;
 	float GetRadius() const {return radius;}

@@ -17,7 +17,7 @@ private:
 
 class Plane : public PhysicsObject {
 public:
-	Plane(Vec2 normal, float disp);
+	Plane(Vec2 normal, float disp, float elas = 1);
 
 	void Draw(LineRenderer* lines) const override;
 private:

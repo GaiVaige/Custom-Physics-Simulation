@@ -88,13 +88,17 @@ void PhysicsSim::Initialise()
 
 
 
-	//objects.push_back(new Circle(Vec2(0, 0), 1));
-	objects.push_back(new Polygon(Vec2(0, 5), UNITCUBE));
-	objects.push_back(new Polygon(Vec2(0, -5), UNITCUBE, STATIC));
-	objects.push_back(new Plane(Vec2(-1, 1), 5));
-	objects.push_back(new Plane(Vec2(1, 1), 5));
-	objects.push_back(new Plane(Vec2(-1, -1), 5));
-	objects.push_back(new Plane(Vec2(1, -1), 5));
+	objects.push_back(new Circle(Vec2(0, -5), .5, .2));
+	objects.push_back(new Circle(Vec2(0, 5), .5, .2));
+	objects.push_back(new Circle(Vec2(-1, 4), .5, .2));
+	objects.push_back(new Circle(Vec2(0, 4), .5, .2));
+	objects.push_back(new Circle(Vec2(1, 4), .5, .4));
+	objects.push_back(new Circle(Vec2(-2, 3), .5, .2));
+	objects.push_back(new Circle(Vec2(2, 3), .5, .3));
+	objects.push_back(new Plane(Vec2(-1, 1), 5, .5));
+	objects.push_back(new Plane(Vec2(1, 1), 5, .5));
+	objects.push_back(new Plane(Vec2(-1, -1), 5, .5));
+	objects.push_back(new Plane(Vec2(1, -1), 5, .5));
 	//objects.push_back(new Circle(Vec2(10, 10), 2));
 	//objects.push_back(new Circle(Vec2(15, 4), 3));
 	//objects.push_back(new Circle(Vec2(8, 2), 4, STATIC));
@@ -106,23 +110,32 @@ void PhysicsSim::Initialise()
 	for (PhysicsObject* object : objects) {
 		std::cout << object->GUID << '\n';
 	}
+	objects[0]->ApplyImpulse(Vec2(5, 25));
 }
 
 void PhysicsSim::Update(float deltaTime)
 {
 
-	objects[0]->ApplyForce(Vec2(0, -1) * deltaTime);
+	//for (PhysicsObject* ob : objects) {
+	//	if (ob->GetType() != PLANE) {
+	//		ob->ApplyForce(Vec2(0, -9.8));
+	//	}
+	//
+	//}
+
 	std::vector<CollisionInfo> allCollisions;
 
 	for (int w = 0; w < 3; w++) {
 		for (int i = 0; i < objects.size(); i++) {
 			for (int j = i + 1; j < objects.size(); j++) {
 				CollisionInfo check = drCollision.DetectCollision(objects[i]->collider, objects[j]->collider);
-				allCollisions.push_back(check);
+				if (check.collided) {
+					allCollisions.push_back(check);
+				}
 			}
 		}
 		for (CollisionInfo& collision : allCollisions) {
-			drCollision.ResolveCollision(collision);
+			drCollision.ResolveCollision(collision, deltaTime);
 		}
 		allCollisions.clear();
 	}

@@ -34,11 +34,12 @@ public:
 
 	unsigned int GUID;
 	PHYSICSTYPE GetType() { return type; }
+	float elasticity;
 private:
 protected:
 	PHYSICSTYPE type;
-	Vec2 position, velocity;
-	float mass;
+	Vec2 position, velocity, accumulatedForce;
+	float inverseMass;
 
 	float orientation;
 	float angularVelocity;

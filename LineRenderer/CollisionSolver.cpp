@@ -68,7 +68,7 @@ CollisionInfo CollisionSolver::DetectCollision(Collider* colA, Collider* colB)
     return DispatchForCorrectFunction(colA, colB);
 }
 
-void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
+void CollisionSolver::ResolveCollision(CollisionInfo colInfo, float dt)
 {
     if (!colInfo.collided) return;
     
@@ -76,12 +76,17 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     if (totalInvMass == 0) {
         return;
     }
-    Vec2 BOffset = colInfo.normal * colInfo.depth * colInfo.colliderB->GetInvMass() / totalInvMass;
+    Vec2 velA = colInfo.colliderA->GetParent()->GetVelocity();
+    Vec2 velB = colInfo.colliderB->GetParent()->GetVelocity();
+    float elas = (colInfo.colliderA->GetParent()->elasticity + colInfo.colliderB->GetParent()->elasticity) / 2.f;
+    float impMag = (-(1 + elas) * Dot((velB - velA), colInfo.normal))/
+        Dot(colInfo.normal, (colInfo.normal * totalInvMass));
+    Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetInvMass() / totalInvMass);
     colInfo.colliderB->Move(BOffset);
-    colInfo.colliderB->GetParent()->ApplyForce(colInfo.normal);
-    Vec2 AOffset = -(colInfo.normal * colInfo.depth * colInfo.colliderA->GetInvMass() / totalInvMass);
+    colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * impMag * colInfo.colliderB->GetInvMass());
+    Vec2 AOffset = -(colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
     colInfo.colliderA->Move(AOffset);
-    colInfo.colliderA->GetParent()->ApplyForce(-colInfo.normal);
+    colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * impMag * colInfo.colliderA->GetInvMass());
     return;
 }
 
@@ -113,12 +118,13 @@ CollisionInfo CollisionSolver::DispatchForCorrectFunction(Collider* colA, Collid
                 case COLLIDERSHAPE::CIRCLE:
                     return CircleToPlane(static_cast<CircleCollider*>(colB), static_cast<PlaneCollider*>(colA));
                 case COLLIDERSHAPE::PLANE:
-                    return CollisionInfo();
+                    return CollisionInfo(false);
                 case COLLIDERSHAPE::POLYGON:
                     return PolygonToPlane(static_cast<PolygonCollider*>(colB), static_cast<PlaneCollider*>(colA));
             }
             break;
     }
+    return CollisionInfo(false);
 }
 
 CollisionInfo CollisionSolver::CircleToCircle(CircleCollider *colA, CircleCollider*colB) const

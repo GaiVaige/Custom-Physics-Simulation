@@ -6,6 +6,7 @@ PhysicsObject::PhysicsObject()
 	auto now = std::chrono::high_resolution_clock::now();
 	auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
 	GUID = nanos;
+	velocity = Vec2(0, 0);
 }
 
 PhysicsObject::~PhysicsObject()
@@ -27,9 +28,12 @@ void PhysicsObject::OffsetPosition(Vec2& v)
 
 void PhysicsObject::Update(float dt)
 {
-	position += (velocity * dt) * collider->GetInvMass();
+	Vec2 dragVec = GetVelocityNormalised() * (50 * inverseMass) * dt;
+	Vec2 accel = ((accumulatedForce * inverseMass) - (velocity * dt)) - dragVec;
+	position += velocity * dt;
+	velocity += accel * dt;
 	collider->SetPos(position);
-	velocity -= (velocity * dt * .1f);
+	accumulatedForce = Vec2();
 }
 
 float PhysicsObject::CalculateMass()
@@ -39,12 +43,12 @@ float PhysicsObject::CalculateMass()
 
 void PhysicsObject::ApplyForce(Vec2 force)
 {
-	//velocity accumulator
+	accumulatedForce += force;
 }
 
 void PhysicsObject::ApplyImpulse(Vec2 force)
 {
-	velocity += force * mass;
+	velocity += force * inverseMass;
 }
 
 

@@ -1,7 +1,7 @@
 #include "Circle.h"
 #include "Maths.h"
 #include "LineRenderer.h"
-CircleCollider::CircleCollider(Vec2& pos, float& rad)
+CircleCollider::CircleCollider(Vec2 pos, float rad)
 {
     position = pos;
     radius = rad;
@@ -28,10 +28,11 @@ void CircleCollider::DrawContactPoints(LineRenderer* lines)
     lines->SetColour(Colour::WHITE);
 }
 
-Circle::Circle(Vec2 pos, float radius, PHYSICSTYPE t)
+Circle::Circle(Vec2 pos, float radius, float elas, PHYSICSTYPE t)
     : radius(radius)
 {
     position = pos;
+    elasticity = elas;
     collider = new CircleCollider(position, radius);
     collider->SetParent(this);
     type = t;
@@ -39,14 +40,15 @@ Circle::Circle(Vec2 pos, float radius, PHYSICSTYPE t)
         collider->SetInvMass(0);
     }
     else {
-        collider->SetInvMass(1.0f / CalculateMass());
+        inverseMass = 1.0f / CalculateMass();
+        collider->SetInvMass(inverseMass);
     }
 }
 
 void Circle::Draw(LineRenderer* lines) const
 {
     lines->DrawCircle(position, radius);
-
+    //lines->DrawLineWithArrow(position, position + velocity);
     //CircleCollider* p = static_cast<CircleCollider*>(collider);
     //p->DrawContactPoints(lines);
 }

@@ -1,9 +1,10 @@
 #include "Plane.h"
 #include "LineRenderer.h"
-Plane::Plane(Vec2 normal, float displacement)
+Plane::Plane(Vec2 normal, float displacement, float elas)
 {
 	direction = normal.GetNormalised();
 	position = -direction * displacement;
+	elasticity = elas;
 	collider = new PlaneCollider(direction, displacement);
 	type = STATIC;
 	collider->SetParent(this);

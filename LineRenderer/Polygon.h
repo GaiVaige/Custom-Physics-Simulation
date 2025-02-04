@@ -27,7 +27,7 @@ private:
 
 class Polygon : public PhysicsObject {
 public:
-	Polygon(Vec2 pos, std::vector<Vec2>& v, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
+	Polygon(Vec2 pos, std::vector<Vec2>& v, float elasticity, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
 	void Draw(LineRenderer* lines) const override;
 
 	float CalculateMass() override;

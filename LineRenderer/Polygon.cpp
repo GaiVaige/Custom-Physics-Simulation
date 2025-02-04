@@ -72,15 +72,16 @@ Vec2 PolygonCollider::GetVert(int i)
 	return v;
 }
 
-Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, PHYSICSTYPE t)
+Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, float elas, PHYSICSTYPE t)
 {
 	position = pos;
+	elasticity = elas;
 	for (Vec2 vec : v) {
 		Vec2 vc = Vec2(vec.x, vec.y);
 		verts.push_back(vc);
 	}
-	mass = CalculateMass();
-	collider = new PolygonCollider(pos, mass, v);
+	inverseMass = CalculateMass();
+	collider = new PolygonCollider(pos, inverseMass, v);
 	collider->SetParent(this);
 	collider->SetPos(pos);
 	type = t;
@@ -96,13 +97,7 @@ void Polygon::Draw(LineRenderer* lines) const
 	}
 	lines->FinishLineLoop();
 
-	//PolygonCollider* p = static_cast<PolygonCollider*>(collider);
-	//for (Vec2 v : testDraw) {
-	//	lines->DrawCircle(v + position, .1f);
-	//}
-	//p->DebugDrawAxis(lines);
-
-	
+	//lines->DrawLineWithArrow(position, position + velocity);
 
 }
 
