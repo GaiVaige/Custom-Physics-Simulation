@@ -6,7 +6,7 @@ PhysicsObject::PhysicsObject()
 	auto now = std::chrono::high_resolution_clock::now();
 	auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
 	GUID = nanos;
-	velocity = Vec2(0, 0);
+	linearVelocity = Vec2(0, 0);
 }
 
 PhysicsObject::~PhysicsObject()
@@ -29,11 +29,11 @@ void PhysicsObject::OffsetPosition(Vec2& v)
 void PhysicsObject::Update(float dt)
 {
 	Vec2 dragVec = GetVelocityNormalised() * (50 * inverseMass) * dt;
-	Vec2 accel = ((accumulatedForce * inverseMass) - (velocity * dt)) - dragVec;
-	position += velocity * dt;
-	velocity += accel * dt;
+	Vec2 accel = ((accumulatedLinearForce * inverseMass) - (linearVelocity * dt)) - dragVec;
+	position += linearVelocity * dt;
+	accumulatedLinearForce += accel * dt;
 	collider->SetPos(position);
-	accumulatedForce = Vec2();
+	accumulatedLinearForce = Vec2();
 }
 
 float PhysicsObject::CalculateMass()
@@ -41,14 +41,23 @@ float PhysicsObject::CalculateMass()
 	return 0.0f;
 }
 
+float PhysicsObject::CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight)
+{
+	return 0.0f;
+}
+
+void PhysicsObject::Rotate(float amnt)
+{
+}
+
 void PhysicsObject::ApplyForce(Vec2 force)
 {
-	accumulatedForce += force;
+	accumulatedLinearForce += force;
 }
 
 void PhysicsObject::ApplyImpulse(Vec2 force)
 {
-	velocity += force * inverseMass;
+	linearVelocity += force * inverseMass;
 }
 
 
