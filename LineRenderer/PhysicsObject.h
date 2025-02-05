@@ -3,6 +3,8 @@
 #include "Collider.h"
 class LineRenderer;
 
+static float LINEAR_THRESHOLD = .05f;
+static Vec2 GRAVITY = Vec2(0, -9.8);
 
 enum PHYSICSTYPE {
 	STATIC,
@@ -25,6 +27,8 @@ public:
 	void Update(float dt);
 	virtual void Draw(LineRenderer* lines) const = 0;
 	virtual float CalculateMass();
+	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
+
 
 	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
 	virtual void Rotate(float amnt);

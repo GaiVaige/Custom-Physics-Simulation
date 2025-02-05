@@ -1,5 +1,6 @@
 #include "Polygon.h"
 #include "LineRenderer.h"
+#include <string>
 PolygonCollider::PolygonCollider(Vec2& centre, float mass)
 {
 	position = centre;
@@ -96,9 +97,13 @@ void Polygon::Draw(LineRenderer* lines) const
 		lines->AddPointToLine(verts[i] + position);
 	}
 	lines->FinishLineLoop();
-
+	lines->DrawText(std::to_string(linearVelocity.GetMagnitude()), position, 1);
 	//lines->DrawLineWithArrow(position, position + velocity);
 
+}
+
+void Polygon::Rotate(float amnt)
+{
 }
 
 bool Polygon::IsInside(Vec2 p, std::vector<Vec2> verts) {
@@ -157,6 +162,8 @@ float Polygon::CalculateMass()
 			track += dispAmnt;
 		}
 	}
+
+	momentOfIntertia = CalculateMomentOfInertia(position, containedVectors, baseFloatWeight);
 	
 	momentOfIntertia = CalculateMomentOfInertia(position, containedVectors, baseFloatWeight);
 

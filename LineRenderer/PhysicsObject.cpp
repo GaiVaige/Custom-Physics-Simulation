@@ -8,7 +8,6 @@ PhysicsObject::PhysicsObject()
 	GUID = nanos;
 	linearVelocity = Vec2(0, 0);
 }
-
 PhysicsObject::~PhysicsObject()
 {
 	delete collider;
@@ -28,12 +27,19 @@ void PhysicsObject::OffsetPosition(Vec2& v)
 
 void PhysicsObject::Update(float dt)
 {
-	Vec2 dragVec = GetVelocityNormalised() * (50 * inverseMass) * dt;
-	Vec2 accel = ((accumulatedLinearForce * inverseMass) - (linearVelocity * dt)) - dragVec;
+	//position
+	Vec2 accel = (accumulatedLinearForce * inverseMass);
 	position += linearVelocity * dt;
 	linearVelocity += accel * dt;
-	collider->SetPos(position);
+	linearVelocity -= linearVelocity * linearDrag * dt;
+  collider->SetPos(position);
 	accumulatedLinearForce = Vec2();
+
+	//rotation
+	float rotAccel = (accumulatedAngularForce);
+	Rotate(angularVelocity * dt);
+	angularVelocity += rotAccel * dt;
+	accumulatedAngularForce = 0;
 }
 
 float PhysicsObject::CalculateMass()
