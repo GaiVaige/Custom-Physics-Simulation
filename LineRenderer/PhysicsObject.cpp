@@ -28,10 +28,11 @@ void PhysicsObject::OffsetPosition(Vec2& v)
 void PhysicsObject::Update(float dt)
 {
 	//position
-	Vec2 dragVec = GetVelocityNormalised() * (50 * inverseMass) * dt;
-	Vec2 accel = ((accumulatedLinearForce * inverseMass) - (linearVelocity * dt)) - dragVec;
+	Vec2 accel = (accumulatedLinearForce * inverseMass);
 	position += linearVelocity * dt;
 	linearVelocity += accel * dt;
+	linearVelocity -= linearVelocity * linearDrag * dt;
+	accumulatedLinearForce = Vec2();
 
 	//rotation
 	float rotAccel = (accumulatedAngularForce);

@@ -27,7 +27,7 @@ struct Projection {
 class CollisionSolver{
 public:
 	CollisionInfo DetectCollision(Collider* colA, Collider* colB);
-	void ResolveCollision(CollisionInfo colInfo, float dt);
+	void ResolveCollision(CollisionInfo colInfo);
 private:
 	CollisionInfo DispatchForCorrectFunction(Collider* colA, Collider* colB);
 

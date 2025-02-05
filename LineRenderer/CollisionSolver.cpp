@@ -68,7 +68,7 @@ CollisionInfo CollisionSolver::DetectCollision(Collider* colA, Collider* colB)
     return DispatchForCorrectFunction(colA, colB);
 }
 
-void CollisionSolver::ResolveCollision(CollisionInfo colInfo, float dt)
+void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
 {
     if (!colInfo.collided) return;
     
@@ -84,6 +84,7 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo, float dt)
     Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetInvMass() / totalInvMass);
     colInfo.colliderB->Move(BOffset);
     colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * impMag * colInfo.colliderB->GetInvMass());
+
     Vec2 AOffset = -(colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
     colInfo.colliderA->Move(AOffset);
     colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * impMag * colInfo.colliderA->GetInvMass());
