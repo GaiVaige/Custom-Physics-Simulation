@@ -29,7 +29,10 @@ public:
 	virtual float CalculateMass();
 	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
 
+
+	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
 	virtual void Rotate(float amnt);
+
 	void SetVelocity(Vec2 force) { linearVelocity = force; }
 	void ApplyForce(Vec2 force);
 	void ApplyImpulse(Vec2 force);
@@ -42,6 +45,7 @@ public:
 
 	float linearDrag = .5;
 	float angularDrag = .01;
+
 private:
 protected:
 	PHYSICSTYPE type;

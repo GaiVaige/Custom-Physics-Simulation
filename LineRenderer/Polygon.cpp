@@ -165,7 +165,7 @@ float Polygon::CalculateMass()
 
 	momentOfIntertia = CalculateMomentOfInertia(position, containedVectors, baseFloatWeight);
 	
-	
+	momentOfIntertia = CalculateMomentOfInertia(position, containedVectors, baseFloatWeight);
 
 
 	return containedVectors.size() * baseFloatWeight;

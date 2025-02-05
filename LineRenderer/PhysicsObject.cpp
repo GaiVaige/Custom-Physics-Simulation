@@ -32,6 +32,7 @@ void PhysicsObject::Update(float dt)
 	position += linearVelocity * dt;
 	linearVelocity += accel * dt;
 	linearVelocity -= linearVelocity * linearDrag * dt;
+  collider->SetPos(position);
 	accumulatedLinearForce = Vec2();
 
 	//rotation
