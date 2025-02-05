@@ -68,7 +68,9 @@ std::vector<Vec2> testVertsHayden = {
 
 PhysicsSim::PhysicsSim()
 {
-	appInfo.appName = "Testing Out This Physics Thing";
+	appInfo.appName = "Great Steal Caro";
+	appInfo.horizontalResolution = 1280;
+	appInfo.verticalResolution = 720;
 }
 
 PhysicsSim::~PhysicsSim()
@@ -87,15 +89,14 @@ void PhysicsSim::Initialise()
 
 
 
-	//objects.push_back(new Polygon(Vec2(0, 5), UNITCUBE, .5));
-	//objects.push_back(new Circle(Vec2(0, 5), 2, .4 ));
-	objects.push_back(new Circle(Vec2(0, 0), .5, .8));
-	//objects.push_back(new Circle(Vec2(-1, 4), .5, .8));
-	//objects.push_back(new Circle(Vec2(0, 4), .5, .2));
-	//objects.push_back(new Circle(Vec2(1, 4), .5, .4));
-	//objects.push_back(new Circle(Vec2(-2, 3), .5, .2));
-	//objects.push_back(new Circle(Vec2(2, 3), .5, .3));
-	objects.push_back(new Plane(Vec2(-1, 1), 0, .1));
+	objects.push_back(new Circle(Vec2(0, -5), .5, .5));
+	objects.push_back(new Circle(Vec2(0, 5), .5, .5));
+	objects.push_back(new Circle(Vec2(-1, 4), .5, .5));
+	objects.push_back(new Circle(Vec2(0, 4), .5, .5));
+	objects.push_back(new Circle(Vec2(1, 4), .5, .5));
+	objects.push_back(new Circle(Vec2(-2, 3), .5, .5));
+	objects.push_back(new Circle(Vec2(2, 3), .5, .5));
+	objects.push_back(new Plane(Vec2(-1, 1), 5, .1));
 	objects.push_back(new Plane(Vec2(1, 1), 5, .1));
 	objects.push_back(new Plane(Vec2(-1, -1), 5, .1));
 	objects.push_back(new Plane(Vec2(1, -1), 5, .1));
@@ -103,19 +104,21 @@ void PhysicsSim::Initialise()
 	//objects.push_back(new Circle(Vec2(15, 4), 3));
 	//objects.push_back(new Circle(Vec2(8, 2), 4, STATIC));
 	//objects.push_back(new Circle(Vec2(9, 2), 2));
+	//objects.push_back(new Polygon(Vec2(12, 5), 1, testVerts));
 	//objects.push_back(new Polygon(Vec2(5, 0), 1, testVertsFour));
 	//objects.push_back(new Polygon(Vec2( - 10, 0), 1, testVertsFive, STATIC));
 
 	for (PhysicsObject* object : objects) {
 		std::cout << object->GUID << '\n';
 	}
+	objects[0]->ApplyImpulse(Vec2(5, 25));
+
+
 }
 
 void PhysicsSim::Update(float deltaTime)
 {
-	for (PhysicsObject* o : objects) {
-		o->ApplyForce(Vec2(0, -9.8));
-	}
+
 
 
 	std::vector<CollisionInfo> allCollisions;

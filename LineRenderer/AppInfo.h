@@ -6,7 +6,7 @@
 //up, in case it gets set to true later.
 struct GridInfo
 {
-	bool show = true;
+	bool show = false;
 	Colour mainAxesColour = Colour::WHITE.Multiply(0.8f);	//The colour of the cardinal axes lines
 	Colour linesColour = Colour::WHITE.Multiply(0.3f);	//The colour of the more faded spacing lines.
 	unsigned int extent = 10;	//How many grid lines there are in all four directions (positive and negative).

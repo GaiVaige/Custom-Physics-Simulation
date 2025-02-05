@@ -29,8 +29,6 @@ public:
 	virtual float CalculateMass();
 	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
 
-
-	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
 	virtual void Rotate(float amnt);
 
 	void SetVelocity(Vec2 force) { linearVelocity = force; }
