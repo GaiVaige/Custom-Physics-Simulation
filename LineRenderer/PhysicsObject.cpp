@@ -31,7 +31,7 @@ void PhysicsObject::Update(float dt)
 	Vec2 dragVec = GetVelocityNormalised() * (50 * inverseMass) * dt;
 	Vec2 accel = ((accumulatedLinearForce * inverseMass) - (linearVelocity * dt)) - dragVec;
 	position += linearVelocity * dt;
-	accumulatedLinearForce += accel * dt;
+	linearVelocity += accel * dt;
 	collider->SetPos(position);
 	accumulatedLinearForce = Vec2();
 }
@@ -43,7 +43,11 @@ float PhysicsObject::CalculateMass()
 
 float PhysicsObject::CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight)
 {
-	return 0.0f;
+	float totalMOI = 0;
+	for (Vec2 p : points) {
+		totalMOI += (centreOfMass - p).GetMagnitudeSquared() * pointWeight;
+	}
+	return totalMOI;
 }
 
 void PhysicsObject::Rotate(float amnt)

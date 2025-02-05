@@ -8,6 +8,7 @@ Plane::Plane(Vec2 normal, float displacement, float elas)
 	collider = new PlaneCollider(direction, displacement);
 	type = STATIC;
 	collider->SetParent(this);
+	momentOfIntertia = FLT_MAX;
 }
 
 void Plane::Draw(LineRenderer* lines) const
