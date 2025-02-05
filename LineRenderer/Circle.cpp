@@ -55,5 +55,7 @@ void Circle::Draw(LineRenderer* lines) const
 
 float Circle::CalculateMass()
 {
-    return PI * (radius * radius);
+    float mass = PI * (radius * radius);
+    momentOfIntertia = 2 / 5 * mass * (radius * radius);
+    return mass;
 }

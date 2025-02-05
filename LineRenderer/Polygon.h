@@ -30,6 +30,8 @@ public:
 	Polygon(Vec2 pos, std::vector<Vec2>& v, float elasticity, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
 	void Draw(LineRenderer* lines) const override;
 
+	void Rotate(float amnt) override;
+
 	float CalculateMass() override;
 	bool IsInside(Vec2 p, std::vector<Vec2> verts);
 	std::vector<Vec2> GetVerts() { return verts; }
