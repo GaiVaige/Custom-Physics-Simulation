@@ -33,7 +33,7 @@ public:
 	PhysicsObject* GetParent(){return parent;};
 
 	void Move(Vec2& offset);
-	
+	virtual void Rotate(float amnt) = 0;
 	void SetInvMass(float m) { inverseMass = m; } 
 	float GetInvMass() { return inverseMass; }
 	std::vector<Vec2> contactPoints;

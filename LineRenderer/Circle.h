@@ -10,6 +10,7 @@ public:
 	Vec2 GetFurthestPoint(Vec2& direction) const override;
 	void DrawContactPoints(LineRenderer* lines);
 	float GetRadius() const { return radius; }
+	void Rotate(float amnt) override;
 private:
 	float radius;
 };
@@ -19,6 +20,7 @@ public:
 	Circle(Vec2 pos, float radius, float elas, PHYSICSTYPE t = PHYSICSTYPE::DYNAMIC);
 
 	void Draw(LineRenderer* lines) const override;
+	void Rotate(float amnt) override;
 	float GetRadius() const {return radius;}
 	float CalculateMass() override;
 

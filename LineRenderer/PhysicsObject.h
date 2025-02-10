@@ -22,13 +22,14 @@ public:
 
 	Collider* collider = nullptr;
 	const Vec2 GetPos() const { return position; }
+	const float GetOrientation() const { return orientation; }
 	void SetPosition(Vec2& v);
 	void OffsetPosition(Vec2& v);
 	void Update(float dt);
 	virtual void Draw(LineRenderer* lines) const = 0;
 	virtual float CalculateMass();
 	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
-
+	void DrawOrientingAxes(LineRenderer* lines) const;
 	virtual void Rotate(float amnt);
 
 	void SetVelocity(Vec2 force) { linearVelocity = force; }
@@ -37,22 +38,28 @@ public:
 	Vec2 GetVelocity() { return linearVelocity; }
 	Vec2 GetVelocityNormalised() { return linearVelocity.GetNormalised(); }
 
+	void ApplyAngularForce(Vec2 force, Vec2 pos);
+	void ApplyAngularImpulse(Vec2 force, Vec2 pos);
+
+	void SetMOI(float f) { momentOfIntertia = f; }
+
 	unsigned int GUID;
 	PHYSICSTYPE GetType() { return type; }
 	float elasticity;
 
 	float linearDrag = .5;
-	float angularDrag = .01;
+	float angularDrag = .3;
+	float momentOfIntertia;
 
 private:
 protected:
 	PHYSICSTYPE type;
-	Vec2 position, linearVelocity, accumulatedLinearForce;
+	Vec2 position, linearVelocity, accumulatedLinearForce, centreOfMassDisplacement;
+	Vec2 up, right;
 	float inverseMass;
 
 	float orientation;
 	float angularVelocity;
 	float accumulatedAngularForce;
-	float momentOfIntertia;
 
 };

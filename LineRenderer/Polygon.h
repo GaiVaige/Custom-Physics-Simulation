@@ -10,10 +10,12 @@ public:
 	PolygonCollider(PolygonCollider& c) = delete;
 	PolygonCollider& operator=(PolygonCollider& c) = delete;
 	void DebugDrawAxis(LineRenderer* lines);
+
+	void Rotate(float amnt) override;
+
 	void CalcNormals(std::vector<Vec2>& vertices);
 
 	Vec2& SetPos(Vec2& pos) override;
-
 	Vec2 GetAxis(int i) { return axes[i]; }
 	std::pair<Vec2, Vec2> GetEdge(int i) { return edges[i]; }
 	Vec2 GetVert(int i);

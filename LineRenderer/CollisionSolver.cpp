@@ -81,13 +81,34 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     float elas = (colInfo.colliderA->GetParent()->elasticity + colInfo.colliderB->GetParent()->elasticity) / 2.f;
     float impMag = (-(1 + elas) * Dot((velB - velA), colInfo.normal))/
         Dot(colInfo.normal, (colInfo.normal * totalInvMass));
+
+
     Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetInvMass() / totalInvMass);
     colInfo.colliderB->Move(BOffset);
-    colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * impMag * colInfo.colliderB->GetInvMass());
+    colInfo.colliderB->GetParent()->ApplyForce(colInfo.normal * impMag * colInfo.colliderB->GetInvMass());
+    if (colInfo.colliderB->contactPoints.size() > 0) {
+        Vec2 bAv = Vec2(0, 0);
+        for (Vec2 v : colInfo.colliderB->contactPoints) {
+            bAv += v;
+        }
+        bAv /= colInfo.colliderB->contactPoints.size();
+        if (impMag > 0) {
+            int i = 1;
+        }
+        colInfo.colliderB->GetParent()->ApplyAngularImpulse(colInfo.normal * colInfo.colliderA->GetParent()->GetVelocity().GetMagnitude(), bAv);
+    }
 
     Vec2 AOffset = -(colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
     colInfo.colliderA->Move(AOffset);
-    colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * impMag * colInfo.colliderA->GetInvMass());
+    colInfo.colliderA->GetParent()->ApplyForce(-colInfo.normal * impMag * colInfo.colliderA->GetInvMass());
+    if (colInfo.colliderA->contactPoints.size() > 0) {
+        Vec2 aAv = Vec2(0, 0);
+        for (Vec2 v : colInfo.colliderA->contactPoints) {
+            aAv += v;
+        }
+        aAv /= colInfo.colliderA->contactPoints.size();
+        colInfo.colliderB->GetParent()->ApplyAngularImpulse(-colInfo.normal * colInfo.colliderB->GetParent()->GetVelocity().GetMagnitude(), aAv);
+    }
     return;
 }
 
@@ -218,11 +239,11 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
     }
 
     Vec2 circleClosestPoint = (smallest * colA->GetRadius() + colA->GetPos());
-    colA->contactPoints.push_back(circleClosestPoint);
+    colA->contactPoints.push_back(circleClosestPoint - colA->GetPos());
 
         for (int i = 0; i < colB->GetVerts().size(); i++) {
             if (!IsInside(circleClosestPoint, colB->GetEdge(i))) break;
-            if (i == colB->GetVerts().size() - 1) colB->contactPoints.push_back(circleClosestPoint);
+            if (i == colB->GetVerts().size() - 1) colB->contactPoints.push_back(circleClosestPoint - colB->GetPos());
         }
 
 
@@ -244,7 +265,7 @@ CollisionInfo CollisionSolver::CircleToPlane(CircleCollider* colA, PlaneCollider
     CollisionInfo colInfo;
     colInfo.collided = distance < colA->GetRadius();
     if (colInfo.collided) {
-        Vec2 circleClosestPoint = (-colB->GetAxis() * colA->GetRadius() + colA->GetPos());
+        Vec2 circleClosestPoint = (-colB->GetAxis() * colA->GetRadius());
         colA->contactPoints.push_back(circleClosestPoint);
     }
     colInfo.colliderA = colA;
@@ -315,83 +336,13 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
         }
 
     }
-    /*Vec2 edgeR, edgeI;
-    if (which == colA) {
-        edgeR = (colA->GetEdge(index).second - colA->GetEdge(index).first);
-        colA->start = colA->GetEdge(index).second;
-        colA->end = colA->GetEdge(index).first;
-
-        float amnt = FLT_MAX;
-        int ind = -1;
-        for (int i = 0; i < colB->GetVerts().size(); i++) {
-            float c = Dot(smallest, colB->GetAxis(i));
-            if (c < amnt) {
-                amnt = c;
-                ind = i;
-            }
-        }
-        edgeI = (colB->GetEdge(ind).second - colB->GetEdge(ind).first);
-        colB->start = colB->GetEdge(ind).second;
-        colB->end = colB->GetEdge(ind).first;
-
-        if (index >= colB->GetVerts().size()) index -= colB->GetVerts().size();
-
-        for (int i = 0; i < colA->GetVerts().size(); i++) {
-            if (!IsInside(colB->GetEdge(index).first, colA->GetEdge(i))) break;
-            if (i == colA->GetVerts().size() - 1) colB->contactPoints.push_back(colB->GetEdge(index).first);
-        }
-       
-
-        for (int i = 0; i < colA->GetVerts().size(); i++) {
-            if (!IsInside(colB->GetEdge(index).second, colA->GetEdge(i))) break;
-            if (i == colA->GetVerts().size() - 1) colB->contactPoints.push_back(colB->GetEdge(index).second);
-        }
-       
-
-
-
-    }
-    if (which == colB) {
-        edgeR = (colB->GetEdge(index).second - colB->GetEdge(index).first);
-        colB->start = colB->GetEdge(index).second;
-        colB->end = colB->GetEdge(index).first;
-
-        float amnt = FLT_MAX;
-        int ind = -1;
-        for (int i = 0; i < colA->GetVerts().size(); i++) {
-            float c = Dot(-smallest, colA->GetAxis(i));
-            if (c < amnt) {
-                amnt = c;
-                ind = i;
-            }
-        }
-        edgeI = (colA->GetEdge(ind).second - colA->GetEdge(ind).first);
-        colA->start = colA->GetEdge(ind).second;
-        colA->end = colA->GetEdge(ind).first;
-
-        if (index >= colA->GetVerts().size()) index -= colA->GetVerts().size();
-
-        for (int i = 0; i < colB->GetVerts().size(); i++) {
-            if (!IsInside(colA->GetEdge(index).first, colB->GetEdge(i))) break;
-            if (i == colB->GetVerts().size() - 1) colA->contactPoints.push_back(colA->GetEdge(index).first);
-        }
-
-
-        for (int i = 0; i < colB->GetVerts().size(); i++) {
-            if (!IsInside(colA->GetEdge(index).second, colB->GetEdge(i))) break;
-            if (i == colB->GetVerts().size() - 1) colA->contactPoints.push_back(colA->GetEdge(index).second);
-        }
-        
-
-
-
-    }*/
+   
     if (which && notWhich) {
         for (int repeat = 0; repeat < 2; repeat++) {
             for (int i = 0; i < notWhich->GetVerts().size(); i++) {
                 for (int j = 0; j < which->GetVerts().size(); j++) {
                     if (!IsInside(notWhich->GetVert(i), which->GetEdge(j))) break;
-                    if (j == which->GetVerts().size() - 1) which->contactPoints.push_back(notWhich->GetVert(i));
+                    if (j == which->GetVerts().size() - 1) which->contactPoints.push_back(notWhich->GetVert(i) - which->GetPos());
                 }
             }
             PolygonCollider* s = which;
@@ -430,7 +381,7 @@ CollisionInfo CollisionSolver::PolygonToPlane(PolygonCollider* colA, PlaneCollid
     if (colInfo.collided) {
         for (int i : inds) {
             if(Dot(colA->GetVert(i), colB->GetAxis()) + colB->GetDisplacement() < 0)
-            colA->contactPoints.push_back(colA->GetVert(i));
+            colA->contactPoints.push_back(colA->GetVert(i) - colA->GetPos());
         }
 
     }

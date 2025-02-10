@@ -13,6 +13,13 @@ Vec2(.5f, .5f),
 Vec2(.5f, -.5f)
 };
 
+std::vector<Vec2> RECTANGLE = {
+Vec2(-2, -.5f),
+Vec2(-2, .5f),
+Vec2(2, .5f),
+Vec2(2, -.5f)
+};
+
 std::vector<Vec2> testVerts = {
 Vec2(-1, -1),
 Vec2(-1, 1),
@@ -89,36 +96,40 @@ void PhysicsSim::Initialise()
 
 
 
-	objects.push_back(new Circle(Vec2(0, -5), .5, .5));
-	objects.push_back(new Circle(Vec2(0, 5), .5, .5));
-	objects.push_back(new Circle(Vec2(-1, 4), .5, .5));
-	objects.push_back(new Circle(Vec2(0, 4), .5, .5));
-	objects.push_back(new Circle(Vec2(1, 4), .5, .5));
-	objects.push_back(new Circle(Vec2(-2, 3), .5, .5));
-	objects.push_back(new Circle(Vec2(2, 3), .5, .5));
-	objects.push_back(new Plane(Vec2(-1, 1), 5, .1));
-	objects.push_back(new Plane(Vec2(1, 1), 5, .1));
-	objects.push_back(new Plane(Vec2(-1, -1), 5, .1));
-	objects.push_back(new Plane(Vec2(1, -1), 5, .1));
+	//objects.push_back(new Circle(Vec2(0, -5), .5, .5));
+	//objects.push_back(new Circle(Vec2(0, 5), .5, .5));
+	//objects.push_back(new Circle(Vec2(-1, 4), .5, .5));
+	//objects.push_back(new Circle(Vec2(0, 4), .5, .5));
+	//objects.push_back(new Circle(Vec2(1, 4), .5, .5));
+	//objects.push_back(new Circle(Vec2(-2, 3), .5, .5));
+	objects.push_back(new Circle(Vec2(0, 50), 1, .5));
+	objects.push_back(new Polygon(Vec2(2.5, 15), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(4, 13), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(1, 11), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(.4, 8), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(0, 0), RECTANGLE, .5));
+	//objects.push_back(new Polygon(Vec2(10, 12), testVertsThree, .8));
+	objects.push_back(new Plane(Vec2(0, 1), 10, .1));
+	//objects.push_back(new Plane(Vec2(1, 1), 50, .1));
+	//objects.push_back(new Plane(Vec2(-1, -1), 50, .1));
+	//objects.push_back(new Plane(Vec2(1, -1), 50, .1));
 	//objects.push_back(new Circle(Vec2(10, 10), 2));
 	//objects.push_back(new Circle(Vec2(15, 4), 3));
 	//objects.push_back(new Circle(Vec2(8, 2), 4, STATIC));
 	//objects.push_back(new Circle(Vec2(9, 2), 2));
-	//objects.push_back(new Polygon(Vec2(12, 5), 1, testVerts));
-	//objects.push_back(new Polygon(Vec2(5, 0), 1, testVertsFour));
 	//objects.push_back(new Polygon(Vec2( - 10, 0), 1, testVertsFive, STATIC));
 
 	for (PhysicsObject* object : objects) {
 		std::cout << object->GUID << '\n';
 	}
-	objects[0]->ApplyImpulse(Vec2(5, 25));
 
+	objects[0]->ApplyImpulse(Vec2(0, -100));
 
 }
-
+int rotAmnt = 5;
 void PhysicsSim::Update(float deltaTime)
 {
-
+	//objects[0]->SetPosition(cursorPos);
 
 
 	std::vector<CollisionInfo> allCollisions;
@@ -137,7 +148,6 @@ void PhysicsSim::Update(float deltaTime)
 		}
 		allCollisions.clear();
 	}
-
 	for (PhysicsObject* c : objects) {
 		c->Update(deltaTime);
 		c->Draw(lines);
@@ -148,4 +158,5 @@ void PhysicsSim::Update(float deltaTime)
 
 void PhysicsSim::OnLeftClick()
 {
+	rotAmnt = 500;
 }

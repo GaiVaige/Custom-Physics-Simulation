@@ -1,12 +1,14 @@
 #include "PhysicsObject.h"
 #include <chrono>
-
+#include "LineRenderer.h"
 PhysicsObject::PhysicsObject()
 {
 	auto now = std::chrono::high_resolution_clock::now();
 	auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
 	GUID = nanos;
 	linearVelocity = Vec2(0, 0);
+	up = Vec2(0, 1);
+	right = Vec2(1, 0);
 }
 PhysicsObject::~PhysicsObject()
 {
@@ -36,9 +38,10 @@ void PhysicsObject::Update(float dt)
 	accumulatedLinearForce = Vec2();
 
 	//rotation
-	float rotAccel = (accumulatedAngularForce);
+	float rotAccel = (accumulatedAngularForce/momentOfIntertia);
 	Rotate(angularVelocity * dt);
 	angularVelocity += rotAccel * dt;
+	angularVelocity -= angularVelocity * angularDrag * dt;
 	accumulatedAngularForce = 0;
 }
 
@@ -56,6 +59,12 @@ float PhysicsObject::CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec
 	return totalMOI;
 }
 
+void PhysicsObject::DrawOrientingAxes(LineRenderer* lines) const
+{
+	lines->DrawLineSegment(position, position + up * 2, Colour::GREEN);
+	lines->DrawLineSegment(position, position + right * 2, Colour::RED);
+}
+
 void PhysicsObject::Rotate(float amnt)
 {
 }
@@ -68,6 +77,16 @@ void PhysicsObject::ApplyForce(Vec2 force)
 void PhysicsObject::ApplyImpulse(Vec2 force)
 {
 	linearVelocity += force * inverseMass;
+}
+
+void PhysicsObject::ApplyAngularForce(Vec2 force, Vec2 pos)
+{
+	accumulatedAngularForce += (force.y * pos.x - force.x * pos.y)/momentOfIntertia;
+}
+
+void PhysicsObject::ApplyAngularImpulse(Vec2 force, Vec2 pos)
+{
+	angularVelocity += (force.y * pos.x - force.x * pos.y) / momentOfIntertia;
 }
 
 
