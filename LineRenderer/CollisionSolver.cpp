@@ -116,14 +116,14 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetInvMass() / totalInvMass);
     colInfo.colliderB->Move(BOffset);
     colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * colInfo.colliderB->GetInvMass() * j);
-    //colInfo.colliderB->GetParent()->ApplyAngularImpulse(colInfo.normal * totalRelVel.GetMagnitude(), bAv);
+    colInfo.colliderB->GetParent()->ApplyAngularImpulse(colInfo.normal * totalRelVel.GetMagnitude(), bAv);
 
 
 
     Vec2 AOffset = (-colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
     colInfo.colliderA->Move(AOffset);
     colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * colInfo.colliderA->GetInvMass() * j);
-    //colInfo.colliderA->GetParent()->ApplyAngularImpulse(-colInfo.normal * -totalRelVel.GetMagnitude(), aAv);
+    colInfo.colliderA->GetParent()->ApplyAngularImpulse(-colInfo.normal * -totalRelVel.GetMagnitude(), aAv);
 
     return;
 }
@@ -253,6 +253,7 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
 
         }
     }
+    if (overlap < .0001f) return CollisionInfo(false);
 
     Vec2 circleClosestPoint = (smallest * colA->GetRadius() + colA->GetPos());
     colA->contactPoints.push_back(circleClosestPoint - colA->GetPos());
@@ -352,7 +353,8 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
         }
 
     }
-   
+    if (overlap < .0001f) return CollisionInfo(false);
+
     if (which && notWhich) {
         for (int repeat = 0; repeat < 2; repeat++) {
             for (int i = 0; i < notWhich->GetVerts().size(); i++) {

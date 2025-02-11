@@ -174,7 +174,7 @@ float Polygon::CalculateMass()
 	Vec2 end = Vec2(max.x, max.y);
 	Vec2 dispAmnt = Vec2(.25, 0);
 	Vec2 vertDispAmnt = Vec2(0, .25);
-	float baseFloatWeight = .04f;
+	float baseFloatWeight = .1f;
 
 	std::vector<Vec2> containedVectors;
 	Vec2 track = start;
