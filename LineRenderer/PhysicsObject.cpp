@@ -35,8 +35,12 @@ void PhysicsObject::Update(float dt)
 	position += linearVelocity * dt;
 	linearVelocity += accel * dt;
 	linearVelocity -= linearVelocity * linearDrag * dt;
-  collider->SetPos(position);
+	collider->SetPos(position);
 	accumulatedLinearForce = Vec2();
+
+	if (linearVelocity.GetMagnitude() <= .01f) {
+		linearVelocity = Vec2();
+	}
 
 	//rotation
 	float rotAccel = (accumulatedAngularForce/momentOfIntertia);
@@ -62,16 +66,15 @@ float PhysicsObject::CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec
 
 void PhysicsObject::DrawOrientingAxes(LineRenderer* lines) const
 {
-	lines->DrawLineSegment(position, position + up * 2, Colour::GREEN);
-	lines->DrawLineSegment(position, position + right * 2, Colour::RED);
+	lines->DrawLineSegment(position, position + up, Colour::GREEN);
+	lines->DrawLineSegment(position, position + right, Colour::RED);
 }
 
 void PhysicsObject::Rotate(float amnt)
 {
-	while (orientation > DegToRad(360)) {
-		orientation -= DegToRad(360);
-	}
+	if (abs(orientation) >= DegToRad(360)) orientation = 0;
 }
+
 
 void PhysicsObject::ApplyForce(Vec2 force)
 {

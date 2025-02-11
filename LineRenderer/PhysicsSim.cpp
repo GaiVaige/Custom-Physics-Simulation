@@ -100,6 +100,7 @@ void PhysicsSim::Initialise()
 	//objects.push_back(new Circle(Vec2(0, 5), .5, .5));
 	//objects.push_back(new Circle(Vec2(-1, 4), .5, .5));
 	//objects.push_back(new Circle(Vec2(0, 4), .5, .5));
+
 	//objects.push_back(new Circle(Vec2(1, 4), .5, .5));
 	//objects.push_back(new Circle(Vec2(-2, 3), .5, .5));
 	objects.push_back(new Polygon(Vec2(2, 15), RECTANGLE, .5));
@@ -122,19 +123,22 @@ void PhysicsSim::Initialise()
 	for (PhysicsObject* object : objects) {
 		std::cout << object->GUID << '\n';
 	}
+
 	objects[0]->ApplyImpulse(Vec2(0, -98));
 
 }
+
 
 void PhysicsSim::Update(float deltaTime)
 {
 	//objects[1]->ApplyForce(Vec2(0, -9.8));
 		std::vector<CollisionInfo> allCollisions;
 
-		for (int w = 0; w < 1; w++) {
+		for (int w = 0; w < 2; w++) {
 			for (int i = 0; i < objects.size(); i++) {
 				for (int j = i + 1; j < objects.size(); j++) {
 					CollisionInfo check = drCollision.DetectCollision(objects[i]->collider, objects[j]->collider);
+
 					if (check.collided) {
 						allCollisions.push_back(check);
 					}
@@ -144,11 +148,12 @@ void PhysicsSim::Update(float deltaTime)
 				drCollision.ResolveCollision(collision);
 			}
 			allCollisions.clear();
-		}
-		for (PhysicsObject* c : objects) {
-			c->Update(deltaTime);
-			c->Draw(lines);
-			c->collider->EndTick();
+			for (PhysicsObject* c : objects) {
+				c->Update(deltaTime);
+				c->Draw(lines);
+				c->collider->EndTick();
+			}
+
 		}
 
 

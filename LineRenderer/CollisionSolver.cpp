@@ -4,6 +4,8 @@
 #include "Polygon.h"
 #include "Plane.h"
 
+#include <iostream>
+
 bool IsInside(Vec2 p, std::pair<Vec2, Vec2> edge) {
 
     Vec2 check = edge.first - edge.second;
@@ -87,6 +89,7 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
             aAv += v;
         }
         aAv /= colInfo.colliderA->contactPoints.size();
+        aAv += colInfo.colliderA->GetPos();
     }
     float armA = aAv.GetMagnitudeSquared();
     float effmassA = 1 / 
@@ -99,6 +102,7 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
             bAv += v;
         }
         bAv /= colInfo.colliderB->contactPoints.size();
+        bAv += colInfo.colliderB->GetPos();
     }
     float armB = bAv.GetMagnitudeSquared();
     float effmassB = 1 /
@@ -177,8 +181,8 @@ CollisionInfo CollisionSolver::CircleToCircle(CircleCollider *colA, CircleCollid
 
 
     Vec2 normal = (colB->GetPos() - colA->GetPos()).GetNormalised();
-    colA->contactPoints.push_back(normal * colA->GetRadius() + colA->GetPos());
-    colB->contactPoints.push_back(-normal * colB->GetRadius() + colB->GetPos());
+    colA->contactPoints.push_back(normal * colA->GetRadius());
+    colB->contactPoints.push_back(-normal * colB->GetRadius());
     float penAmnt = sumOfRadii - distance;
     colInf.collided = true;
     colInf.colliderA = colA;
@@ -196,13 +200,18 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
 
     Vec2 vertSave;
     for (Vec2 vert : colB->GetVerts()) {
-        Vec2 delta = Vec2(vert.x - colA->GetPos().x, vert.y - colA->GetPos().y);
+        Vec2 delta = Vec2(vert.x + colB->GetPos().x - colA->GetPos().x, vert.y + colB->GetPos().y - colA->GetPos().y);
     
         float dist = delta.GetMagnitude();
     
         if (dist < minDist) {
             minDist = dist;
             closestDist = delta;
+        }
+        else if (dist == minDist) {
+            closestDist = (closestDist + colA->GetPos() + delta + colA->GetPos())/2;
+            closestDist -= colA->GetPos();
+            minDist = closestDist.GetMagnitude();
         }
     }
     
@@ -215,22 +224,26 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
     p.min -= colA->GetRadius();
     p.max += colA->GetRadius();
 
-
-    for (int i = 0; i < colB->GetVerts().size(); i++) {
+    std::vector<Vec2> vecBs = colB->GetVerts();
+    for (Vec2& v : vecBs) {
+        v.RotateBy(colB->GetParent()->GetOrientation());
+        v += colB->GetPos();
+        std::
         
-        Projection p2 = ProjectOnAxis(axis, colB->GetVerts());
+    }
 
-        if (!p.Overlaps(p2)) {
-            return CollisionInfo(false);
-        }
-        else {
-            float o = p.GetOverlap(p2);
-            if (o < overlap) {
-                overlap = o;
-                smallest = axis;
-            }
+    Projection p2 = ProjectOnAxis(axis, vecBs);
 
+    if (!p.Overlaps(p2)) {
+        return CollisionInfo(false);
+    }
+    else {
+        float o = p.GetOverlap(p2);
+        if (o < overlap) {
+            overlap = o;
+            smallest = axis;
         }
+
     }
 
     for (int i = 0; i < colB->GetVerts().size(); i++) {
@@ -239,9 +252,9 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
         Projection p1 = ProjectOnAxis(ax, tempC);
         p1.min -= colA->GetRadius();
         p1.max += colA->GetRadius();
-        Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
+        Projection p2 = ProjectOnAxis(ax, vecBs);
 
-        if (!p1.Overlaps(p2)) {
+        if (!p2.Overlaps(p1)) {
             return CollisionInfo(false);
         }
         else {
@@ -255,12 +268,12 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
     }
     if (overlap < .0001f) return CollisionInfo(false);
 
-    Vec2 circleClosestPoint = (smallest * colA->GetRadius() + colA->GetPos());
-    colA->contactPoints.push_back(circleClosestPoint - colA->GetPos());
+    Vec2 circleClosestPoint = (smallest * colA->GetRadius());
+    colA->contactPoints.push_back(circleClosestPoint);
 
         for (int i = 0; i < colB->GetVerts().size(); i++) {
             if (!IsInside(circleClosestPoint, colB->GetEdge(i))) break;
-            if (i == colB->GetVerts().size() - 1) colB->contactPoints.push_back(circleClosestPoint - colB->GetPos());
+            if (i == colB->GetVerts().size() - 1) colB->contactPoints.push_back(circleClosestPoint);
         }
 
 
@@ -308,11 +321,22 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
     Vec2 ax;
     Projection p1;
     Projection p2;
+
+    std::vector<Vec2> vecAs = colA->GetVerts();
+    for (Vec2& v : vecAs) {
+        v += colA->GetPos();
+    }
+
+    std::vector<Vec2> vecBs = colB->GetVerts();
+    for (Vec2& v : vecBs) {
+        v += colB->GetPos();
+    }
+
     for (int i = 0; i < colA->GetVerts().size(); i++) {
         ax = colA->GetAxis(i);
 
-        p1 = ProjectOnAxis(ax, colA->GetVerts());
-        p2 = ProjectOnAxis(ax, colB->GetVerts());
+        p1 = ProjectOnAxis(ax, vecAs);
+        p2 = ProjectOnAxis(ax, vecBs);
 
         if (!p1.Overlaps(p2)) {
             return CollisionInfo(false);
@@ -334,8 +358,8 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
     for (int i = 0; i < colB->GetVerts().size(); i++) {
         ax = colB->GetAxis(i);
 
-        p1 = ProjectOnAxis(ax, colA->GetVerts());
-        p2 = ProjectOnAxis(ax, colB->GetVerts());
+        p1 = ProjectOnAxis(ax, vecAs);
+        p2 = ProjectOnAxis(ax, vecBs);
 
         if (!p1.Overlaps(p2)) {
             return CollisionInfo(false);
@@ -372,6 +396,7 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
 
 
 
+    if (overlap < .0001f) return CollisionInfo(false);
 
 
     CollisionInfo colInfo;
@@ -388,7 +413,7 @@ CollisionInfo CollisionSolver::PolygonToPlane(PolygonCollider* colA, PlaneCollid
     float overlap = FLT_MAX;
     std::vector<int> inds;
     for (int i = 0; i < colA->GetVerts().size(); i++) {
-        float dist = Dot(colA->GetVert(i), colB->GetAxis()) + colB->GetDisplacement();
+        float dist = Dot(colA->GetVert(i) + colA->GetPos(), colB->GetAxis()) + colB->GetDisplacement();
         if (dist <= overlap) {
             overlap = dist;
             inds.push_back(i);
@@ -398,8 +423,8 @@ CollisionInfo CollisionSolver::PolygonToPlane(PolygonCollider* colA, PlaneCollid
     colInfo.collided = (overlap <= 0);
     if (colInfo.collided) {
         for (int i : inds) {
-            if(Dot(colA->GetVert(i), colB->GetAxis()) + colB->GetDisplacement() < 0)
-            colA->contactPoints.push_back(colA->GetVert(i) - colA->GetPos());
+            if (Dot(colA->GetVert(i) + colA->GetPos(), colB->GetAxis()) + colB->GetDisplacement() < 0)
+                colA->contactPoints.push_back(colA->GetVert(i) - colA->GetPos());
         }
 
     }

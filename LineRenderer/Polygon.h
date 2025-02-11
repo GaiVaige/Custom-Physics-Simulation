@@ -21,7 +21,6 @@ public:
 	Vec2 GetVert(int i);
 	std::vector<Vec2>& GetVerts() { return verts; }
 private:
-	std::vector<Vec2> baseVerts;
 	std::vector<Vec2> verts;
 	std::vector<Vec2> axes;
 	std::vector<std::pair<Vec2, Vec2>> edges;
