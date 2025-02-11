@@ -102,7 +102,7 @@ void PhysicsSim::Initialise()
 	//objects.push_back(new Circle(Vec2(0, 4), .5, .5));
 	//objects.push_back(new Circle(Vec2(1, 4), .5, .5));
 	//objects.push_back(new Circle(Vec2(-2, 3), .5, .5));
-	objects.push_back(new Polygon(Vec2(2, 15), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(2, 50), testVertsFive, .5));
 	objects.push_back(new Polygon(Vec2(0, 5), UNITCUBE, .5));
 	//objects.push_back(new Polygon(Vec2(1, 11), RECTANGLE, .5));
 	//objects.push_back(new Polygon(Vec2(.4, 8), RECTANGLE, .5));
@@ -122,7 +122,7 @@ void PhysicsSim::Initialise()
 	for (PhysicsObject* object : objects) {
 		std::cout << object->GUID << '\n';
 	}
-	objects[0]->ApplyImpulse(Vec2(0, -98));
+	objects[0]->ApplyImpulse(Vec2(0, -980));
 
 }
 

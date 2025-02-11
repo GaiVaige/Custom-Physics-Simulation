@@ -191,6 +191,7 @@
     <ClInclude Include="..\imgui\imstb_truetype.h" />
     <ClInclude Include="AppInfo.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Car.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionSolver.h" />
