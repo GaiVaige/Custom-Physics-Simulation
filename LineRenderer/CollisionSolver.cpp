@@ -79,36 +79,52 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     Vec2 velA = colInfo.colliderA->GetParent()->GetVelocity();
     Vec2 velB = colInfo.colliderB->GetParent()->GetVelocity();
     float elas = (colInfo.colliderA->GetParent()->elasticity + colInfo.colliderB->GetParent()->elasticity) / 2.f;
-    float impMag = (-(1 + elas) * Dot((velB - velA), colInfo.normal))/
-        Dot(colInfo.normal, (colInfo.normal * totalInvMass));
 
 
-    Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetInvMass() / totalInvMass);
-    colInfo.colliderB->Move(BOffset);
-    colInfo.colliderB->GetParent()->ApplyForce(colInfo.normal * impMag * colInfo.colliderB->GetInvMass());
-    if (colInfo.colliderB->contactPoints.size() > 0) {
-        Vec2 bAv = Vec2(0, 0);
-        for (Vec2 v : colInfo.colliderB->contactPoints) {
-            bAv += v;
-        }
-        bAv /= colInfo.colliderB->contactPoints.size();
-        if (impMag > 0) {
-            int i = 1;
-        }
-        colInfo.colliderB->GetParent()->ApplyAngularImpulse(colInfo.normal * colInfo.colliderA->GetParent()->GetVelocity().GetMagnitude(), bAv);
-    }
-
-    Vec2 AOffset = -(colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
-    colInfo.colliderA->Move(AOffset);
-    colInfo.colliderA->GetParent()->ApplyForce(-colInfo.normal * impMag * colInfo.colliderA->GetInvMass());
+    Vec2 aAv = Vec2(0, 0);
     if (colInfo.colliderA->contactPoints.size() > 0) {
-        Vec2 aAv = Vec2(0, 0);
         for (Vec2 v : colInfo.colliderA->contactPoints) {
             aAv += v;
         }
         aAv /= colInfo.colliderA->contactPoints.size();
-        colInfo.colliderB->GetParent()->ApplyAngularImpulse(-colInfo.normal * colInfo.colliderB->GetParent()->GetVelocity().GetMagnitude(), aAv);
     }
+    float armA = aAv.GetMagnitudeSquared();
+    float effmassA = 1 / 
+        (colInfo.colliderA->GetInvMass() + (armA / colInfo.colliderA->GetParent()->momentOfIntertia));
+
+    Vec2 bAv = Vec2(0, 0);
+    if (colInfo.colliderB->contactPoints.size() > 0) {
+
+        for (Vec2 v : colInfo.colliderB->contactPoints) {
+            bAv += v;
+        }
+        bAv /= colInfo.colliderB->contactPoints.size();
+    }
+    float armB = bAv.GetMagnitudeSquared();
+    float effmassB = 1 /
+        (colInfo.colliderB->GetInvMass() + (armB / colInfo.colliderB->GetParent()->momentOfIntertia));
+
+    float j = -(1 + elas) * Dot((velB - velA), colInfo.normal) /
+        Dot(colInfo.normal, colInfo.normal) * (1/effmassA + 1/effmassB);
+
+    Vec2 relVelA = (colInfo.colliderA->GetParent()->GetVelocityAt(aAv + colInfo.colliderA->GetPos()));
+
+    Vec2 relVelB = (colInfo.colliderB->GetParent()->GetVelocityAt(bAv + colInfo.colliderB->GetPos()));
+
+    Vec2 totalRelVel = relVelA + relVelB;
+
+    Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetInvMass() / totalInvMass);
+    colInfo.colliderB->Move(BOffset);
+    colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * colInfo.colliderB->GetInvMass() * j);
+    //colInfo.colliderB->GetParent()->ApplyAngularImpulse(colInfo.normal * totalRelVel.GetMagnitude(), bAv);
+
+
+
+    Vec2 AOffset = (-colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
+    colInfo.colliderA->Move(AOffset);
+    colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * colInfo.colliderA->GetInvMass() * j);
+    //colInfo.colliderA->GetParent()->ApplyAngularImpulse(-colInfo.normal * -totalRelVel.GetMagnitude(), aAv);
+
     return;
 }
 
@@ -201,7 +217,7 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
 
 
     for (int i = 0; i < colB->GetVerts().size(); i++) {
-
+        
         Projection p2 = ProjectOnAxis(axis, colB->GetVerts());
 
         if (!p.Overlaps(p2)) {
@@ -371,7 +387,7 @@ CollisionInfo CollisionSolver::PolygonToPlane(PolygonCollider* colA, PlaneCollid
     std::vector<int> inds;
     for (int i = 0; i < colA->GetVerts().size(); i++) {
         float dist = Dot(colA->GetVert(i), colB->GetAxis()) + colB->GetDisplacement();
-        if (dist < overlap) {
+        if (dist <= overlap) {
             overlap = dist;
             inds.push_back(i);
         }

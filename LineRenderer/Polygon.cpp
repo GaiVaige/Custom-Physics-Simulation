@@ -26,20 +26,19 @@ PolygonCollider::~PolygonCollider()
 
 void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 {
-	for (Vec2 p : axes) {
-		lines->DrawLineSegment(position, position + p * 3, Colour::BLUE);
-	}
-	lines->SetColour(Colour::WHITE);
 
-	for (Vec2 p : contactPoints) {
-		lines->DrawCircle(p + position, .1, Colour::MAGENTA);
-	}
+	//for (Vec2 p : contactPoints) {
+	//	lines->DrawCircle(p + position, .1, Colour::MAGENTA);
+	//}
 }
 
 void PolygonCollider::Rotate(float amnt)
 {
 	for (Vec2& v : verts) {
+		v -= position;
 		v.RotateBy(amnt);
+		v += position;
+
 	}
 	CalcNormals(verts);
 }
@@ -99,6 +98,7 @@ Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, float elas, PHYSICSTYPE t)
 	}
 	inverseMass = CalculateMass();
 	collider = new PolygonCollider(pos, inverseMass, v);
+	inverseMass = 1.f / inverseMass;
 	collider->SetParent(this);
 	collider->SetPos(pos);
 	type = t;
@@ -114,21 +114,27 @@ void Polygon::Draw(LineRenderer* lines) const
 	}
 	lines->FinishLineLoop();
 	lines->DrawCircle(position + centreOfMassDisplacement, .1, Colour::GREEN);
-	DrawOrientingAxes(lines);
 	PolygonCollider* p = static_cast<PolygonCollider*>(collider);
+	//for (int i = 0; i < verts.size(); i++) {
+	//	lines->DrawCircle(verts[i] + position, .2, Colour::MAGENTA);
+	//}
 	p->DebugDrawAxis(lines);
-
+	DrawOrientingAxes(lines);
+	//lines->DrawText(std::to_string(orientation), position, 1);
 }
 
 void Polygon::Rotate(float amnt)
 {
 	for (Vec2& v : verts) {
+		//v -= position;
 		v.RotateBy(amnt);
+		//v += position;
 	}
 	orientation += amnt;
 	collider->Rotate(amnt);
 	up.RotateBy(amnt);
 	right.RotateBy(amnt);
+	PhysicsObject::Rotate(amnt);
 }
 
 bool Polygon::IsInside(Vec2 p, std::vector<Vec2> verts) {

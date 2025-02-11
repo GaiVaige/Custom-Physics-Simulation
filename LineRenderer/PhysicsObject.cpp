@@ -1,6 +1,7 @@
 #include "PhysicsObject.h"
 #include <chrono>
 #include "LineRenderer.h"
+#include "math.h"
 PhysicsObject::PhysicsObject()
 {
 	auto now = std::chrono::high_resolution_clock::now();
@@ -54,7 +55,7 @@ float PhysicsObject::CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec
 {
 	float totalMOI = 0;
 	for (Vec2 p : points) {
-		totalMOI += (centreOfMass - p).GetMagnitudeSquared() * pointWeight;
+		totalMOI += (centreOfMass - (p + GetPos())).GetMagnitudeSquared() * pointWeight;
 	}
 	return totalMOI;
 }
@@ -67,6 +68,9 @@ void PhysicsObject::DrawOrientingAxes(LineRenderer* lines) const
 
 void PhysicsObject::Rotate(float amnt)
 {
+	while (orientation > DegToRad(360)) {
+		orientation -= DegToRad(360);
+	}
 }
 
 void PhysicsObject::ApplyForce(Vec2 force)
@@ -86,7 +90,13 @@ void PhysicsObject::ApplyAngularForce(Vec2 force, Vec2 pos)
 
 void PhysicsObject::ApplyAngularImpulse(Vec2 force, Vec2 pos)
 {
-	angularVelocity += (force.y * pos.x - force.x * pos.y) / momentOfIntertia;
+	float f = (force.y * pos.x - force.x * pos.y) / momentOfIntertia;
+	angularVelocity += f;
+}
+
+Vec2 PhysicsObject::GetVelocityAt(Vec2 pos) const
+{
+	return linearVelocity + (pos - position).GetRotatedBy90() * angularVelocity;
 }
 
 

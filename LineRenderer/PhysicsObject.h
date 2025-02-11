@@ -36,11 +36,12 @@ public:
 	void ApplyForce(Vec2 force);
 	void ApplyImpulse(Vec2 force);
 	Vec2 GetVelocity() { return linearVelocity; }
+	float GetAngularVelocity() { return angularVelocity; }
 	Vec2 GetVelocityNormalised() { return linearVelocity.GetNormalised(); }
 
 	void ApplyAngularForce(Vec2 force, Vec2 pos);
 	void ApplyAngularImpulse(Vec2 force, Vec2 pos);
-
+	Vec2 GetVelocityAt(Vec2 pos) const;
 	void SetMOI(float f) { momentOfIntertia = f; }
 
 	unsigned int GUID;
