@@ -123,7 +123,7 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     Vec2 AOffset = (-colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
     colInfo.colliderA->Move(AOffset);
     colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * colInfo.colliderA->GetInvMass() * j);
-    colInfo.colliderA->GetParent()->ApplyAngularImpulse(-colInfo.normal * -totalRelVel.GetMagnitude(), aAv);
+    colInfo.colliderA->GetParent()->ApplyAngularImpulse(-colInfo.normal * totalRelVel.GetMagnitude(), aAv);
 
     return;
 }
