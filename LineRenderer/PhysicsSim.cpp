@@ -100,15 +100,15 @@ void PhysicsSim::Initialise()
 	//objects.push_back(new Circle(Vec2(0, 5), .5, .5));
 	//objects.push_back(new Circle(Vec2(-1, 4), .5, .5));
 	//objects.push_back(new Circle(Vec2(0, 4), .5, .5));
-	//objects.push_back(new Circle(Vec2(0, 4), 3, .5));
-	objects.push_back(new Polygon(Vec2(2, 8), RECTANGLE, .1));
-	//objects.push_back(new Polygon(Vec2(0, 0), RECTANGLE, .1));
-	objects.push_back(new Circle(Vec2(0, 0), 3, .5));
-	//objects.push_back(new Polygon(Vec2(0, 0), RECTANGLE, .1));
+
+	//objects.push_back(new Circle(Vec2(1, 4), .5, .5));
+	//objects.push_back(new Circle(Vec2(-2, 3), .5, .5));
+	objects.push_back(new Polygon(Vec2(2, 15), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(0, 5), UNITCUBE, .5));
 	//objects.push_back(new Polygon(Vec2(1, 11), RECTANGLE, .5));
 	//objects.push_back(new Polygon(Vec2(.4, 8), RECTANGLE, .5));
 	//objects.push_back(new Polygon(Vec2(0, 0), testVertsThree, 1));
-	//objects.push_back(new Circle(Vec2(0, 0), 3, .1));
+	//objects.push_back(new Circle(Vec2(0, 0), 3, .8));
 	//objects.push_back(new Polygon(Vec2(10, 12), testVertsThree, .8));
 	objects.push_back(new Plane(Vec2(0, 1), 10, .1));
 	//objects.push_back(new Plane(Vec2(1, 1), 50, .1));
@@ -124,18 +124,11 @@ void PhysicsSim::Initialise()
 		std::cout << object->GUID << '\n';
 	}
 
-	//objects[0]->Rotate(DegToRad(25));
-	//objects[0]->ApplyImpulse(Vec2(15, 0));
-	//objects[1]->ApplyAngularImpulse(Vec2(-50, 0), Vec2(0, 1));
-	//objects[0]->ApplyAngularImpulse(Vec2(-100, 0), objects[0]->GetPos() + Vec2(0, 1) * .5);
-	objects[0]->ApplyAngularImpulse(Vec2(0, -30), Vec2(1, 0));
-	objects[0]->ApplyImpulse(Vec2(0, -8));
+	objects[0]->ApplyImpulse(Vec2(0, -98));
 
 }
-int rotAmnt = 5;
-bool tick = false;
-int jk = 0;
-int t = 0;
+
+
 void PhysicsSim::Update(float deltaTime)
 {
 	//objects[1]->ApplyForce(Vec2(0, -9.8));
@@ -168,5 +161,4 @@ void PhysicsSim::Update(float deltaTime)
 
 void PhysicsSim::OnLeftClick()
 {
-	tick = true;
 }

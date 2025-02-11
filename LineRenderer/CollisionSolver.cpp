@@ -377,7 +377,8 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
         }
 
     }
-   
+    if (overlap < .0001f) return CollisionInfo(false);
+
     if (which && notWhich) {
         for (int repeat = 0; repeat < 2; repeat++) {
             for (int i = 0; i < notWhich->GetVerts().size(); i++) {
