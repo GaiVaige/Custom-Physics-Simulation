@@ -10,7 +10,7 @@ public:
 	Vec2 GetFurthestPoint(Vec2& direction) const override;
 	void DrawContactPoints(LineRenderer* lines);
 	float GetRadius() const { return radius; }
-	void Rotate(float amnt) override;
+	void Rotate(float amnt) override {};
 private:
 	float radius;
 };

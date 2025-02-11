@@ -29,9 +29,6 @@ void CircleCollider::DrawContactPoints(LineRenderer* lines)
     lines->SetColour(Colour::WHITE);
 }
 
-void CircleCollider::Rotate(float amnt)
-{
-}
 
 Circle::Circle(Vec2 pos, float radius, float elas, PHYSICSTYPE t)
     : radius(radius)
@@ -60,7 +57,7 @@ void Circle::Draw(LineRenderer* lines) const
     lines->DrawCircle(position, radius);
     //lines->DrawLineWithArrow(position, position + velocity);
     CircleCollider* p = static_cast<CircleCollider*>(collider);
-    p->DrawContactPoints(lines);
+    //p->DrawContactPoints(lines);
     DrawOrientingAxes(lines);
 }
 
@@ -69,7 +66,6 @@ void Circle::Rotate(float amnt)
     up.RotateBy(amnt);
     right.RotateBy(amnt);
     orientation += amnt;
-    PhysicsObject::Rotate(amnt);
 }
 
 float Circle::CalculateMass()

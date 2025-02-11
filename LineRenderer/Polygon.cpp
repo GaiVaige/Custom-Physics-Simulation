@@ -16,7 +16,6 @@ PolygonCollider::PolygonCollider(Vec2& centre, float mass, std::vector<Vec2> v)
 	for (Vec2 vec : v) {
 		verts.push_back(vec);
 	}
-	baseVerts = verts;
 	CalcNormals(verts);
 }
 
@@ -26,21 +25,17 @@ PolygonCollider::~PolygonCollider()
 
 void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 {
-
-	//for (Vec2 p : contactPoints) {
-	//	lines->DrawCircle(p + position, .1, Colour::MAGENTA);
-	//}
 }
 
 void PolygonCollider::Rotate(float amnt)
 {
-	for (Vec2& v : verts) {
-		v -= position;
+	std::vector<Vec2> temp;
+	for (Vec2 v : verts) {
 		v.RotateBy(amnt);
 		v += position;
-
+		temp.push_back(v);
 	}
-	CalcNormals(verts);
+	CalcNormals(temp);
 }
 
 void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
@@ -66,13 +61,6 @@ Vec2& PolygonCollider::SetPos(Vec2& pos)
 	}
 
 	this->Collider::SetPos(pos);
-	verts.clear();
-
-	for (Vec2 v : baseVerts) {
-		Vec2 f = v;
-		f.RotateBy(parent->GetOrientation());
-		verts.push_back(f + pos);
-	}
 
 	for (std::pair<Vec2, Vec2>& v : edges) {
 		v.first += position;
@@ -110,31 +98,22 @@ Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, float elas, PHYSICSTYPE t)
 void Polygon::Draw(LineRenderer* lines) const
 {
 	for (int i = 0; i < verts.size(); i++) {
-		lines->AddPointToLine(verts[i] + position);
+		Vec2 v = verts[i].GetRotatedBy(orientation);
+		lines->AddPointToLine(v + position);
 	}
 	lines->FinishLineLoop();
 	lines->DrawCircle(position + centreOfMassDisplacement, .1, Colour::GREEN);
 	PolygonCollider* p = static_cast<PolygonCollider*>(collider);
-	//for (int i = 0; i < verts.size(); i++) {
-	//	lines->DrawCircle(verts[i] + position, .2, Colour::MAGENTA);
-	//}
 	p->DebugDrawAxis(lines);
 	DrawOrientingAxes(lines);
-	//lines->DrawText(std::to_string(orientation), position, 1);
 }
 
 void Polygon::Rotate(float amnt)
 {
-	for (Vec2& v : verts) {
-		//v -= position;
-		v.RotateBy(amnt);
-		//v += position;
-	}
 	orientation += amnt;
-	collider->Rotate(amnt);
+	collider->Rotate(orientation);
 	up.RotateBy(amnt);
 	right.RotateBy(amnt);
-	PhysicsObject::Rotate(amnt);
 }
 
 bool Polygon::IsInside(Vec2 p, std::vector<Vec2> verts) {
