@@ -93,7 +93,7 @@ PhysicsSim::~PhysicsSim()
 
 void PhysicsSim::Initialise()
 {
-	objects.push_back(new Polygon(Vec2(-3, 10), testVertsFive, .5));
+	objects.push_back(new Polygon(Vec2(10, 10), testVertsFive, .5));
 	//objects.push_back(new Circle(Vec2(0, 1), 2, 1));
 	//objects.push_back(new Polygon(Vec2(0, 1), UNITCUBE, .5));
 	objects.push_back(new Plane(Vec2(0, 1), 10, 1));
@@ -102,7 +102,7 @@ void PhysicsSim::Initialise()
 		std::cout << object->GUID << '\n';
 	}
 	//objects[0]->ApplyImpulse(Vec2(0, -600));
-    objects[0]->ApplyForceAt(Vec2(0, 5), objects[0]->GetPos() + Vec2(10, 0));
+    objects[0]->ApplyForceAt(Vec2(0, 5), Vec2(10, 0));
 
 }
 
