@@ -8,7 +8,7 @@ public:
 	PlaneCollider(PlaneCollider& p) = delete;
 	PlaneCollider& operator=(PlaneCollider& other) = delete;
 	void Rotate(float amnt) override {};
-	Vec2 GetAxis() { return direction; }
+	Vec2 GetNormal() { return direction; }
 	float GetDisplacement() { return displacement; }
 private:
 	Vec2 direction;

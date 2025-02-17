@@ -62,6 +62,7 @@ void Circle::Draw(LineRenderer* lines) const
     CircleCollider* p = static_cast<CircleCollider*>(collider);
     p->DrawContactPoints(lines);
     DrawOrientingAxes(lines);
+    lines->DrawLineWithArrow(position, position + GetVelocity());
 }
 
 void Circle::Rotate(float amnt)

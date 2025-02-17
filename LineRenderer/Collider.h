@@ -16,9 +16,9 @@ struct CollisionInfo {
 	CollisionInfo(bool collided) : collided(collided) {};
 	CollisionInfo(bool collided, Vec2 norm, float depth) : collided(collided), normal(norm), depth(depth) {};
 	bool collided;
+	float depth;
 	Vec2 normal;
 	Vec2 contactPoint;
-	float depth;
 	Collider* colliderA;
 	Collider* colliderB;
 };

@@ -35,7 +35,7 @@ public:
 	void SetVelocity(Vec2 force) { linearVelocity = force; }
 	void ApplyForce(Vec2 force);
 	void ApplyImpulse(Vec2 force);
-	Vec2 GetVelocity() { return linearVelocity; }
+	Vec2 GetVelocity() const { return linearVelocity; }
 	float GetAngularVelocity() { return angularVelocity; }
 	Vec2 GetVelocityNormalised() { return linearVelocity.GetNormalised(); }
 

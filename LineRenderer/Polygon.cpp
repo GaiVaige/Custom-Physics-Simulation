@@ -104,6 +104,7 @@ Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, float elas, PHYSICSTYPE t)
 	type = t;
 	if (type == STATIC) {
 		collider->SetInvMass(0);
+		momentOfIntertia = FLT_MAX;
 	}
 }
 
@@ -115,9 +116,11 @@ void Polygon::Draw(LineRenderer* lines) const
 	lines->FinishLineLoop();
 	lines->DrawCircle(position + centreOfMassDisplacement, .1, Colour::GREEN);
 	PolygonCollider* p = static_cast<PolygonCollider*>(collider);
-	//for (int i = 0; i < verts.size(); i++) {
-	//	lines->DrawCircle(verts[i] + position, .2, Colour::MAGENTA);
-	//}
+	lines->DrawLineWithArrow(position, position + GetVelocity());
+	for (int i = 0; i < verts.size(); i++) {
+		lines->DrawLineWithArrow(verts[i] + position, verts[i] + position + GetVelocityAt(verts[i]), Colour::BLUE);
+
+	}
 	p->DebugDrawAxis(lines);
 	DrawOrientingAxes(lines);
 	//lines->DrawText(std::to_string(orientation), position, 1);
