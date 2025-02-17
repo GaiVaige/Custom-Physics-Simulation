@@ -42,7 +42,7 @@ public:
 	void ApplyAngularForce(Vec2 force, Vec2 pos);
 	void ApplyForceAt(Vec2 force, Vec2 pos);
 	Vec2 GetVelocityAt(Vec2 pos) const;
-	void SetMOI(float f) { momentOfIntertia = f; }
+	void SetMOI(float f) { inverseMomentOfInertia = f; }
 
 	unsigned int GUID;
 	PHYSICSTYPE GetType() { return type; }
@@ -50,7 +50,7 @@ public:
 
 	float linearDrag = .5;
 	float angularDrag = .3;
-	float momentOfIntertia;
+	float inverseMomentOfInertia;
 
 private:
 protected:

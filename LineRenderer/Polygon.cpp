@@ -94,7 +94,7 @@ Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, float elas, PHYSICSTYPE t)
 	type = t;
 	if (type == STATIC) {
 		collider->SetInvMass(0);
-		momentOfIntertia = FLT_MAX;
+		inverseMomentOfInertia = FLT_MAX;
 	}
 }
 
@@ -106,13 +106,13 @@ void Polygon::Draw(LineRenderer* lines) const
 	lines->FinishLineLoop();
 	lines->DrawCircle(position + centreOfMassDisplacement, .1, Colour::GREEN);
 	PolygonCollider* p = static_cast<PolygonCollider*>(collider);
-	lines->DrawLineWithArrow(position, position + GetVelocity());
-	for (int i = 0; i < verts.size(); i++) {
-		lines->DrawText(GetVelocityAt(verts[i]).ToString(), verts[i].GetRotatedBy(orientation) + position, .5);
-		lines->DrawLineWithArrow(verts[i].GetRotatedBy(orientation) + position, verts[i].GetRotatedBy(orientation) + position + GetVelocityAt(verts[i]), Colour::BLUE);
-
-	}
-	p->DebugDrawAxis(lines);
+	//lines->DrawLineWithArrow(position, position + GetVelocity());
+	//for (int i = 0; i < verts.size(); i++) {
+	//	lines->DrawText(GetVelocityAt(verts[i]).ToString(), verts[i].GetRotatedBy(orientation) + position, .5);
+	//	lines->DrawLineWithArrow(verts[i].GetRotatedBy(orientation) + position, verts[i].GetRotatedBy(orientation) + position + GetVelocityAt(verts[i]), Colour::BLUE);
+	//
+	//}
+	//p->DebugDrawAxis(lines);
 	DrawOrientingAxes(lines);
 	//lines->DrawText(std::to_string(orientation), position, 1);
 }
@@ -188,7 +188,7 @@ float Polygon::CalculateMass()
 	}
 	overallPos /= containedVectors.size();
 	centreOfMassDisplacement = overallPos;
-	momentOfIntertia = CalculateMomentOfInertia(position + centreOfMassDisplacement, containedVectors, baseFloatWeight);
+	inverseMomentOfInertia = 1.0f / CalculateMomentOfInertia(position + centreOfMassDisplacement, containedVectors, baseFloatWeight);
 	
 
 

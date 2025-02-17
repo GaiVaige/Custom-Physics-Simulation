@@ -83,20 +83,17 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
 
     Vec2 aAv = colInfo.contactPoint - colInfo.colliderA->GetPos();
     float arcA = aAv.GetMagnitudeSquared();
-    float effmassA = 1 / 
-        (colInfo.colliderA->GetInvMass() + (arcA / colInfo.colliderA->GetParent()->momentOfIntertia));
+    float effmassA = (colInfo.colliderA->GetInvMass() + (arcA * colInfo.colliderA->GetParent()->inverseMomentOfInertia));
     
     Vec2 bAv = colInfo.contactPoint - colInfo.colliderB->GetPos();
     float arcB = bAv.GetMagnitudeSquared();
-    float effmassB = 1 /
-        (colInfo.colliderB->GetInvMass() + (arcB / colInfo.colliderB->GetParent()->momentOfIntertia));
+    float effmassB = (colInfo.colliderB->GetInvMass() + (arcB * colInfo.colliderB->GetParent()->inverseMomentOfInertia));
     if (colInfo.colliderA->GetShape() == CIRCLE && colInfo.colliderB->GetShape() == POLYGON) {
         int i = 0;
     }
-    float j = -(1 + elas) * Dot((velB - velA), colInfo.normal) / (1/effmassA + 1/effmassB);
+    float j = -(1 + elas) * Dot((velB - velA), colInfo.normal) / (effmassA + effmassB);
 
     Vec2 relVelA = (colInfo.colliderA->GetParent()->GetVelocityAt(aAv + colInfo.colliderA->GetPos()));
-    
     Vec2 relVelB = (colInfo.colliderB->GetParent()->GetVelocityAt(bAv + colInfo.colliderB->GetPos()));
     
     Vec2 totalRelVel = relVelA + relVelB;

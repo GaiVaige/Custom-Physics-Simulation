@@ -39,7 +39,7 @@ void PhysicsObject::Update(float dt)
 	accumulatedLinearForce = Vec2();
 
 	//rotation
-	float rotAccel = (accumulatedAngularForce/momentOfIntertia);
+	float rotAccel = (accumulatedAngularForce * inverseMomentOfInertia);
 	Rotate(angularVelocity * dt);
 	angularVelocity += rotAccel * dt;
 	angularVelocity -= angularVelocity * angularDrag * dt;
@@ -85,14 +85,14 @@ void PhysicsObject::ApplyImpulse(Vec2 force)
 
 void PhysicsObject::ApplyAngularForce(Vec2 force, Vec2 pos)
 {
-	accumulatedAngularForce += (force.y * pos.x - force.x * pos.y)/momentOfIntertia;
+	accumulatedAngularForce += (force.y * pos.x - force.x * pos.y) * inverseMomentOfInertia;
 }
 
 void PhysicsObject::ApplyForceAt(Vec2 force, Vec2 pos)
 {
 	//float torque = Dot(pos, force);
 	float f = (force.y * pos.x - force.x * pos.y);
-	angularVelocity += f/momentOfIntertia;
+	angularVelocity += f * inverseMomentOfInertia;
 	linearVelocity += (force * inverseMass);
 }
 

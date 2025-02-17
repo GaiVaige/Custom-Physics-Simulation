@@ -9,7 +9,7 @@ Plane::Plane(Vec2 normal, float displacement, float elas)
 	type = STATIC;
 	collider->SetParent(this);
 
-	momentOfIntertia = FLT_MAX;
+	inverseMomentOfInertia = 0;
 	centreOfMassDisplacement = Vec2(0, 0);
 
 }
