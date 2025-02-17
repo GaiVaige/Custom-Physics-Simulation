@@ -94,21 +94,21 @@ PhysicsSim::~PhysicsSim()
 void PhysicsSim::Initialise()
 {
 	objects.push_back(new Polygon(Vec2(-3, 10), testVertsFive, .5));
-	objects.push_back(new Circle(Vec2(0, 1), 2, 1));
+	//objects.push_back(new Circle(Vec2(0, 1), 2, 1));
 	//objects.push_back(new Polygon(Vec2(0, 1), UNITCUBE, .5));
 	objects.push_back(new Plane(Vec2(0, 1), 10, 1));
 
 	for (PhysicsObject* object : objects) {
 		std::cout << object->GUID << '\n';
 	}
-	objects[0]->ApplyImpulse(Vec2(0, -600));
-    //objects[0]->ApplyAngularImpulse(Vec2(0, 50), objects[0]->GetPos() + Vec2(10, 0));
+	//objects[0]->ApplyImpulse(Vec2(0, -600));
+    objects[0]->ApplyForceAt(Vec2(0, 5), objects[0]->GetPos() + Vec2(10, 0));
 
 }
 
 void PhysicsSim::Update(float deltaTime)
 {
-	objects[0]->ApplyForce(Vec2(0, -59.8));
+		objects[0]->ApplyForce(Vec2(0, -9.8/objects[0]->collider->GetInvMass()));
 		std::vector<CollisionInfo> allCollisions;
 
 		for (int w = 0; w < 1; w++) {

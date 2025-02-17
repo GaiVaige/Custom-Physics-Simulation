@@ -88,10 +88,11 @@ void PhysicsObject::ApplyAngularForce(Vec2 force, Vec2 pos)
 	accumulatedAngularForce += (force.y * pos.x - force.x * pos.y)/momentOfIntertia;
 }
 
-void PhysicsObject::ApplyAngularImpulse(Vec2 force, Vec2 pos)
+void PhysicsObject::ApplyForceAt(Vec2 force, Vec2 pos)
 {
-	float f = (force.y * pos.x - force.x * pos.y) / momentOfIntertia;
-	angularVelocity += f;
+	float f = (force.y * pos.x - force.x * pos.y);
+	angularVelocity += f/momentOfIntertia;
+	linearVelocity += (force * inverseMass);
 }
 
 Vec2 PhysicsObject::GetVelocityAt(Vec2 pos) const

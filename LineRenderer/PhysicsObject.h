@@ -40,7 +40,7 @@ public:
 	Vec2 GetVelocityNormalised() { return linearVelocity.GetNormalised(); }
 
 	void ApplyAngularForce(Vec2 force, Vec2 pos);
-	void ApplyAngularImpulse(Vec2 force, Vec2 pos);
+	void ApplyForceAt(Vec2 force, Vec2 pos);
 	Vec2 GetVelocityAt(Vec2 pos) const;
 	void SetMOI(float f) { momentOfIntertia = f; }
 

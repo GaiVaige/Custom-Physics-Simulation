@@ -108,10 +108,10 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     colInfo.colliderB->Move(BOffset);
 
 
-    colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * j);
-    colInfo.colliderA->GetParent()->ApplyAngularImpulse(-colInfo.normal * j, aAv);
-    colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * j);
-    colInfo.colliderB->GetParent()->ApplyAngularImpulse(colInfo.normal * j, bAv);
+    //colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * j);
+    colInfo.colliderA->GetParent()->ApplyForceAt(-colInfo.normal * j, aAv);
+    //colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * j);
+    colInfo.colliderB->GetParent()->ApplyForceAt(colInfo.normal * j, bAv);
 
     return;
 }
@@ -201,11 +201,15 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
     Projection p = ProjectOnAxis(axis, tempC);
     p.min -= colA->GetRadius();
     p.max += colA->GetRadius();
+    std::vector<Vec2> bTranslatedPoints;
 
+    for (Vec2 v : colB->GetVerts()) {
+        bTranslatedPoints.push_back(v.GetRotatedBy(colB->GetParent()->GetOrientation()) + colB->GetPos());
+    }
 
     for (int i = 0; i < colB->GetVerts().size(); i++) {
         
-        Projection p2 = ProjectOnAxis(axis, colB->GetVerts());
+        Projection p2 = ProjectOnAxis(axis, bTranslatedPoints);
 
         if (!p.Overlaps(p2)) {
             return CollisionInfo(false);
@@ -226,7 +230,7 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
         Projection p1 = ProjectOnAxis(ax, tempC);
         p1.min -= colA->GetRadius();
         p1.max += colA->GetRadius();
-        Projection p2 = ProjectOnAxis(ax, colB->GetVerts());
+        Projection p2 = ProjectOnAxis(ax, bTranslatedPoints);
 
         if (!p1.Overlaps(p2)) {
             return CollisionInfo(false);
@@ -287,14 +291,26 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
     PolygonCollider* which = nullptr;
     PolygonCollider* notWhich = nullptr;
 
+    std::vector<Vec2> aTranslatedPoints;
+
+    for (Vec2 v : colA->GetVerts()) {
+        aTranslatedPoints.push_back(v.GetRotatedBy(colA->GetParent()->GetOrientation()) + colA->GetPos());
+    }
+
+    std::vector<Vec2> bTranslatedPoints;
+
+    for (Vec2 v : colB->GetVerts()) {
+        bTranslatedPoints.push_back(v.GetRotatedBy(colB->GetParent()->GetOrientation()) + colB->GetPos());
+    }
+
     Vec2 ax;
     Projection p1;
     Projection p2;
     for (int i = 0; i < colA->GetVerts().size(); i++) {
         ax = colA->GetAxis(i);
 
-        p1 = ProjectOnAxis(ax, colA->GetVerts());
-        p2 = ProjectOnAxis(ax, colB->GetVerts());
+        p1 = ProjectOnAxis(ax, aTranslatedPoints);
+        p2 = ProjectOnAxis(ax, bTranslatedPoints);
 
         if (!p1.Overlaps(p2)) {
             return CollisionInfo(false);
@@ -316,8 +332,8 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
     for (int i = 0; i < colB->GetVerts().size(); i++) {
         ax = colB->GetAxis(i);
 
-        p1 = ProjectOnAxis(ax, colA->GetVerts());
-        p2 = ProjectOnAxis(ax, colB->GetVerts());
+        p1 = ProjectOnAxis(ax, aTranslatedPoints);
+        p2 = ProjectOnAxis(ax, bTranslatedPoints);
 
         if (!p1.Overlaps(p2)) {
             return CollisionInfo(false);

@@ -1,13 +1,35 @@
 #pragma once
 #include "Polygon.h"
 #include <array>
+
+struct Wheel {
+	Wheel(Vec2 pos) : pos(pos) {};
+	Vec2 pos;
+	float rotSpeed;
+};
+
+static std::vector<Vec2> carVerts{
+	{-1, -2},
+	{-1, 2},
+	{1, 2},
+	{1, -2}
+};
+
+static std::vector<Vec2> wheelVerts{
+	{-.1, -.3},
+	{-.1, .3},
+	{.1, .3},
+	{.1, -.3}
+};
+
 class Car : public Polygon {
 
 public:
+	Car(Vec2 pos);
 	void CalculateVelocityAdditions();
 	void Accelerate(float throttleAmnt);
 	void Brake();
-	void ShiftGear(bool up);
+	void Draw(LineRenderer* lines) const override;
 private:
 	int gear;
 	
@@ -15,12 +37,5 @@ private:
 
 	float currentThrottle;
 	float currentTurningAmount;
-
-	std::array<std::pair<float, float>, 5> accelAndTurnPairs{
-		std::pair<float, float>(-1.f, 1.f),
-		std::pair<float, float>(0.f, 1.f),
-		std::pair<float, float>(1.f, 1.f),
-		std::pair<float, float>(2.f, .5f),
-		std::pair<float, float>(4.f, .1f)
-	}
+	std::vector<Wheel> wheels;
 };

@@ -34,13 +34,11 @@ void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 
 void PolygonCollider::Rotate(float amnt)
 {
-	for (Vec2& v : verts) {
-		v -= position;
-		v.RotateBy(amnt);
-		v += position;
-
+	std::vector<Vec2> rotatedNorms;
+	for (Vec2 v : verts) {
+		rotatedNorms.push_back(v.GetRotatedBy(GetParent()->GetOrientation()));
 	}
-	CalcNormals(verts);
+	CalcNormals(rotatedNorms);
 }
 
 void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
@@ -50,9 +48,9 @@ void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
 	for (int i = 0; i < vertices.size(); i++) {
 		int j = i + 1;
 		if (j >= vertices.size())	j = 0;
-		Vec2 lineSeg = verts[j] - verts[i];
+		Vec2 lineSeg = vertices[j] - vertices[i];
 		axes.push_back(Vec2(-lineSeg.y, lineSeg.x).GetNormalised());
-		edges.push_back(std::pair<Vec2, Vec2>(verts[j], verts[i]));
+		edges.push_back(std::pair<Vec2, Vec2>(vertices[j], vertices[i]));
 	}
 
 
@@ -64,16 +62,7 @@ Vec2& PolygonCollider::SetPos(Vec2& pos)
 		v.first -= position;
 		v.second -= position;
 	}
-
 	this->Collider::SetPos(pos);
-	verts.clear();
-
-	for (Vec2 v : baseVerts) {
-		Vec2 f = v;
-		f.RotateBy(parent->GetOrientation());
-		verts.push_back(f + pos);
-	}
-
 	for (std::pair<Vec2, Vec2>& v : edges) {
 		v.first += position;
 		v.second += position;
@@ -84,7 +73,8 @@ Vec2& PolygonCollider::SetPos(Vec2& pos)
 
 Vec2 PolygonCollider::GetVert(int i)
 {
-	Vec2 v = verts[i];
+	Vec2 v = verts[i].GetRotatedBy(GetParent()->GetOrientation());
+	v += position;
 	return v;
 }
 
@@ -111,14 +101,14 @@ Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, float elas, PHYSICSTYPE t)
 void Polygon::Draw(LineRenderer* lines) const
 {
 	for (int i = 0; i < verts.size(); i++) {
-		lines->AddPointToLine(verts[i] + position);
+		lines->AddPointToLine(verts[i].GetRotatedBy(orientation) + position);
 	}
 	lines->FinishLineLoop();
 	lines->DrawCircle(position + centreOfMassDisplacement, .1, Colour::GREEN);
 	PolygonCollider* p = static_cast<PolygonCollider*>(collider);
 	lines->DrawLineWithArrow(position, position + GetVelocity());
 	for (int i = 0; i < verts.size(); i++) {
-		lines->DrawLineWithArrow(verts[i] + position, verts[i] + position + GetVelocityAt(verts[i]), Colour::BLUE);
+		lines->DrawLineWithArrow(verts[i].GetRotatedBy(orientation) + position, verts[i].GetRotatedBy(orientation) + position + GetVelocityAt(verts[i]), Colour::BLUE);
 
 	}
 	p->DebugDrawAxis(lines);
@@ -128,11 +118,6 @@ void Polygon::Draw(LineRenderer* lines) const
 
 void Polygon::Rotate(float amnt)
 {
-	for (Vec2& v : verts) {
-		//v -= position;
-		v.RotateBy(amnt);
-		//v += position;
-	}
 	orientation += amnt;
 	collider->Rotate(amnt);
 	up.RotateBy(amnt);
