@@ -93,8 +93,8 @@ PhysicsSim::~PhysicsSim()
 
 void PhysicsSim::Initialise()
 {
-	objects.push_back(new Polygon(Vec2(10, 10), testVertsFive, .5));
-	//objects.push_back(new Circle(Vec2(0, 1), 2, 1));
+	objects.push_back(new Polygon(Vec2(500, 100), testVertsFive, .5));
+	objects.push_back(new Circle(Vec2(500, 1), 2, 1));
 	//objects.push_back(new Polygon(Vec2(0, 1), UNITCUBE, .5));
 	objects.push_back(new Plane(Vec2(0, 1), 10, 1));
 
