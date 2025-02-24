@@ -61,8 +61,8 @@ void Launcher::AdjustStrength(float amnt)
 
 void Launcher::AdjustAngle(float amnt)
 {
-	if (bOrient + amnt > .6) amnt = 0;
-	if (bOrient + amnt < -.6) amnt = 0;
+	if (RadToDeg(bOrient + amnt) > 56) amnt = 0;
+	if (RadToDeg(bOrient + amnt) < -56) amnt = 0;
 
 	barrel->Rotate(amnt);
 	bOrient = barrel->GetOrientation();
