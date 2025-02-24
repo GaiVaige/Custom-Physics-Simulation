@@ -45,7 +45,7 @@ Circle::Circle(Vec2 pos, float radius, float elas, PHYSICSTYPE t)
     float m = CalculateMass();
     inverseMass = 1.0f / m;
     float moi = m * (radius * radius) * .4;
-    SetMOI(1.0f/moi);
+    inverseMomentOfInertia = (1.0f/moi);
     collider->SetInvMass(inverseMass);
     if (type == STATIC) {
         collider->SetInvMass(0);
@@ -61,8 +61,8 @@ void Circle::Draw(LineRenderer* lines) const
     //lines->DrawLineWithArrow(position, position + velocity);
     CircleCollider* p = static_cast<CircleCollider*>(collider);
     p->DrawContactPoints(lines);
-    DrawOrientingAxes(lines);
-    lines->DrawLineWithArrow(position, position + GetVelocity());
+    //DrawOrientingAxes(lines);
+    //lines->DrawLineWithArrow(position, position + GetVelocity());
 }
 
 void Circle::Rotate(float amnt)

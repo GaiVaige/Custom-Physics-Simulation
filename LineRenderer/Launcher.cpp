@@ -1,0 +1,96 @@
+#include "Launcher.h"
+#include "LineRenderer.h"
+#include "ApplicationHarness.h"
+
+Launcher::Launcher(Vec2 pos, Vec2 bDisp)
+	: Polygon(pos, launcherVerts, 0, STATIC)
+{
+	for (Vec2& v : barrelverts) {
+		v += bDisp;
+	}
+	barrel = new Barrel(pos);
+	barrelPos = bDisp;
+}
+
+Launcher::~Launcher()
+{
+	delete barrel;
+}
+
+void Launcher::Tick(float dt)
+{
+	rulerPositions.clear();
+	float rotAmnt = ApplicationHarness::GetInputAxis(Key::RightArrow, Key::LeftArrow);
+
+	float strAmnt = ApplicationHarness::GetInputAxis(Key::DownArrow, Key::UpArrow);
+
+	AdjustStrength(strAmnt * dt);
+	AdjustAngle(rotAmnt * dt);
+
+	Vec2 initialPos = position + barrelPos.GetRotatedBy(barrel->GetOrientation()) + barrel->up * .8;
+	Bullet* b = new Bullet(initialPos);
+	b->useGravity = true;
+	b->ApplyImpulse(barrel->up * fireStrength);
+
+	for (int i = 0; i < 2 * fireStrength; i++) {
+		for (int i = 0; i < 5; i++) {
+			b->Update(dt);
+		}
+		rulerPositions.push_back(b->GetPos());
+	}
+	delete b;
+}
+
+void Launcher::Fire()
+{
+	if (fireStrength != 0) {
+		Bullet* b = new Bullet(position + barrelPos.GetRotatedBy(barrel->GetOrientation()) + barrel->up * .8);
+		sceneObjects->push_back(b);
+		b->useGravity = true;
+		b->ApplyImpulse(barrel->up * fireStrength);
+	}
+
+}
+
+void Launcher::AdjustStrength(float amnt)
+{
+	fireStrength += amnt * 3;
+	if (fireStrength > 10) fireStrength = 10;
+	if (fireStrength < 0) fireStrength = 0;
+}
+
+void Launcher::AdjustAngle(float amnt)
+{
+	if (bOrient + amnt > .6) amnt = 0;
+	if (bOrient + amnt < -.6) amnt = 0;
+
+	barrel->Rotate(amnt);
+	bOrient = barrel->GetOrientation();
+}
+
+void Launcher::Draw(LineRenderer* lines) const
+{
+	Polygon::Draw(lines);
+	lines->DrawText("Angle: " + std::to_string(RadToDeg(barrel->GetOrientation())), Vec2(-39.3, 20), 1);
+	lines->DrawText("Fire Strength: " + std::to_string(fireStrength), Vec2(-39.3, 18), 1);
+	barrel->Draw(lines);
+
+	lines->AddPointToLine(position + barrelPos.GetRotatedBy(barrel->GetOrientation()) + barrel->up * .8);
+	for (const Vec2& v : rulerPositions) {
+		lines->AddPointToLine(v);
+	}
+	lines->FinishLineStrip();
+
+}
+
+void Bullet::Draw(LineRenderer* lines) const
+{
+	Circle::Draw(lines);
+}
+
+void Bullet::Notify(PhysicsObject* other)
+{
+	if (other->GetType() == STATIC) {
+		markedForDeletion = true;
+	}
+}

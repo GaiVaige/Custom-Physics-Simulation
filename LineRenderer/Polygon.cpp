@@ -94,7 +94,8 @@ Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, float elas, PHYSICSTYPE t)
 	type = t;
 	if (type == STATIC) {
 		collider->SetInvMass(0);
-		inverseMomentOfInertia = FLT_MAX;
+		inverseMass = 0;
+		inverseMomentOfInertia = 0;
 	}
 }
 
@@ -104,17 +105,9 @@ void Polygon::Draw(LineRenderer* lines) const
 		lines->AddPointToLine(verts[i].GetRotatedBy(orientation) + position);
 	}
 	lines->FinishLineLoop();
-	lines->DrawCircle(position + centreOfMassDisplacement, .1, Colour::GREEN);
-	PolygonCollider* p = static_cast<PolygonCollider*>(collider);
-	//lines->DrawLineWithArrow(position, position + GetVelocity());
-	//for (int i = 0; i < verts.size(); i++) {
-	//	lines->DrawText(GetVelocityAt(verts[i]).ToString(), verts[i].GetRotatedBy(orientation) + position, .5);
-	//	lines->DrawLineWithArrow(verts[i].GetRotatedBy(orientation) + position, verts[i].GetRotatedBy(orientation) + position + GetVelocityAt(verts[i]), Colour::BLUE);
-	//
-	//}
-	//p->DebugDrawAxis(lines);
-	DrawOrientingAxes(lines);
-	//lines->DrawText(std::to_string(orientation), position, 1);
+	//lines->DrawCircle(position + centreOfMassDisplacement, .1, Colour::GREEN);
+	//PolygonCollider* p = static_cast<PolygonCollider*>(collider);
+	//DrawOrientingAxes(lines);
 }
 
 void Polygon::Rotate(float amnt)

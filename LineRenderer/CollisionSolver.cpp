@@ -82,22 +82,20 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
 
 
     Vec2 aAv = colInfo.contactPoint - colInfo.colliderA->GetPos();
-    float arcA = aAv.GetMagnitudeSquared();
-    float effmassA = (colInfo.colliderA->GetInvMass() + (arcA * colInfo.colliderA->GetParent()->inverseMomentOfInertia));
+    float arcA = Dot(colInfo.normal.GetRotatedBy90(), aAv);
+    float effmassA = (colInfo.colliderA->GetInvMass() + (pow(arcA, 2) * colInfo.colliderA->GetParent()->inverseMomentOfInertia));
     
     Vec2 bAv = colInfo.contactPoint - colInfo.colliderB->GetPos();
-    float arcB = bAv.GetMagnitudeSquared();
-    float effmassB = (colInfo.colliderB->GetInvMass() + (arcB * colInfo.colliderB->GetParent()->inverseMomentOfInertia));
-    if (colInfo.colliderA->GetShape() == CIRCLE && colInfo.colliderB->GetShape() == POLYGON) {
-        int i = 0;
-    }
-    float j = -(1 + elas) * Dot((velB - velA), colInfo.normal) / (effmassA + effmassB);
+    float arcB = Dot(colInfo.normal.GetRotatedBy90(), bAv);
+    float effmassB = (colInfo.colliderB->GetInvMass() + (pow(arcB, 2) * colInfo.colliderB->GetParent()->inverseMomentOfInertia));
+
 
     Vec2 relVelA = (colInfo.colliderA->GetParent()->GetVelocityAt(aAv + colInfo.colliderA->GetPos()));
     Vec2 relVelB = (colInfo.colliderB->GetParent()->GetVelocityAt(bAv + colInfo.colliderB->GetPos()));
     
     Vec2 totalRelVel = relVelA + relVelB;
 
+    float j = -(1 + elas) * Dot((relVelB - relVelA), colInfo.normal) / (effmassB + effmassA);
 
     Vec2 AOffset = (-colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
     colInfo.colliderA->Move(AOffset);
@@ -107,8 +105,10 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
 
     //colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * j);
     colInfo.colliderA->GetParent()->ApplyForceAt(-colInfo.normal * j, aAv);
+    colInfo.colliderA->GetParent()->Notify(colInfo.colliderB->GetParent());
     //colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * j);
     colInfo.colliderB->GetParent()->ApplyForceAt(colInfo.normal * j, bAv);
+    colInfo.colliderB->GetParent()->Notify(colInfo.colliderA->GetParent());
 
     return;
 }

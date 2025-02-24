@@ -22,8 +22,8 @@ void Plane::Draw(LineRenderer* lines) const
 	lines->AddPointToLine(position + start * 1000);
 	lines->AddPointToLine(position + end * 1000);
 	lines->FinishLineStrip();
-	lines->SetColour(Colour::BLUE);
-	lines->DrawLineWithArrow(position, position + direction);
+	//lines->SetColour(Colour::BLUE);
+	//lines->DrawLineWithArrow(position, position + direction);
 	lines->SetColour(Colour::WHITE);
 }
 

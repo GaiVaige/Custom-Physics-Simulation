@@ -76,6 +76,9 @@
       <Filter>Engine\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Launcher.cpp">
+      <Filter>Game\Game Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLFWCallbacks.h">
@@ -180,7 +183,7 @@
     <ClInclude Include="Plane.h">
       <Filter>Engine\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Car.h">
+    <ClInclude Include="Launcher.h">
       <Filter>Game\Game Files</Filter>
     </ClInclude>
   </ItemGroup>
