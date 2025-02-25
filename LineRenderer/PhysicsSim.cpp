@@ -74,10 +74,10 @@ void PhysicsSim::Initialise()
 	//objects.push_back(new BladeSpinners(Vec2(-5, 22), 7, 5, objectQueue));
 
 
-	objects.push_back(new Plane(Vec2(0, 1), 0, 1));
-	objects.push_back(new Plane(Vec2(-1, 0), 50, 1));
-	objects.push_back(new Plane(Vec2(1, 0), 50, 1));
-	objects.push_back(new Plane(Vec2(0, -1), 51, 1));
+	objects.push_back(new Plane(Vec2(0, 1), 0, .2));
+	objects.push_back(new Plane(Vec2(-1, 0), 50, .2));
+	objects.push_back(new Plane(Vec2(1, 0), 50, .2));
+	objects.push_back(new Plane(Vec2(0, -1), 51, .2));
 	for (PhysicsObject* c : objectQueue) {
 		objects.push_back(c);
 	}
@@ -163,7 +163,7 @@ void PhysicsSim::OnRightClick()
 			float add = (storedVerts[j].x - storedVerts[i].x) * (storedVerts[j].y + storedVerts[i].y);
 			cwCalc += add;
 		}
-		std::cout << cwCalc << '\n';
+		//std::cout << cwCalc << '\n';
 		if (cwCalc < 0) {
 			std::reverse(storedVerts.begin(), storedVerts.end());
 		}

@@ -35,6 +35,7 @@ public:
 	void ApplyForce(Vec2 force);
 	void ApplyImpulse(Vec2 force);
 	Vec2 GetVelocity() const { return linearVelocity; }
+	void SetVelocity(Vec2 newVel) { linearVelocity = newVel; }
 	float GetAngularVelocity() { return angularVelocity; }
 
 	void ApplyAngularForce(Vec2 force, Vec2 pos);

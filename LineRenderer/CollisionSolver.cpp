@@ -73,10 +73,10 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     if (!colInfo.collided) return;
     
     float totalInvMass = colInfo.colliderA->GetInvMass() + colInfo.colliderB->GetInvMass();
-
     if (totalInvMass == 0) {
         return;
     }
+
 
     Vec2 velA = colInfo.colliderA->GetParent()->GetVelocity();
     Vec2 velB = colInfo.colliderB->GetParent()->GetVelocity();
@@ -98,6 +98,8 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     Vec2 totalRelVel = relVelA + relVelB;
 
     float j = -(1 + elas) * Dot((relVelB - relVelA), colInfo.normal) / (effmassB + effmassA);
+
+
 
     Vec2 AOffset = (-colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
     colInfo.colliderA->Move(AOffset);

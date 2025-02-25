@@ -102,8 +102,13 @@ void BladeSpinners::Unload()
 SpinBlock::SpinBlock(Vec2 pos, std::vector<Vec2> vertices)
 	:Polygon(pos, vertices, 1)
 {
-	inverseMass = 0;
-	collider->SetInvMass(0);
+	pin = PinConstraint(pos);
+}
+
+void SpinBlock::Update(float dt)
+{
+	Polygon::Update(dt);
+	pin.Constrain(this);
 }
 
 void Crate::CollisionEvent(PhysicsObject* other)

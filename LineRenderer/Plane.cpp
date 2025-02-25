@@ -18,7 +18,7 @@ void Plane::Draw(LineRenderer* lines) const
 {
 	Vec2 start = direction.GetRotatedBy270();
 	Vec2 end = direction.GetRotatedBy90();
-
+	lines->SetColour(Colour::RED);
 	lines->AddPointToLine(position + start * 1000);
 	lines->AddPointToLine(position + end * 1000);
 	lines->FinishLineStrip();
