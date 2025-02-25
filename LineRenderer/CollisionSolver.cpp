@@ -73,9 +73,11 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     if (!colInfo.collided) return;
     
     float totalInvMass = colInfo.colliderA->GetInvMass() + colInfo.colliderB->GetInvMass();
+
     if (totalInvMass == 0) {
         return;
     }
+
     Vec2 velA = colInfo.colliderA->GetParent()->GetVelocity();
     Vec2 velB = colInfo.colliderB->GetParent()->GetVelocity();
     float elas = (colInfo.colliderA->GetParent()->elasticity + colInfo.colliderB->GetParent()->elasticity) / 2.f;
@@ -105,10 +107,10 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
 
     //colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * j);
     colInfo.colliderA->GetParent()->ApplyForceAt(-colInfo.normal * j, aAv);
-    colInfo.colliderA->GetParent()->Notify(colInfo.colliderB->GetParent());
+    colInfo.colliderA->GetParent()->CollisionEvent(colInfo.colliderB->GetParent());
     //colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * j);
     colInfo.colliderB->GetParent()->ApplyForceAt(colInfo.normal * j, bAv);
-    colInfo.colliderB->GetParent()->Notify(colInfo.colliderA->GetParent());
+    colInfo.colliderB->GetParent()->CollisionEvent(colInfo.colliderA->GetParent());
 
     return;
 }

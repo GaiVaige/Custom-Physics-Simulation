@@ -16,20 +16,16 @@ PolygonCollider::PolygonCollider(Vec2& centre, float mass, std::vector<Vec2> v)
 	for (Vec2 vec : v) {
 		verts.push_back(vec);
 	}
-	baseVerts = verts;
 	CalcNormals(verts);
 }
 
-PolygonCollider::~PolygonCollider()
-{
-}
 
 void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 {
 
-	//for (Vec2 p : contactPoints) {
-	//	lines->DrawCircle(p + position, .1, Colour::MAGENTA);
-	//}
+	for (Vec2 p : axes) {
+		lines->DrawLineWithArrow(position, position + p * 10, Colour::MAGENTA);
+	}
 }
 
 void PolygonCollider::Rotate(float amnt)
@@ -105,7 +101,7 @@ void Polygon::Draw(LineRenderer* lines) const
 		lines->AddPointToLine(verts[i].GetRotatedBy(orientation) + position);
 	}
 	lines->FinishLineLoop();
-
+	//static_cast<PolygonCollider*>(collider)->DebugDrawAxis(lines);
 }
 
 void Polygon::Rotate(float amnt)

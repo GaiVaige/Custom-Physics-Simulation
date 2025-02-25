@@ -16,7 +16,7 @@ class PhysicsObject {
 public:
 
 	PhysicsObject();
-	~PhysicsObject();
+	virtual ~PhysicsObject();
 	PhysicsObject(PhysicsObject& po) = delete;
 	PhysicsObject& operator=(PhysicsObject& po) = delete;
 
@@ -44,7 +44,7 @@ public:
 	void DrawOrientingAxes(LineRenderer* lines) const;
 	
 	virtual void Unload();
-	virtual void Notify(PhysicsObject* other = nullptr) {};
+	virtual void CollisionEvent(PhysicsObject* other = nullptr) {};
 	
 	PHYSICSTYPE GetType() { return type; }
 	unsigned int GUID;

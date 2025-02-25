@@ -13,7 +13,6 @@ PhysicsObject::PhysicsObject()
 }
 PhysicsObject::~PhysicsObject()
 {
-	Unload();
 	delete collider;
 }
 

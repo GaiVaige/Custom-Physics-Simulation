@@ -6,7 +6,6 @@ class PolygonCollider : public Collider {
 public:
 	PolygonCollider(Vec2& centre, float mass);
 	PolygonCollider(Vec2& centre, float mass, std::vector<Vec2> v);
-	~PolygonCollider();
 	PolygonCollider(PolygonCollider& c) = delete;
 	PolygonCollider& operator=(PolygonCollider& c) = delete;
 	void DebugDrawAxis(LineRenderer* lines);
@@ -20,8 +19,8 @@ public:
 	std::pair<Vec2, Vec2> GetEdge(int i) { return edges[i]; }
 	Vec2 GetVert(int i);
 	std::vector<Vec2>& GetVerts() { return verts; }
+protected:
 private:
-	std::vector<Vec2> baseVerts;
 	std::vector<Vec2> verts;
 	std::vector<Vec2> axes;
 	std::vector<std::pair<Vec2, Vec2>> edges;
@@ -37,6 +36,8 @@ public:
 	float CalculateMass() override;
 	bool IsInside(Vec2 p, std::vector<Vec2> verts);
 	std::vector<Vec2> GetVerts() { return verts; }
+protected:
+	std::vector<Vec2>& GetVertsByRef() { return verts; }
 private:
 	std::vector<Vec2> verts;
 

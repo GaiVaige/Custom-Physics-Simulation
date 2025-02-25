@@ -102,7 +102,7 @@ void Bullet::Draw(LineRenderer* lines) const
 	Circle::Draw(lines);
 }
 
-void Bullet::Notify(PhysicsObject* other)
+void Bullet::CollisionEvent(PhysicsObject* other)
 {
 	if (other->GetType() == STATIC) {
 		player->score += score;

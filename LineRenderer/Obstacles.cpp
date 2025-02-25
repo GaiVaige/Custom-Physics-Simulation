@@ -14,7 +14,7 @@ void Bumper::Update(float dt)
 		framesActive++;
 	}
 }
-void Bumper::Notify(PhysicsObject* other)
+void Bumper::CollisionEvent(PhysicsObject* other)
 {
 	if (other->GetType() != STATIC) {
 		Vec2 a = this->GetPos();
@@ -39,7 +39,7 @@ void Bumper::Draw(LineRenderer* lines) const
 	}
 }
 
-void Blade::Notify(PhysicsObject* other)
+void Blade::CollisionEvent(PhysicsObject* other)
 {
 	if (other->GetType() == DYNAMIC) {
 		other->markedForDeletion = true;
@@ -74,6 +74,11 @@ BladeSpinners::BladeSpinners(Vec2 pos, int count, float rotSpeed, std::vector<Ph
 	}
 }
 
+BladeSpinners::~BladeSpinners()
+{
+	Unload();
+}
+
 
 void BladeSpinners::Update(float dt)
 {
@@ -91,5 +96,19 @@ void BladeSpinners::Unload()
 {
 	for (Blade* b : blades) {
 		b->markedForDeletion = true;
+	}
+}
+
+SpinBlock::SpinBlock(Vec2 pos, std::vector<Vec2> vertices)
+	:Polygon(pos, vertices, 1)
+{
+	inverseMass = 0;
+	collider->SetInvMass(0);
+}
+
+void Crate::CollisionEvent(PhysicsObject* other)
+{
+	if (other->GetType() == STATIC) {
+		this->markedForDeletion = true;
 	}
 }

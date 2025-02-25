@@ -12,7 +12,7 @@ public:
 	int framesActive = 0;
 	Vec2 thisBounceDir = Vec2(0, 0);
 	void Update(float dt) override;
-	void Notify(PhysicsObject* other) override;
+	void CollisionEvent(PhysicsObject* other) override;
 	void Draw(LineRenderer* lines) const override;
 
 };
@@ -27,18 +27,37 @@ class Blade : public Polygon {
 public:
 	Blade(Vec2 pos) : Polygon(pos, bladeVerts, 0) {};
 
-	void Notify(PhysicsObject* other) override;
+	void CollisionEvent(PhysicsObject* other) override;
 	void Draw(LineRenderer* lines) const override;
 
 
 };
-class BladeSpinners : public PhysicsObject{
+class BladeSpinners : public PhysicsObject {
 public:
 	BladeSpinners(Vec2 pos, int count, float rotSpeed, std::vector<PhysicsObject*>& queue);
+	~BladeSpinners();
 	float rotationSpeed;
 	std::vector<Blade*> blades;
 	void Update(float dt) override;
 	void Draw(LineRenderer* lines) const override;
 	void Unload() override;
 	
+};
+
+class SpinBlock : public Polygon {
+public:
+	SpinBlock(Vec2 pos, std::vector<Vec2> verts);
+};
+
+static std::vector<Vec2> CRATE = {
+Vec2(-.5f, -.5f),
+Vec2(-.5f, .5f),
+Vec2(.5f, .5f),
+Vec2(.5f, -.5f)
+};
+class Crate : public Polygon {
+public:
+	Crate(Vec2 pos) : Polygon(pos, CRATE, .4) { useGravity = true; };
+
+	void CollisionEvent(PhysicsObject* other) override;
 };

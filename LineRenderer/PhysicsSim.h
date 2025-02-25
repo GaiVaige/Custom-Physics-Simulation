@@ -21,5 +21,10 @@ public:
 
 	void Update(float deltaTime) override;
 
+	//Geometry Painter
+	std::vector<Vec2> storedVerts;
+	void OnLeftClick() override;
+	void OnRightClick() override;
+	
 	void OnKeyPress(Key key) override;
 };

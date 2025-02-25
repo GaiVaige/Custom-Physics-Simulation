@@ -10,7 +10,7 @@ struct Bullet : public Circle {
 	int score = 0;
 	int combo = 1;
 	void Draw(LineRenderer* lines) const override;
-	void Notify(PhysicsObject* other) override;
+	void CollisionEvent(PhysicsObject* other) override;
 
 };
 

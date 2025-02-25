@@ -13,11 +13,12 @@
 #include "Target.h"
 #include "Obstacles.h"
 #pragma region ShapeVerts
-std::vector<Vec2> UNITCUBE = {
-Vec2(-.5f, -.5f),
-Vec2(-.5f, .5f),
-Vec2(.5f, .5f),
-Vec2(.5f, -.5f)
+
+std::vector<Vec2> BIGSQUARE = {
+Vec2(-10, -10),
+Vec2(-10, 10),
+Vec2(10, 10),
+Vec2(10, -10)
 };
 
 std::vector<Vec2> RECTANGLE = {
@@ -27,59 +28,11 @@ Vec2(2, .5f),
 Vec2(2, -.5f)
 };
 
-std::vector<Vec2> testVerts = {
-Vec2(-1, -1),
-Vec2(-1, 1),
-Vec2(1, 1),
-Vec2(1, -1)
-};
-
-std::vector<Vec2> testVertsBIG = {
-Vec2(-2, -2),
-Vec2(-2, 2),
-Vec2(2, 2),
-Vec2(2, -2)
-};
-
-std::vector<Vec2> testVertsTwo = {
-	Vec2(-1, -.5),
-	Vec2(0, 1.5),
-	Vec2(1, -.5)
-};
-
-std::vector<Vec2> testVertsThree = {
-	Vec2(0, -1),
-	Vec2(-.6, -.6),
-	Vec2(-1, 0),
-	Vec2(-.6, .6),
-	Vec2(0, 1),
-	Vec2(.6, .6),
-	Vec2(1, 0),
-	Vec2(.6, -.6)
-};
-
-std::vector<Vec2> testVertsFour = {
-	Vec2(-1, 0),
-	Vec2(0, 1),
-	Vec2(1, 0),
-	Vec2(0, -1)
-};
-
-std::vector<Vec2> testVertsFive = {
-	Vec2(-5, 1),
-	Vec2(5, 1),
-	Vec2(5, -1),
-	Vec2(-5, -1)
-};
-
-std::vector<Vec2> testVertsHayden = {
-	Vec2(27, -9),
-	Vec2(35, -12),
-	Vec2(36, -14),
-	Vec2(37, -18),
-	Vec2(38, -23),
-	Vec2(39, -33),
-	Vec2(40, -83),
+std::vector<Vec2> LONG_RECTANGLE = {
+Vec2(-4, -.5f),
+Vec2(-4, .5f),
+Vec2(4, .5f),
+Vec2(4, -.5f)
 };
 #pragma endregion
 
@@ -136,7 +89,6 @@ void PhysicsSim::Initialise()
 
 void PhysicsSim::Update(float deltaTime)
 {
-
 	for (PhysicsObject* c : objectQueue) {
 		objects.push_back(c);
 	}
@@ -166,14 +118,85 @@ void PhysicsSim::Update(float deltaTime)
 		}
 	}
 
+
 	for (PhysicsObject* c : objectsToClear) {
 		if (std::find(objects.begin(), objects.end(), c) != objects.end()) {
 			objects.erase(std::find(objects.begin(), objects.end(), c));
+			delete c;
 		}
+	}
+	for (Vec2 v : storedVerts) {
+		Vec2 pos = Vec2(0, 0);
+		for (Vec2& v : storedVerts) {
+			lines->DrawCircle(v, 1);
+			pos += v;
+		}
+		pos /= storedVerts.size();
+		lines->DrawCircle(pos, 1);
 	}
 
 
+}
 
+void PhysicsSim::OnLeftClick()
+{
+	storedVerts.push_back(cursorPos);
+}
+
+void PhysicsSim::OnRightClick()
+{
+	if (storedVerts.size() >= 3) {
+		Vec2 pos = Vec2(0, 0);
+		for (Vec2& v : storedVerts) {
+			pos += v;
+		}
+		pos /= storedVerts.size();
+		for (Vec2& v : storedVerts) {
+			v -= pos;
+		}
+		float cwCalc = 0;
+		for (int i = 0; i < storedVerts.size(); i++) {
+			int j = i + 1;
+			if (j == storedVerts.size()) j = 0;
+			Vec2 a = storedVerts[i];
+			Vec2 b = storedVerts[j];
+			float add = (storedVerts[j].x - storedVerts[i].x) * (storedVerts[j].y + storedVerts[i].y);
+			cwCalc += add;
+		}
+		std::cout << cwCalc << '\n';
+		if (cwCalc < 0) {
+			std::reverse(storedVerts.begin(), storedVerts.end());
+		}
+		Polygon* p = new Polygon(pos, storedVerts, 1);
+		p->inverseMass = 0;
+		p->collider->SetInvMass(0);
+		p->inverseMomentOfInertia = 0;
+
+		//Validate if polygon is convex before scene placement
+		bool signNegative = false;
+		bool previousSign = signNegative;
+		bool first = true;
+		PolygonCollider* pc = static_cast<PolygonCollider*>(p->collider);
+		for (int i = 0; i < p->GetVerts().size(); i++) {
+			int j = i + 1;
+			if (j == p->GetVerts().size()) j = 0;
+			float f = PseudoCross(pc->GetAxis(i), pc->GetAxis(j));
+			signNegative = (f < 0);
+			if (first) {
+				previousSign = signNegative;
+				first = false;
+			}
+			if (signNegative != previousSign) {
+				delete p;
+				storedVerts.clear();
+				return;
+			}
+			previousSign = signNegative;
+		}
+		objectQueue.push_back(p);
+
+	}
+	storedVerts.clear();
 
 }
 
@@ -188,7 +211,19 @@ void PhysicsSim::OnKeyPress(Key key)
 		objectQueue.push_back(new BladeSpinners(cursorPos, 5, 10, objectQueue));
 		break;
 	case Key::Three:
-		objectQueue.push_back(new Bumper(cursorPos, 10));
+		objectQueue.push_back(new Bumper(cursorPos, 5));
+		break;
+	case Key::Four:
+		objectQueue.push_back(new FrenzyTarget(cursorPos, 10, Vec2(0, 50), objectQueue));
+		break;
+	case Key::Five:
+		objectQueue.push_back(new SpinBlock(cursorPos, RECTANGLE));
+		break;
+	case Key::Six:
+		objectQueue.push_back(new SpinBlock(cursorPos, LONG_RECTANGLE));
+		break;
+	case Key::Seven:
+		objectQueue.push_back(new Crate(cursorPos));
 		break;
 	case Key::R:
 		for (int i = 5; i < objects.size(); i++) {
