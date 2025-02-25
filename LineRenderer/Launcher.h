@@ -2,9 +2,13 @@
 #include "Polygon.h"
 #include "Circle.h"
 
+class Launcher;
 struct Bullet : public Circle {
-	Bullet(Vec2 pos) : Circle(pos, .6, 1) {};
+	Bullet(Vec2 pos, Launcher* player = nullptr) : Circle(pos, .6, 1), player(player) {};
 
+	Launcher* player;
+	int score = 0;
+	int combo = 1;
 	void Draw(LineRenderer* lines) const override;
 	void Notify(PhysicsObject* other) override;
 
@@ -31,7 +35,6 @@ static std::vector<Vec2> launcherVerts{
 class Launcher : public Polygon {
 
 public:
-	Launcher();
 	Launcher(Vec2 pos, Vec2 bDisp);
 	~Launcher();
 
@@ -44,7 +47,7 @@ public:
 	float bOrient;
 
 
-	void Tick(float dt);
+	void Update(float dt) override;
 	void Fire();
 	void AdjustStrength(float amnt);
 	void AdjustAngle(float amnt);

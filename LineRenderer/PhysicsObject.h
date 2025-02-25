@@ -24,11 +24,12 @@ public:
 	virtual void Draw(LineRenderer* lines) const = 0;
 	virtual float CalculateMass();
 	virtual void Rotate(float amnt);
+	void RotateAbout(float amnt, Vec2 pos);
 	const Vec2 GetPos() const { return position; }
 	const float GetOrientation() const { return orientation; }
 	void SetPosition(Vec2& v);
 	void OffsetPosition(Vec2& v);
-	void Update(float dt);
+	virtual void Update(float dt);
 	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
 
 	void ApplyForce(Vec2 force);
@@ -42,6 +43,7 @@ public:
 
 	void DrawOrientingAxes(LineRenderer* lines) const;
 	
+	virtual void Unload();
 	virtual void Notify(PhysicsObject* other = nullptr) {};
 	
 	PHYSICSTYPE GetType() { return type; }
@@ -52,6 +54,7 @@ public:
 	float angularDrag = .3;
 	float inverseMass = 0;
 	float inverseMomentOfInertia = 0;
+	float orientation = 0;
 	Vec2 up, right;
 
 	bool useGravity = false;
@@ -62,7 +65,6 @@ protected:
 	PHYSICSTYPE type;
 	Vec2 position, linearVelocity, accumulatedLinearForce, centreOfMassDisplacement;
 
-	float orientation = 0;
 	float angularVelocity = 0;
 	float accumulatedAngularForce = 0;
 

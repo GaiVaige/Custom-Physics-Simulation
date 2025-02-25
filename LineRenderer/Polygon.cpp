@@ -105,9 +105,7 @@ void Polygon::Draw(LineRenderer* lines) const
 		lines->AddPointToLine(verts[i].GetRotatedBy(orientation) + position);
 	}
 	lines->FinishLineLoop();
-	//lines->DrawCircle(position + centreOfMassDisplacement, .1, Colour::GREEN);
-	//PolygonCollider* p = static_cast<PolygonCollider*>(collider);
-	//DrawOrientingAxes(lines);
+
 }
 
 void Polygon::Rotate(float amnt)

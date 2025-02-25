@@ -5,10 +5,10 @@
 Launcher::Launcher(Vec2 pos, Vec2 bDisp)
 	: Polygon(pos, launcherVerts, 0, STATIC)
 {
-	for (Vec2& v : barrelverts) {
-		v += bDisp;
-	}
-	barrel = new Barrel(pos);
+	//for (Vec2& v : barrelverts) {
+	//	v += bDisp;
+	//}
+	barrel = new Barrel(pos + bDisp);
 	barrelPos = bDisp;
 }
 
@@ -17,8 +17,9 @@ Launcher::~Launcher()
 	delete barrel;
 }
 
-void Launcher::Tick(float dt)
+void Launcher::Update(float dt)
 {
+	PhysicsObject::Update(dt);
 	currentTime += dt;
 	rulerPositions.clear();
 	float rotAmnt = ApplicationHarness::GetInputAxis(Key::RightArrow, Key::LeftArrow);
@@ -50,7 +51,7 @@ void Launcher::Tick(float dt)
 void Launcher::Fire()
 {
 	if (fireStrength != 0) {
-		Bullet* b = new Bullet(position + barrelPos.GetRotatedBy(barrel->GetOrientation()) + barrel->up * .8);
+		Bullet* b = new Bullet(position + barrelPos.GetRotatedBy(barrel->GetOrientation()) + barrel->up * .8, this);
 		sceneObjects->push_back(b);
 		b->useGravity = true;
 		b->ApplyImpulse(barrel->up * fireStrength);
@@ -70,7 +71,7 @@ void Launcher::AdjustAngle(float amnt)
 	if (RadToDeg(bOrient + amnt) > 56) amnt = 0;
 	if (RadToDeg(bOrient + amnt) < -56) amnt = 0;
 
-	barrel->Rotate(amnt);
+	barrel->RotateAbout(amnt, position);
 	bOrient = barrel->GetOrientation();
 }
 
@@ -80,12 +81,12 @@ void Launcher::Draw(LineRenderer* lines) const
 	std::string degText = std::to_string(RadToDeg(barrel->GetOrientation()));
 	int size = degText.find('.');
 	degText.resize(size + 3);
-	lines->DrawText("Angle: " + degText, Vec2(-39.3, 20), 1);
+	lines->DrawText("Angle: " + degText, Vec2(-39.3, 40), 1);
 	std::string fireText = std::to_string(fireStrength);
 	int fsize = fireText.find('.');
 	fireText.resize(fsize + 2);
-	lines->DrawText("Fire Strength: " + fireText + "/10", Vec2(-39.3, 18), 1);
-	lines->DrawText("Score: " + std::to_string(score), Vec2(-39.3, 16), 1);
+	lines->DrawText("Fire Strength: " + fireText + "/10", Vec2(-39.3, 38), 1);
+	lines->DrawText("Score: " + std::to_string(score), Vec2(-39.3, 36), 1);
 	barrel->Draw(lines);
 
 	lines->AddPointToLine(position + barrelPos.GetRotatedBy(barrel->GetOrientation()) + barrel->up * .8);
@@ -104,6 +105,7 @@ void Bullet::Draw(LineRenderer* lines) const
 void Bullet::Notify(PhysicsObject* other)
 {
 	if (other->GetType() == STATIC) {
+		player->score += score;
 		markedForDeletion = true;
 	}
 }

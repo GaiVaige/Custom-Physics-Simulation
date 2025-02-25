@@ -13,6 +13,7 @@ PhysicsObject::PhysicsObject()
 }
 PhysicsObject::~PhysicsObject()
 {
+	Unload();
 	delete collider;
 }
 
@@ -67,11 +68,25 @@ void PhysicsObject::DrawOrientingAxes(LineRenderer* lines) const
 	lines->DrawLineSegment(position, position + right * 2, Colour::RED);
 }
 
+void PhysicsObject::Unload()
+{
+}
+
 void PhysicsObject::Rotate(float amnt)
 {
 	while (orientation > DegToRad(360)) {
 		orientation -= DegToRad(360);
 	}
+}
+
+void PhysicsObject::RotateAbout(float amnt, Vec2 pos)
+{
+	Vec2 tP = GetPos();
+	tP -= pos;
+	tP.RotateBy(amnt);
+	tP += pos;
+	position = tP;
+	Rotate(amnt);
 }
 
 void PhysicsObject::ApplyForce(Vec2 force)

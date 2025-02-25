@@ -7,7 +7,8 @@ void Target::Notify(PhysicsObject* other)
 	Bullet* bull = dynamic_cast<Bullet*>(other);
 
 	if (bull != nullptr) {
-		player->score++;
+		bull->score+= bull->combo;
+		bull->combo++;
 		this->markedForDeletion = true;
 	}
 }

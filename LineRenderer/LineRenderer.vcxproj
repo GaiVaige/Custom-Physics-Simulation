@@ -168,6 +168,7 @@
     <ClCompile Include="GLFWCallbacks.cpp" />
     <ClCompile Include="Launcher.cpp" />
     <ClCompile Include="LineRenderer.cpp" />
+    <ClCompile Include="Obstacles.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="PhysicsSim.cpp" />
     <ClCompile Include="Plane.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="Launcher.h" />
     <ClInclude Include="LineRenderer.h" />
     <ClInclude Include="Maths.h" />
+    <ClInclude Include="Obstacles.h" />
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="PhysicsSim.h" />
     <ClInclude Include="Plane.h" />

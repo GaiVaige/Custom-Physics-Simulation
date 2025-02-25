@@ -75,11 +75,18 @@
     <ClCompile Include="Polygon.cpp">
       <Filter>Engine\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Launcher.cpp">
       <Filter>Game\Game Files</Filter>
     </ClCompile>
-    <ClCompile Include="Target.cpp" />
+    <ClCompile Include="Target.cpp">
+      <Filter>Game\Game Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Obstacles.cpp">
+      <Filter>Game\Game Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>Engine\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLFWCallbacks.h">
@@ -188,6 +195,9 @@
       <Filter>Game\Game Files</Filter>
     </ClInclude>
     <ClInclude Include="Target.h">
+      <Filter>Game\Game Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacles.h">
       <Filter>Game\Game Files</Filter>
     </ClInclude>
   </ItemGroup>
