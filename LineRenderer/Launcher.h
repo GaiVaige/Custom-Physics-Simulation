@@ -52,6 +52,9 @@ public:
 	void Draw(LineRenderer* lines) const override;
 
 	std::vector<Vec2> rulerPositions;
+	float fireTimer = .8f;
+	float currentTime = 0;
+	int score = 0;
 private:
 
 };

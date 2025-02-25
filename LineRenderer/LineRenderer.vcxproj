@@ -175,6 +175,7 @@
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="ApplicationHarness.cpp" />
     <ClCompile Include="Maths.cpp" />
+    <ClCompile Include="Target.cpp" />
     <ClCompile Include="TextStream.cpp" />
     <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="Vec2.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="ApplicationHarness.h" />
+    <ClInclude Include="Target.h" />
     <ClInclude Include="TextStream.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="Vec2.h" />

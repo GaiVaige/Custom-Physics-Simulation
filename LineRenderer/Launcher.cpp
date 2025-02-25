@@ -1,7 +1,7 @@
 #include "Launcher.h"
 #include "LineRenderer.h"
 #include "ApplicationHarness.h"
-
+#include <iostream>
 Launcher::Launcher(Vec2 pos, Vec2 bDisp)
 	: Polygon(pos, launcherVerts, 0, STATIC)
 {
@@ -19,10 +19,16 @@ Launcher::~Launcher()
 
 void Launcher::Tick(float dt)
 {
+	currentTime += dt;
 	rulerPositions.clear();
 	float rotAmnt = ApplicationHarness::GetInputAxis(Key::RightArrow, Key::LeftArrow);
 
 	float strAmnt = ApplicationHarness::GetInputAxis(Key::DownArrow, Key::UpArrow);
+
+	if(ApplicationHarness::IsKeyDown(Key::Space) && currentTime > fireTimer) {
+		Fire();
+		currentTime = 0;
+	}
 
 	AdjustStrength(strAmnt * dt);
 	AdjustAngle(rotAmnt * dt);
@@ -71,8 +77,15 @@ void Launcher::AdjustAngle(float amnt)
 void Launcher::Draw(LineRenderer* lines) const
 {
 	Polygon::Draw(lines);
-	lines->DrawText("Angle: " + std::to_string(RadToDeg(barrel->GetOrientation())), Vec2(-39.3, 20), 1);
-	lines->DrawText("Fire Strength: " + std::to_string(fireStrength), Vec2(-39.3, 18), 1);
+	std::string degText = std::to_string(RadToDeg(barrel->GetOrientation()));
+	int size = degText.find('.');
+	degText.resize(size + 3);
+	lines->DrawText("Angle: " + degText, Vec2(-39.3, 20), 1);
+	std::string fireText = std::to_string(fireStrength);
+	int fsize = fireText.find('.');
+	fireText.resize(fsize + 2);
+	lines->DrawText("Fire Strength: " + fireText + "/10", Vec2(-39.3, 18), 1);
+	lines->DrawText("Score: " + std::to_string(score), Vec2(-39.3, 16), 1);
 	barrel->Draw(lines);
 
 	lines->AddPointToLine(position + barrelPos.GetRotatedBy(barrel->GetOrientation()) + barrel->up * .8);

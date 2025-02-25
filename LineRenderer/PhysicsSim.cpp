@@ -8,7 +8,9 @@
 #include "TextStream.h"
 #include "Key.h"
 
+#include "ApplicationHarness.h"
 #include "Launcher.h"
+#include "Target.h"
 #pragma region ShapeVerts
 std::vector<Vec2> UNITCUBE = {
 Vec2(-.5f, -.5f),
@@ -109,9 +111,24 @@ void PhysicsSim::Initialise()
 	objects.push_back(playerLauncher);
 	playerLauncher->sceneObjects = &objects;
 	//objects.push_back(new Circle(Vec2(-3, 10), 1, .5));
-	objects.push_back(new Polygon(Vec2(0, -5), RECTANGLE, .5));
-	objects[1]->inverseMass = 0;
-	objects[1]->collider->SetInvMass(0);
+	//objects 1 through 
+	objects.push_back(new Polygon(Vec2(3, -5), RECTANGLE, .5));
+	//objects.push_back(new Polygon(Vec2(0, 0), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(10, -8), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(-4, -12), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(-10, -2), RECTANGLE, .5));
+	objects.push_back(new Polygon(Vec2(-20, -10), RECTANGLE, .5));
+	for (int i = 1; i < 6; i++) {
+		objects[i]->inverseMass = 0;
+		objects[i]->collider->SetInvMass(0);
+	}
+
+	for (int i = 1; i < 6; i++) {
+		objects.push_back(new Target(objects[i]->GetPos() + Vec2(0, 3), playerLauncher));
+		objects[i + 5]->inverseMass = 0;
+		objects[i + 5]->collider->SetInvMass(0);
+	}
+
 	objects.push_back(new Plane(Vec2(0, 1), 20, 1));
 	for (PhysicsObject* object : objects) {
 		std::cout << object->GUID << '\n';
@@ -121,6 +138,7 @@ void PhysicsSim::Initialise()
 
 void PhysicsSim::Update(float deltaTime)
 {
+
 	playerLauncher->Tick(deltaTime);
 	std::vector<CollisionInfo> allCollisions;
 	std::vector<PhysicsObject*> objectsToClear;
@@ -158,7 +176,7 @@ void PhysicsSim::Update(float deltaTime)
 
 void PhysicsSim::OnLeftClick()
 {
-	playerLauncher->Fire();
+	//playerLauncher->Fire();
 }
 
 
