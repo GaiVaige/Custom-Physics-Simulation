@@ -2,6 +2,7 @@
 #include "LineRenderer.h"
 #include <string>
 #include <iostream>
+#include "Constraint.h"
 PolygonCollider::PolygonCollider(Vec2& centre, float mass)
 {
 	position = centre;
@@ -23,8 +24,9 @@ PolygonCollider::PolygonCollider(Vec2& centre, float mass, std::vector<Vec2> v)
 void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 {
 
-	for (Vec2 p : axes) {
-		lines->DrawLineWithArrow(position, position + p * 10, Colour::MAGENTA);
+
+	for (Vec2 v : verts) {
+		lines->DrawCircle(v.GetRotatedBy(parent->orientation) + position, .5);
 	}
 }
 
@@ -46,7 +48,7 @@ void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
 		if (j >= vertices.size())	j = 0;
 		Vec2 lineSeg = vertices[j] - vertices[i];
 		axes.push_back(Vec2(-lineSeg.y, lineSeg.x).GetNormalised());
-		edges.push_back(std::pair<Vec2, Vec2>(vertices[j], vertices[i]));
+		edges.push_back(std::pair<Vec2, Vec2>(vertices[j] + position, vertices[i] + position));
 	}
 
 

@@ -46,12 +46,12 @@ public:
 
 class SpinBlock : public Polygon {
 public:
-	SpinBlock(Vec2 pos, std::vector<Vec2> verts);
+	SpinBlock(Vec2 pos, std::vector<Vec2> verts, Vec2 dispFromOrigin);
 
 	void Update(float dt) override;
-
-	PinConstraint pin;
+	void Draw(LineRenderer* lines) const override;
 };
+
 
 static std::vector<Vec2> CRATE = {
 Vec2(-1, -1),
@@ -63,5 +63,6 @@ class Crate : public Polygon {
 public:
 	Crate(Vec2 pos) : Polygon(pos, CRATE, .4) { useGravity = true; };
 
+	void Update(float dt) override;
 	void CollisionEvent(PhysicsObject* other) override;
 };

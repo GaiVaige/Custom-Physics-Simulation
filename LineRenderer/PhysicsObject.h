@@ -2,7 +2,7 @@
 #include "Vec2.h"
 #include "Collider.h"
 class LineRenderer;
-
+class Constraint;
 static float LINEAR_THRESHOLD = .05f;
 static Vec2 GRAVITY = Vec2(0, -9.8);
 
@@ -48,25 +48,28 @@ public:
 	virtual void CollisionEvent(PhysicsObject* other = nullptr) {};
 	
 	PHYSICSTYPE GetType() { return type; }
+	bool markedForDeletion = false;
+	bool useGravity = false;
+
 	unsigned int GUID;
 	float elasticity = 0;
-
 	float linearDrag = .5;
 	float angularDrag = .3;
+	float angularVelocity = 0;
+	float accumulatedAngularForce = 0;
 	float inverseMass = 0;
 	float inverseMomentOfInertia = 0;
 	float orientation = 0;
-	Vec2 up, right;
 
-	bool useGravity = false;
-	bool markedForDeletion = false;
+	Vec2 up, right, accumulatedLinearForce;
+	Constraint* constraint = nullptr;
 
+	bool constraintResolvedRotation = false;
+	bool constraintResolvedPosition = false;
 private:
 protected:
 	PHYSICSTYPE type;
-	Vec2 position, linearVelocity, accumulatedLinearForce, centreOfMassDisplacement;
+	Vec2 position, linearVelocity, centreOfMassDisplacement;
 
-	float angularVelocity = 0;
-	float accumulatedAngularForce = 0;
 
 };

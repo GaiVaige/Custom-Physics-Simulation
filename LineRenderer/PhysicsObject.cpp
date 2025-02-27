@@ -2,6 +2,7 @@
 #include <chrono>
 #include "LineRenderer.h"
 #include "math.h"
+#include "Constraint.h"
 PhysicsObject::PhysicsObject()
 {
 	auto now = std::chrono::high_resolution_clock::now();
@@ -13,6 +14,9 @@ PhysicsObject::PhysicsObject()
 }
 PhysicsObject::~PhysicsObject()
 {
+	if (constraint != nullptr) {
+		delete constraint;
+	}
 	delete collider;
 }
 
@@ -30,21 +34,31 @@ void PhysicsObject::OffsetPosition(Vec2& v)
 
 void PhysicsObject::Update(float dt)
 {
-
+	if (constraint != nullptr) {
+		constraint->Constrain(this, dt);
+	}
 	Vec2 accel = (GRAVITY * (int)useGravity) + accumulatedLinearForce * inverseMass;
 
-	position += linearVelocity * dt;
-	linearVelocity += accel * dt;
-	linearVelocity -= linearVelocity * linearDrag * dt;
-	collider->SetPos(position);
-	accumulatedLinearForce = Vec2();
+	if (!constraintResolvedPosition) {
+		position += linearVelocity * dt;
+		linearVelocity += accel * dt;
+		linearVelocity -= linearVelocity * linearDrag * dt;
+		accumulatedLinearForce = Vec2();
+	}
 
-	//rotation
-	float rotAccel = (accumulatedAngularForce * inverseMomentOfInertia);
-	Rotate(angularVelocity * dt);
-	angularVelocity += rotAccel * dt;
-	angularVelocity -= angularVelocity * angularDrag * dt;
-	accumulatedAngularForce = 0;
+	if (!constraintResolvedRotation) {
+		//rotation
+		float rotAccel = (accumulatedAngularForce * inverseMomentOfInertia);
+		Rotate(angularVelocity * dt);
+		angularVelocity += rotAccel * dt;
+		angularVelocity -= angularVelocity * angularDrag * dt;
+		accumulatedAngularForce = 0;
+	}
+	collider->SetPos(position);
+
+	constraintResolvedPosition = false;
+	constraintResolvedRotation = false;
+
 }
 
 float PhysicsObject::CalculateMass()

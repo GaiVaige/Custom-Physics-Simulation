@@ -99,16 +99,29 @@ void BladeSpinners::Unload()
 	}
 }
 
-SpinBlock::SpinBlock(Vec2 pos, std::vector<Vec2> vertices)
-	:Polygon(pos, vertices, 1)
+SpinBlock::SpinBlock(Vec2 pos, std::vector<Vec2> vertices, Vec2 dispFromOrigin)
+	: Polygon(pos, vertices, 1)
 {
-	pin = PinConstraint(pos);
+	constraint = new HingeJoint(pos - dispFromOrigin);
+	//this->joint = new HingeJoint(pos - Vec2(1, 0));
 }
 
 void SpinBlock::Update(float dt)
 {
+	constraint->Constrain(this);
 	Polygon::Update(dt);
-	pin.Constrain(this);
+}
+
+void SpinBlock::Draw(LineRenderer* lines) const
+{
+	Polygon::Draw(lines);
+	lines->DrawCircle(constraint->position, .5);
+}
+
+void Crate::Update(float dt)
+{
+	//constraint->Constrain(this);
+	Polygon::Update(dt);
 }
 
 void Crate::CollisionEvent(PhysicsObject* other)
@@ -117,3 +130,4 @@ void Crate::CollisionEvent(PhysicsObject* other)
 		this->markedForDeletion = true;
 	}
 }
+

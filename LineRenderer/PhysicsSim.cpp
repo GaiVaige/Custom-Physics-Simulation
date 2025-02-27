@@ -107,6 +107,7 @@ void PhysicsSim::Update(float deltaTime)
 		}
 		for (CollisionInfo& collision : allCollisions) {
 			drCollision.ResolveCollision(collision);
+			//lines->DrawLineWithArrow(collision.contactPoint, collision.contactPoint + collision.normal);
 		}
 		allCollisions.clear();
 	}
@@ -208,7 +209,7 @@ void PhysicsSim::OnKeyPress(Key key)
 		objectQueue.push_back(new Target(cursorPos));
 		break;
 	case Key::Two:
-		objectQueue.push_back(new BladeSpinners(cursorPos, 5, 10, objectQueue));
+		objectQueue.push_back(new BladeSpinners(cursorPos, 3, 1, objectQueue));
 		break;
 	case Key::Three:
 		objectQueue.push_back(new Bumper(cursorPos, 5));
@@ -217,10 +218,10 @@ void PhysicsSim::OnKeyPress(Key key)
 		objectQueue.push_back(new FrenzyTarget(cursorPos, 10, Vec2(0, 50), objectQueue));
 		break;
 	case Key::Five:
-		objectQueue.push_back(new SpinBlock(cursorPos, RECTANGLE));
+		objectQueue.push_back(new SpinBlock(cursorPos, RECTANGLE, Vec2(-2, 0)));
 		break;
 	case Key::Six:
-		objectQueue.push_back(new SpinBlock(cursorPos, LONG_RECTANGLE));
+		objectQueue.push_back(new SpinBlock(cursorPos, RECTANGLE, Vec2(2, 0)));
 		break;
 	case Key::Seven:
 		objectQueue.push_back(new Crate(cursorPos));

@@ -3,7 +3,7 @@
 #include "Circle.h"
 #include "Polygon.h"
 #include "Plane.h"
-
+#include "Constraint.h"
 bool IsInside(Vec2 p, std::pair<Vec2, Vec2> edge) {
 
     Vec2 check = edge.first - edge.second;
@@ -81,13 +81,24 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     Vec2 velA = colInfo.colliderA->GetParent()->GetVelocity();
     Vec2 velB = colInfo.colliderB->GetParent()->GetVelocity();
     float elas = (colInfo.colliderA->GetParent()->elasticity + colInfo.colliderB->GetParent()->elasticity) / 2.f;
-
-
-    Vec2 aAv = colInfo.contactPoint - colInfo.colliderA->GetPos();
+    Vec2 aSpot;
+    if (colInfo.colliderA->GetParent()->constraint != nullptr) {
+        aSpot = colInfo.colliderA->GetParent()->constraint->position;
+    }
+    else {
+        aSpot = colInfo.colliderA->GetPos();
+    }
+    Vec2 aAv = colInfo.contactPoint - aSpot;
     float arcA = Dot(colInfo.normal.GetRotatedBy90(), aAv);
     float effmassA = (colInfo.colliderA->GetInvMass() + (pow(arcA, 2) * colInfo.colliderA->GetParent()->inverseMomentOfInertia));
-    
-    Vec2 bAv = colInfo.contactPoint - colInfo.colliderB->GetPos();
+    Vec2 bSpot;
+    if (colInfo.colliderB->GetParent()->constraint != nullptr) {
+        bSpot = colInfo.colliderB->GetParent()->constraint->position;
+    }
+    else {
+        bSpot = colInfo.colliderB->GetPos();
+    }
+    Vec2 bAv = colInfo.contactPoint - bSpot;
     float arcB = Dot(colInfo.normal.GetRotatedBy90(), bAv);
     float effmassB = (colInfo.colliderB->GetInvMass() + (pow(arcB, 2) * colInfo.colliderB->GetParent()->inverseMomentOfInertia));
 
@@ -99,12 +110,22 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
 
     float j = -(1 + elas) * Dot((relVelB - relVelA), colInfo.normal) / (effmassB + effmassA);
 
-
-
-    Vec2 AOffset = (-colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() / totalInvMass));
-    colInfo.colliderA->Move(AOffset);
-    Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetInvMass() / totalInvMass);
-    colInfo.colliderB->Move(BOffset);
+    float aAdd = 0;
+    float bAdd = 0;
+    if (colInfo.colliderA->GetParent()->constraint == nullptr) {
+        if (colInfo.colliderB->GetParent()->constraint != nullptr) {
+            bAdd = colInfo.colliderB->GetInvMass();
+        }
+        Vec2 AOffset = (-colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() + bAdd / totalInvMass));
+        colInfo.colliderA->Move(AOffset);
+    }
+    if (colInfo.colliderB->GetParent()->constraint == nullptr) {
+        if (colInfo.colliderA->GetParent()->constraint != nullptr) {
+            aAdd = colInfo.colliderA->GetInvMass();
+        }
+        Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetInvMass() + aAdd / totalInvMass);
+        colInfo.colliderB->Move(BOffset);
+    }
 
 
     //colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * j);
@@ -291,6 +312,8 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
     int index = -1;
     PolygonCollider* which = nullptr;
     PolygonCollider* notWhich = nullptr;
+    std::vector<Vec2> whichPoints;
+    std::vector<Vec2> notWhichPoints;
 
     std::vector<Vec2> aTranslatedPoints;
 
@@ -323,7 +346,9 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
                 smallest = ax;
                 index = i;
                 which = colA;
+                whichPoints = aTranslatedPoints;
                 notWhich = colB;
+                notWhichPoints = bTranslatedPoints;
             }
 
         }
@@ -347,6 +372,8 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
                 index = i;
                 which = colB;
                 notWhich = colA;
+                whichPoints = bTranslatedPoints;
+                notWhichPoints = aTranslatedPoints;
             }
 
         }
@@ -359,13 +386,16 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
         for (int repeat = 0; repeat < 2; repeat++) {
             for (int i = 0; i < notWhich->GetVerts().size(); i++) {
                 for (int j = 0; j < which->GetVerts().size(); j++) {
-                    if (!IsInside(notWhich->GetVert(i), which->GetEdge(j))) break;
-                    if (j == which->GetVerts().size() - 1) cPnts.push_back(notWhich->GetVert(i));
+                    if (!IsInside(notWhichPoints[i], which->GetEdge(j))) break;
+                    if (j == which->GetVerts().size() - 1) cPnts.push_back(notWhichPoints[i]);
                 }
             }
             PolygonCollider* s = which;
+            std::vector<Vec2> sV = whichPoints;
             which = notWhich;
+            whichPoints = notWhichPoints;
             notWhich = s;
+            notWhichPoints = sV;
         }
 
     }
@@ -374,7 +404,9 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
     for (Vec2 v : cPnts) {
         av += v;
     }
-    if (!cPnts.empty()) av /= cPnts.size();
+    if (!cPnts.empty()) {
+        av /= cPnts.size();
+    }
 
 
 

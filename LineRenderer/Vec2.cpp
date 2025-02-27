@@ -94,6 +94,15 @@ Vec2 Vec2::GetRotatedBy(float cosAngle, float sinAngle) const
 	);
 }
 
+Vec2 Vec2::GetRotatedAboutBy(float angle, Vec2 pos) const
+{
+	Vec2 tP = *this;
+	tP -= pos;
+	tP.RotateBy(angle);
+	tP += pos;
+	return tP;
+}
+
 void Vec2::SetMagnitude(float mag)
 {
 	Normalise();
