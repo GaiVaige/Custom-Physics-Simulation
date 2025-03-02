@@ -160,7 +160,6 @@ void PhysicsSim::OnRightClick()
 		}
 		Polygon* p = new Polygon(pos, storedVerts, 1);
 		p->inverseMass = 0;
-		p->collider->SetInvMass(0);
 		p->inverseMomentOfInertia = 0;
 
 		//Validate if polygon is convex before scene placement

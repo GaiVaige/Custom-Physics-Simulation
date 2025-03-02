@@ -33,12 +33,9 @@ public:
 
 	void Move(Vec2& offset);
 	virtual void Rotate(float amnt) = 0;
-	void SetInvMass(float m) { inverseMass = m; } 
-	float GetInvMass() { return inverseMass; }
 
 
 protected:
-	float inverseMass;
 	COLLIDERSHAPE shape;
 	Vec2 position;
 	PhysicsObject* parent;

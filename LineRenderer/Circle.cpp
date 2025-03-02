@@ -23,9 +23,7 @@ Circle::Circle(Vec2 pos, float radius, float elas, PHYSICSTYPE t)
     inverseMass = 1.0f / m;
     float moi = m * (radius * radius) * .4;
     inverseMomentOfInertia = (1.0f/moi);
-    collider->SetInvMass(inverseMass);
     if (type == STATIC) {
-        collider->SetInvMass(0);
         inverseMass = 0;
         inverseMomentOfInertia = 0;
     }

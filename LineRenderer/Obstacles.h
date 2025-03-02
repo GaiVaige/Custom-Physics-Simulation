@@ -4,7 +4,7 @@
 #include "Constraint.h"
 class Bumper : public Circle {
 public:
-	Bumper(Vec2 pos, float bumpStrength) : Circle(pos, 1, 1, DYNAMIC), strength(bumpStrength) { this->inverseMass = 0; this->collider->SetInvMass(0); };
+	Bumper(Vec2 pos, float bumpStrength) : Circle(pos, 1, 1, DYNAMIC), strength(bumpStrength) { this->inverseMass = 0; };
 
 	float strength;
 	bool drawBounce;

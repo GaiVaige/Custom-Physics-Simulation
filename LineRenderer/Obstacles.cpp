@@ -66,7 +66,6 @@ BladeSpinners::BladeSpinners(Vec2 pos, int count, float rotSpeed, std::vector<Ph
 		thisDisp *= 2;
 		Blade* b = new Blade(pos + thisDisp);
 		b->inverseMass = 0;
-		b->collider->SetInvMass(0);
 		b->inverseMomentOfInertia = 0;
 		b->orientation = (rotInc * i);
 		queue.push_back(b);

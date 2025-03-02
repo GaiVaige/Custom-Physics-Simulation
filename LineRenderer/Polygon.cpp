@@ -6,14 +6,12 @@
 PolygonCollider::PolygonCollider(Vec2& centre, float mass)
 {
 	position = centre;
-	inverseMass = 1.f/mass;
 }
 
 PolygonCollider::PolygonCollider(Vec2& centre, float mass, std::vector<Vec2> v)
 {
 	shape = POLYGON;
 	position = centre;
-	inverseMass = 1.f / mass;
 	for (Vec2 vec : v) {
 		verts.push_back(vec);
 	}
@@ -90,7 +88,6 @@ Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, float elas, PHYSICSTYPE t)
 	collider->SetPos(pos);
 	type = t;
 	if (type == STATIC) {
-		collider->SetInvMass(0);
 		inverseMass = 0;
 		inverseMomentOfInertia = 0;
 	}

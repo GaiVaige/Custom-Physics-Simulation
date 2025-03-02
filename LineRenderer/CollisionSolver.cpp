@@ -72,7 +72,7 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
 {
     if (!colInfo.collided) return;
     
-    float totalInvMass = colInfo.colliderA->GetInvMass() + colInfo.colliderB->GetInvMass();
+    float totalInvMass = colInfo.colliderA->GetParent()->inverseMass + colInfo.colliderB->GetParent()->inverseMass;
     if (totalInvMass == 0) {
         return;
     }
@@ -90,7 +90,7 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     }
     Vec2 aAv = colInfo.contactPoint - aSpot;
     float arcA = Dot(colInfo.normal.GetRotatedBy90(), aAv);
-    float effmassA = (colInfo.colliderA->GetInvMass() + (pow(arcA, 2) * colInfo.colliderA->GetParent()->inverseMomentOfInertia));
+    float effmassA = (colInfo.colliderA->GetParent()->inverseMass + (pow(arcA, 2) * colInfo.colliderA->GetParent()->inverseMomentOfInertia));
     Vec2 bSpot;
     if (colInfo.colliderB->GetParent()->constraint != nullptr) {
         bSpot = colInfo.colliderB->GetParent()->constraint->position;
@@ -100,7 +100,7 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     }
     Vec2 bAv = colInfo.contactPoint - bSpot;
     float arcB = Dot(colInfo.normal.GetRotatedBy90(), bAv);
-    float effmassB = (colInfo.colliderB->GetInvMass() + (pow(arcB, 2) * colInfo.colliderB->GetParent()->inverseMomentOfInertia));
+    float effmassB = (colInfo.colliderB->GetParent()->inverseMass + (pow(arcB, 2) * colInfo.colliderB->GetParent()->inverseMomentOfInertia));
 
 
     Vec2 relVelA = (colInfo.colliderA->GetParent()->GetVelocityAt(aAv + colInfo.colliderA->GetPos()));
@@ -114,16 +114,16 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
     float bAdd = 0;
     if (colInfo.colliderA->GetParent()->constraint == nullptr) {
         if (colInfo.colliderB->GetParent()->constraint != nullptr) {
-            bAdd = colInfo.colliderB->GetInvMass();
+            bAdd = colInfo.colliderB->GetParent()->inverseMass;
         }
-        Vec2 AOffset = (-colInfo.normal * colInfo.depth * (colInfo.colliderA->GetInvMass() + bAdd / totalInvMass));
+        Vec2 AOffset = (-colInfo.normal * colInfo.depth * (colInfo.colliderA->GetParent()->inverseMass + bAdd / totalInvMass));
         colInfo.colliderA->Move(AOffset);
     }
     if (colInfo.colliderB->GetParent()->constraint == nullptr) {
         if (colInfo.colliderA->GetParent()->constraint != nullptr) {
-            aAdd = colInfo.colliderA->GetInvMass();
+            aAdd = colInfo.colliderA->GetParent()->inverseMass;
         }
-        Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetInvMass() + aAdd / totalInvMass);
+        Vec2 BOffset = colInfo.normal * colInfo.depth * (colInfo.colliderB->GetParent()->inverseMass + aAdd / totalInvMass);
         colInfo.colliderB->Move(BOffset);
     }
 

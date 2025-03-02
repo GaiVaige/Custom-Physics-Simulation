@@ -32,6 +32,5 @@ PlaneCollider::PlaneCollider(Vec2 normal, float disp)
 	direction = normal;
 	displacement = disp;
 	position = direction * displacement;
-	inverseMass = 0;
 	shape = PLANE;
 }
