@@ -9,29 +9,6 @@ CircleCollider::CircleCollider(Vec2 pos, float rad)
     
 
 }
-CircleCollider::~CircleCollider()
-{
-}
-
-Vec2 CircleCollider::GetFurthestPoint(Vec2& direction) const
-{
-    Vec2 nDir = direction.GetNormalised();
-
-    return position + (nDir * radius);
-}
-
-void CircleCollider::DrawContactPoints(LineRenderer* lines)
-{
-    lines->SetColour(Colour::BLUE);
-    for (Vec2 v : contactPoints) {
-        lines->DrawCircle(v + GetPos(), .2);
-    }
-    lines->SetColour(Colour::WHITE);
-}
-
-void CircleCollider::Rotate(float amnt)
-{
-}
 
 Circle::Circle(Vec2 pos, float radius, float elas, PHYSICSTYPE t)
     : radius(radius)
@@ -58,11 +35,7 @@ Circle::Circle(Vec2 pos, float radius, float elas, PHYSICSTYPE t)
 void Circle::Draw(LineRenderer* lines) const
 {
     lines->DrawCircle(position, radius);
-    //lines->DrawLineWithArrow(position, position + velocity);
     CircleCollider* p = static_cast<CircleCollider*>(collider);
-    p->DrawContactPoints(lines);
-    //DrawOrientingAxes(lines);
-    //lines->DrawLineWithArrow(position, position + GetVelocity());
 }
 
 void Circle::Rotate(float amnt)

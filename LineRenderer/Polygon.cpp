@@ -54,7 +54,7 @@ void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
 
 }
 
-Vec2& PolygonCollider::SetPos(Vec2& pos)
+void PolygonCollider::SetPos(Vec2& pos)
 {
 	for (std::pair<Vec2, Vec2>& v : edges) {
 		v.first -= position;
@@ -66,7 +66,6 @@ Vec2& PolygonCollider::SetPos(Vec2& pos)
 		v.second += position;
 	}
 
-	return pos;
 }
 
 Vec2 PolygonCollider::GetVert(int i)

@@ -8,17 +8,17 @@ public:
 	PolygonCollider(Vec2& centre, float mass, std::vector<Vec2> v);
 	PolygonCollider(PolygonCollider& c) = delete;
 	PolygonCollider& operator=(PolygonCollider& c) = delete;
-	void DebugDrawAxis(LineRenderer* lines);
-
-	void Rotate(float amnt) override;
-
 	void CalcNormals(std::vector<Vec2>& vertices);
 
-	Vec2& SetPos(Vec2& pos) override;
+
+	void SetPos(Vec2& pos) override;
+	void Rotate(float amnt) override;
+
 	Vec2 GetAxis(int i) { return axes[i]; }
-	std::pair<Vec2, Vec2> GetEdge(int i) { return edges[i]; }
 	Vec2 GetVert(int i);
+	std::pair<Vec2, Vec2> GetEdge(int i) { return edges[i]; }
 	std::vector<Vec2>& GetVerts() { return verts; }
+	void DebugDrawAxis(LineRenderer* lines);
 protected:
 private:
 	std::vector<Vec2> verts;

@@ -63,16 +63,6 @@ void PhysicsSim::Initialise()
 	playerLauncher = new Launcher(Vec2(0, 0), Vec2(0, 1.5));
 	objects.push_back(playerLauncher);
 	playerLauncher->sceneObjects = &objectQueue;
-	//objects.push_back(new Target(Vec2(-8, 10)));
-	//objects.push_back(new Target(Vec2(-6, 10)));
-	//objects.push_back(new Target(Vec2(-4, 10)));
-	//
-	//objects.push_back(new Bumper(Vec2(0, 20), 30));
-	//
-	//
-	//objects.push_back(new BladeSpinners(Vec2(5, 22), 7, 1, objectQueue));
-	//objects.push_back(new BladeSpinners(Vec2(-5, 22), 7, 5, objectQueue));
-
 
 	objects.push_back(new Plane(Vec2(0, 1), 0, .2));
 	objects.push_back(new Plane(Vec2(-1, 0), 50, .2));
