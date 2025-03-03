@@ -37,7 +37,7 @@ public:
 	void RotateAbout(float amnt, Vec2 pos);
 	const float GetOrientation() const { return orientation; }
 	
-	void ApplyForceAt(Vec2 force, Vec2 pos);
+	void ApplyImpulseAt(Vec2 force, Vec2 pos);
 	void ApplyAngularForce(Vec2 force, Vec2 pos);
 	float GetAngularVelocity() { return angularVelocity; }
 	Vec2 GetVelocityAt(Vec2 pos) const;

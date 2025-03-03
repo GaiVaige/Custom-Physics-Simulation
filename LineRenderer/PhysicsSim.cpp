@@ -119,10 +119,11 @@ void PhysicsSim::Update(float deltaTime)
 	for (Vec2 v : storedVerts) {
 		Vec2 pos = Vec2(0, 0);
 		for (Vec2& v : storedVerts) {
-			lines->DrawCircle(v, 1);
+			lines->AddPointToLine(v, Colour::GREY);
 			pos += v;
 		}
 		pos /= storedVerts.size();
+		lines->FinishLineLoop();
 		lines->DrawCircle(pos, 1);
 	}
 

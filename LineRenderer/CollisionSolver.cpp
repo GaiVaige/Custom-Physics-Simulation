@@ -129,10 +129,10 @@ void CollisionSolver::ResolveCollision(CollisionInfo colInfo)
 
 
     //colInfo.colliderA->GetParent()->ApplyImpulse(-colInfo.normal * j);
-    colInfo.colliderA->GetParent()->ApplyForceAt(-colInfo.normal * j, aAv);
+    colInfo.colliderA->GetParent()->ApplyImpulseAt(-colInfo.normal * j, aAv);
     colInfo.colliderA->GetParent()->CollisionEvent(colInfo.colliderB->GetParent());
     //colInfo.colliderB->GetParent()->ApplyImpulse(colInfo.normal * j);
-    colInfo.colliderB->GetParent()->ApplyForceAt(colInfo.normal * j, bAv);
+    colInfo.colliderB->GetParent()->ApplyImpulseAt(colInfo.normal * j, bAv);
     colInfo.colliderB->GetParent()->CollisionEvent(colInfo.colliderA->GetParent());
 
     return;

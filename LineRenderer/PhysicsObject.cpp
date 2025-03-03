@@ -117,7 +117,7 @@ void PhysicsObject::ApplyAngularForce(Vec2 force, Vec2 pos)
 	accumulatedAngularForce += (force.y * pos.x - force.x * pos.y) * inverseMomentOfInertia;
 }
 
-void PhysicsObject::ApplyForceAt(Vec2 force, Vec2 pos)
+void PhysicsObject::ApplyImpulseAt(Vec2 force, Vec2 pos)
 {
 	//float torque = Dot(pos, force);
 	float f = (force.y * pos.x - force.x * pos.y);
