@@ -28,6 +28,7 @@ class CollisionSolver{
 public:
 	CollisionInfo DetectCollision(Collider* colA, Collider* colB);
 	void ResolveCollision(CollisionInfo colInfo);
+	static bool IsInside(Vec2 p, std::pair<Vec2, Vec2> edge);
 private:
 	CollisionInfo DispatchForCorrectFunction(Collider* colA, Collider* colB);
 
@@ -40,6 +41,4 @@ private:
 
 	Projection ProjectOnAxis(Vec2 axis, std::vector<Vec2> points) const;
 
-	Edge Best(std::vector<Vec2> verts, Vec2 axis) const;
-	std::vector<Vec2> Clip(Vec2 incEdgeA, Vec2 incEdgeB, Vec2 refEdge, float amnt) const;
 };

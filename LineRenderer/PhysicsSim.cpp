@@ -169,6 +169,13 @@ void PhysicsSim::OnRightClick()
 		bool first = true;
 		PolygonCollider* pc = static_cast<PolygonCollider*>(p->collider);
 		for (int i = 0; i < p->GetVerts().size(); i++) {
+			for (int j = 0; j < p->GetVerts().size(); j++) {
+				if (CollisionSolver::IsInside(p->GetVerts()[i], static_cast<PolygonCollider*>(p->collider)->GetEdge(i))) {
+					delete p;
+					storedVerts.clear();
+					return;
+				}
+			}
 			int j = i + 1;
 			if (j == p->GetVerts().size()) j = 0;
 			float f = PseudoCross(pc->GetAxis(i), pc->GetAxis(j));

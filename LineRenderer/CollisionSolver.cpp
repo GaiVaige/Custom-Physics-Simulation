@@ -4,7 +4,7 @@
 #include "Polygon.h"
 #include "Plane.h"
 #include "Constraint.h"
-bool IsInside(Vec2 p, std::pair<Vec2, Vec2> edge) {
+bool CollisionSolver::IsInside(Vec2 p, std::pair<Vec2, Vec2> edge) {
 
     Vec2 check = edge.first - edge.second;
 
@@ -12,55 +12,6 @@ bool IsInside(Vec2 p, std::pair<Vec2, Vec2> edge) {
 
 
     return f <= 0.0f;
-}
-
-Edge CollisionSolver::Best(std::vector<Vec2> verts, Vec2 axis) const {
-    float max = -FLT_MAX;
-    int furthestVertInd = -1;
-    for (int i = 0; i < verts.size(); i++) {
-        float proj = Dot(verts[i], axis);
-        if (proj > max) {
-            max = proj;
-            furthestVertInd = i;
-        }
-    }
-
-    Vec2 furthestVert = verts[furthestVertInd];
-    Vec2 nextVert = verts[furthestVertInd == verts.size() - 1 ? 0 : furthestVertInd + 1];
-    Vec2 previousVert = verts[furthestVertInd == 0 ? verts.size() - 1 : furthestVertInd - 1];
-
-    Vec2 leftWard = (furthestVert - nextVert).GetNormalised();
-    Vec2 rightWard = (furthestVert - previousVert).GetNormalised();
-
-    if (Dot(rightWard, axis) <= Dot(leftWard, axis)) {
-        return Edge(furthestVert, previousVert, furthestVert);
-    }
-    else {
-        return Edge(furthestVert, furthestVert, nextVert);
-    }
-
-}
-
-std::vector<Vec2> CollisionSolver::Clip(Vec2 incEdgeA, Vec2 incEdgeB, Vec2 refEdge, float amnt) const
-{
-    std::vector<Vec2> clippedPoints;
-
-    float d1 = Dot(refEdge, incEdgeA) - amnt;
-    float d2 = Dot(refEdge, incEdgeB) - amnt;
-
-    if (d1 >= 0.0) clippedPoints.push_back(incEdgeA);
-    if (d2 >= 0.0) clippedPoints.push_back(incEdgeB);
-
-    if (d1 * d2 < 0) {
-        Vec2 edge = incEdgeB - incEdgeA;
-        float sc = d1 / (d1 - d2);
-        edge *= sc;
-        edge += incEdgeA;
-
-        clippedPoints.push_back(edge);
-    }
-
-    return clippedPoints;
 }
 
 CollisionInfo CollisionSolver::DetectCollision(Collider* colA, Collider* colB)
