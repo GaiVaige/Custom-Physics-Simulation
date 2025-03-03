@@ -1,5 +1,6 @@
 #include "Obstacles.h"
 #include "LineRenderer.h"
+#include "Launcher.h"
 void Bumper::Update(float dt)
 {
 	if (framesActive == 6) {
@@ -41,7 +42,8 @@ void Bumper::Draw(LineRenderer* lines) const
 
 void Blade::CollisionEvent(PhysicsObject* other)
 {
-	if (other->GetType() == DYNAMIC) {
+	Bullet* b = static_cast<Bullet*>(other);
+	if (b) {
 		other->markedForDeletion = true;
 	}
 }

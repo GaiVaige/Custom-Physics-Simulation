@@ -27,7 +27,7 @@ public:
 
 	void SetMagnitude(float mag);
 
-	std::string ToString();
+	std::string ToString() const;
 
 	Vec2& operator+=(Vec2 v);
 	Vec2& operator-=(Vec2 v);

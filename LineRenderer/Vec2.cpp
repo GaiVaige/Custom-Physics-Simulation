@@ -109,7 +109,7 @@ void Vec2::SetMagnitude(float mag)
 	*this *= mag;
 }
 
-std::string Vec2::ToString()
+std::string Vec2::ToString() const
 {
 	std::string s;
 	s += std::to_string(x);
