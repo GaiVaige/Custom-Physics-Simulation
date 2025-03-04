@@ -90,47 +90,47 @@ void PhysicsSim::Initialise()
 	objects.push_back(new Plane(Vec2(1, 0), 50, .2));
 	objects.push_back(new Plane(Vec2(0, -1), 51, .2));
 
-	//Object creation
-	Polygon* p = new Polygon(Vec2(-25, 7.5), ShapeA, 1);
-	p->inverseMass = 0;
-	p->inverseMomentOfInertia = 0;
-	objects.push_back(p);
-	Polygon* p2 = new Polygon(Vec2(28.687500, 11.187500), ShapeB, 1);
-	p2->inverseMass = 0;
-	p2->inverseMomentOfInertia = 0;
-	objects.push_back(p2);
-	Polygon* p3 = new Polygon(Vec2(-22.142857, 26.026785), ShapeC, 1);
-	p3->inverseMass = 0;
-	p3->inverseMomentOfInertia = 0;
-	objects.push_back(p3);
-	
-	objects.push_back(new Target(Vec2(-6.125000, 7.687500)));
-	objects.push_back(new Target(Vec2(10.375000, 9.937500)));
-	objects.push_back(new Target(Vec2(-15.375000, 11.7500001)));
-	objects.push_back(new Target(Vec2(19.750000, 12.687498)));
-	objects.push_back(new FrenzyTarget(Vec2(23.437500, 23.687500), 10, Vec2(50, 0), objectQueue));
-	objects.push_back(new Target(Vec2(17.312500, 21.062500)));
-	objects.push_back(new Target(Vec2(20.875000, 32.125000)));
-	objects.push_back(new Target(Vec2(- 15.750000, 35.375000)));
-	objects.push_back(new Target(Vec2(- 9.187500, 30.125000)));
-	objects.push_back(new FrenzyTarget(Vec2(- 9.000000, 19.687502), 10, Vec2(50, 0), objectQueue));
-	objects.push_back(new Target(Vec2(- 22.125000, 13.874998)));
-	objects.push_back(new Target(Vec2(- 31.000000, 14.437500)));
-	objects.push_back(new Target(Vec2(8.437500, 35.562500)));
-	
-	objects.push_back(new Bumper(Vec2(-8.500000, 14.187500), 5));
-	objects.push_back(new Bumper(Vec2(7.687500, 8.062500), 5));
-	objects.push_back(new Bumper(Vec2(16.187500, 18.562500), 5));
-	objects.push_back(new Bumper(Vec2(- 7.687500, 24.562500), 5));
-	objects.push_back(new Bumper(Vec2(16.687500, 26.250000), 5));
-	objects.push_back(new Bumper(Vec2(13.750000, 34.062500), 5));
-
-	objects.push_back(new BladeSpinners(Vec2(-7.312500, 38.437500), 5, 1, objectQueue));
-	objects.push_back(new BladeSpinners(Vec2(3.044551, 25), 5, 1, objectQueue));
-
-	objects.push_back(new SpinBlock(Vec2(-5.580449, 26.437500), RECTANGLE, Vec2(-2, 0)));
-	objects.push_back(new SpinBlock(Vec2(9.312500, 18.499998), RECTANGLE, Vec2(2, 0)));
-	objects.push_back(new SpinBlock(Vec2(- 2.687500, 12.687498), RECTANGLE, Vec2(2, 0)));
+	////Object creation
+	//Polygon* p = new Polygon(Vec2(-25, 7.5), ShapeA, 1);
+	//p->inverseMass = 0;
+	//p->inverseMomentOfInertia = 0;
+	//objects.push_back(p);
+	//Polygon* p2 = new Polygon(Vec2(28.687500, 11.187500), ShapeB, 1);
+	//p2->inverseMass = 0;
+	//p2->inverseMomentOfInertia = 0;
+	//objects.push_back(p2);
+	//Polygon* p3 = new Polygon(Vec2(-22.142857, 26.026785), ShapeC, 1);
+	//p3->inverseMass = 0;
+	//p3->inverseMomentOfInertia = 0;
+	//objects.push_back(p3);
+	//
+	//objects.push_back(new Target(Vec2(-6.125000, 7.687500)));
+	//objects.push_back(new Target(Vec2(10.375000, 9.937500)));
+	//objects.push_back(new Target(Vec2(-15.375000, 11.7500001)));
+	//objects.push_back(new Target(Vec2(19.750000, 12.687498)));
+	//objects.push_back(new FrenzyTarget(Vec2(23.437500, 23.687500), 10, Vec2(50, 0), objectQueue));
+	//objects.push_back(new Target(Vec2(17.312500, 21.062500)));
+	//objects.push_back(new Target(Vec2(20.875000, 32.125000)));
+	//objects.push_back(new Target(Vec2(- 15.750000, 35.375000)));
+	//objects.push_back(new Target(Vec2(- 9.187500, 30.125000)));
+	//objects.push_back(new FrenzyTarget(Vec2(- 9.000000, 19.687502), 10, Vec2(50, 0), objectQueue));
+	//objects.push_back(new Target(Vec2(- 22.125000, 13.874998)));
+	//objects.push_back(new Target(Vec2(- 31.000000, 14.437500)));
+	//objects.push_back(new Target(Vec2(8.437500, 35.562500)));
+	//
+	//objects.push_back(new Bumper(Vec2(-8.500000, 14.187500), 5));
+	//objects.push_back(new Bumper(Vec2(7.687500, 8.062500), 5));
+	//objects.push_back(new Bumper(Vec2(16.187500, 18.562500), 5));
+	//objects.push_back(new Bumper(Vec2(- 7.687500, 24.562500), 5));
+	//objects.push_back(new Bumper(Vec2(16.687500, 26.250000), 5));
+	//objects.push_back(new Bumper(Vec2(13.750000, 34.062500), 5));
+	//
+	//objects.push_back(new BladeSpinners(Vec2(-7.312500, 38.437500), 5, 1, objectQueue));
+	//objects.push_back(new BladeSpinners(Vec2(3.044551, 25), 5, 1, objectQueue));
+	//
+	//objects.push_back(new SpinBlock(Vec2(-5.580449, 26.437500), RECTANGLE, Vec2(-2, 0)));
+	//objects.push_back(new SpinBlock(Vec2(9.312500, 18.499998), RECTANGLE, Vec2(2, 0)));
+	//objects.push_back(new SpinBlock(Vec2(- 2.687500, 12.687498), RECTANGLE, Vec2(2, 0)));
 
 
 
@@ -200,13 +200,11 @@ void PhysicsSim::Update(float deltaTime)
 
 void PhysicsSim::OnLeftClick()
 {
-	return;
 	storedVerts.push_back(cursorPos);
 }
 
 void PhysicsSim::OnRightClick()
 {
-	return;
 	if (storedVerts.size() >= 3) {
 		Vec2 pos = Vec2(0, 0);
 		for (Vec2& v : storedVerts) {
@@ -258,17 +256,12 @@ void PhysicsSim::OnRightClick()
 		objectQueue.push_back(p);
 
 	}
-	for (Vec2& v : storedVerts) {
-		std::cout << v.ToString() << ", ";
-	}
-	std::cout << '\n';
 	storedVerts.clear();
 
 }
 
 void PhysicsSim::OnKeyPress(Key key)
 {
-	return;
 	switch (key) {
 	case Key::One:
 		objectQueue.push_back(new Target(cursorPos));
@@ -300,6 +293,9 @@ void PhysicsSim::OnKeyPress(Key key)
 		if (objects.size() < 6) break;
 		objects[objects.size() - 1]->markedForDeletion = true;
 		break;
+
+	case Key::Escape:
+		ApplicationHarness::Quit();
 	default:
 		break;
 	}
