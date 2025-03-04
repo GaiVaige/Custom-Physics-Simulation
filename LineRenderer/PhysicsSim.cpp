@@ -91,20 +91,29 @@ void PhysicsSim::Initialise()
 	objects.push_back(new Plane(Vec2(0, -1), 51, .2));
 
 	//Object creation
-	objects.push_back(new Polygon(Vec2(-25, 7.5), ShapeA, 1, STATIC));
-	objects.push_back(new Polygon(Vec2(28.687500, 11.187500), ShapeB, 1, STATIC));
-	objects.push_back(new Polygon(Vec2(-22.142857, 26.026785), ShapeC, 1, STATIC));
+	Polygon* p = new Polygon(Vec2(-25, 7.5), ShapeA, 1);
+	p->inverseMass = 0;
+	p->inverseMomentOfInertia = 0;
+	objects.push_back(p);
+	Polygon* p2 = new Polygon(Vec2(28.687500, 11.187500), ShapeB, 1);
+	p2->inverseMass = 0;
+	p2->inverseMomentOfInertia = 0;
+	objects.push_back(p2);
+	Polygon* p3 = new Polygon(Vec2(-22.142857, 26.026785), ShapeC, 1);
+	p3->inverseMass = 0;
+	p3->inverseMomentOfInertia = 0;
+	objects.push_back(p3);
 	
 	objects.push_back(new Target(Vec2(-6.125000, 7.687500)));
 	objects.push_back(new Target(Vec2(10.375000, 9.937500)));
 	objects.push_back(new Target(Vec2(-15.375000, 11.7500001)));
 	objects.push_back(new Target(Vec2(19.750000, 12.687498)));
-	objects.push_back(new Target(Vec2(23.437500, 23.687500)));
+	objects.push_back(new FrenzyTarget(Vec2(23.437500, 23.687500), 10, Vec2(50, 0), objectQueue));
 	objects.push_back(new Target(Vec2(17.312500, 21.062500)));
 	objects.push_back(new Target(Vec2(20.875000, 32.125000)));
 	objects.push_back(new Target(Vec2(- 15.750000, 35.375000)));
 	objects.push_back(new Target(Vec2(- 9.187500, 30.125000)));
-	objects.push_back(new Target(Vec2(- 9.000000, 19.687502)));
+	objects.push_back(new FrenzyTarget(Vec2(- 9.000000, 19.687502), 10, Vec2(50, 0), objectQueue));
 	objects.push_back(new Target(Vec2(- 22.125000, 13.874998)));
 	objects.push_back(new Target(Vec2(- 31.000000, 14.437500)));
 	objects.push_back(new Target(Vec2(8.437500, 35.562500)));
