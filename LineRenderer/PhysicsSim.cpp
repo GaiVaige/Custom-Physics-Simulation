@@ -134,7 +134,6 @@ void PhysicsSim::Initialise()
 
 
 
-
 	for (PhysicsObject* c : objectQueue) {
 		objects.push_back(c);
 	}
@@ -144,6 +143,7 @@ void PhysicsSim::Initialise()
 	}
 
 }
+
 
 void PhysicsSim::Update(float deltaTime)
 {
@@ -223,7 +223,7 @@ void PhysicsSim::OnRightClick()
 			float add = (storedVerts[j].x - storedVerts[i].x) * (storedVerts[j].y + storedVerts[i].y);
 			cwCalc += add;
 		}
-		//std::cout << cwCalc << '\n';
+		//std::cout << cwCalc << '\n'; 
 		if (cwCalc < 0) {
 			std::reverse(storedVerts.begin(), storedVerts.end());
 		}

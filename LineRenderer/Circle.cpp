@@ -41,7 +41,6 @@ void Circle::Rotate(float amnt)
     up.RotateBy(amnt);
     right.RotateBy(amnt);
     orientation += amnt;
-    PhysicsObject::Rotate(amnt);
 }
 
 float Circle::CalculateMass()

@@ -58,7 +58,6 @@ void PhysicsObject::Update(float dt)
 
 	constraintResolvedPosition = false;
 	constraintResolvedRotation = false;
-
 }
 
 float PhysicsObject::CalculateMass()
@@ -77,8 +76,8 @@ float PhysicsObject::CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec
 
 void PhysicsObject::DrawOrientingAxes(LineRenderer* lines) const
 {
-	lines->DrawLineSegment(position, position + up * 2, Colour::GREEN);
-	lines->DrawLineSegment(position, position + right * 2, Colour::RED);
+	lines->DrawLineSegment(position, position + up, Colour::GREEN);
+	lines->DrawLineSegment(position, position + right, Colour::RED);
 }
 
 void PhysicsObject::Unload()
@@ -87,9 +86,7 @@ void PhysicsObject::Unload()
 
 void PhysicsObject::Rotate(float amnt)
 {
-	while (orientation > DegToRad(360)) {
-		orientation -= DegToRad(360);
-	}
+	if (abs(orientation) >= DegToRad(360)) orientation = 0;
 }
 
 void PhysicsObject::RotateAbout(float amnt, Vec2 pos)

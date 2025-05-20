@@ -156,13 +156,18 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
 
     Vec2 vertSave;
     for (Vec2 vert : colB->GetVerts()) {
-        Vec2 delta = Vec2(vert.x - colA->GetPos().x, vert.y - colA->GetPos().y);
+        Vec2 delta = Vec2(vert.x + colB->GetPos().x - colA->GetPos().x, vert.y + colB->GetPos().y - colA->GetPos().y);
     
         float dist = delta.GetMagnitude();
     
         if (dist < minDist) {
             minDist = dist;
             closestDist = delta;
+        }
+        else if (dist == minDist) {
+            closestDist = (closestDist + colA->GetPos() + delta + colA->GetPos())/2;
+            closestDist -= colA->GetPos();
+            minDist = closestDist.GetMagnitude();
         }
     }
     
@@ -184,17 +189,18 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
         
         Projection p2 = ProjectOnAxis(axis, bTranslatedPoints);
 
-        if (!p.Overlaps(p2)) {
-            return CollisionInfo(false);
-        }
-        else {
-            float o = p.GetOverlap(p2);
-            if (o < overlap) {
-                overlap = o;
-                smallest = axis;
-            }
+    Projection p2 = ProjectOnAxis(axis, vecBs);
 
+    if (!p.Overlaps(p2)) {
+        return CollisionInfo(false);
+    }
+    else {
+        float o = p.GetOverlap(p2);
+        if (o < overlap) {
+            overlap = o;
+            smallest = axis;
         }
+
     }
 
     for (int i = 0; i < colB->GetVerts().size(); i++) {
@@ -204,8 +210,7 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
         p1.min -= colA->GetRadius();
         p1.max += colA->GetRadius();
         Projection p2 = ProjectOnAxis(ax, bTranslatedPoints);
-
-        if (!p1.Overlaps(p2)) {
+        if (!p2.Overlaps(p1)) {
             return CollisionInfo(false);
         }
         else {
@@ -281,6 +286,17 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
     Vec2 ax;
     Projection p1;
     Projection p2;
+
+    std::vector<Vec2> vecAs = colA->GetVerts();
+    for (Vec2& v : vecAs) {
+        v += colA->GetPos();
+    }
+
+    std::vector<Vec2> vecBs = colB->GetVerts();
+    for (Vec2& v : vecBs) {
+        v += colB->GetPos();
+    }
+
     for (int i = 0; i < colA->GetVerts().size(); i++) {
         ax = colA->GetAxis(i);
 
@@ -308,7 +324,6 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
 
     for (int i = 0; i < colB->GetVerts().size(); i++) {
         ax = colB->GetAxis(i);
-
         p1 = ProjectOnAxis(ax, aTranslatedPoints);
         p2 = ProjectOnAxis(ax, bTranslatedPoints);
 
@@ -360,6 +375,7 @@ CollisionInfo CollisionSolver::PolygonToPolygon(PolygonCollider* colA, PolygonCo
     }
 
 
+    if (overlap < .0001f) return CollisionInfo(false);
 
 
     CollisionInfo colInfo;

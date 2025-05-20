@@ -105,10 +105,9 @@ void Polygon::Draw(LineRenderer* lines) const
 void Polygon::Rotate(float amnt)
 {
 	orientation += amnt;
-	collider->Rotate(amnt);
+	collider->Rotate(orientation);
 	up.RotateBy(amnt);
 	right.RotateBy(amnt);
-	PhysicsObject::Rotate(amnt);
 }
 
 bool Polygon::IsInside(Vec2 p, std::vector<Vec2> verts) {

@@ -10,9 +10,9 @@ void Collider::Move(Vec2& offset)
     parent->OffsetPosition(offset);
 }
 
-void Collider::Rotate(float amnt)
-{
-}
+//void Collider::Rotate(float amnt)
+//{
+//}
 
 
 
