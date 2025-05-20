@@ -186,57 +186,56 @@ CollisionInfo CollisionSolver::CircleToPolygon(CircleCollider* colA, PolygonColl
     }
 
     for (int i = 0; i < colB->GetVerts().size(); i++) {
-        
+
         Projection p2 = ProjectOnAxis(axis, bTranslatedPoints);
 
-    Projection p2 = ProjectOnAxis(axis, vecBs);
 
-    if (!p.Overlaps(p2)) {
-        return CollisionInfo(false);
-    }
-    else {
-        float o = p.GetOverlap(p2);
-        if (o < overlap) {
-            overlap = o;
-            smallest = axis;
-        }
-
-    }
-
-    for (int i = 0; i < colB->GetVerts().size(); i++) {
-        Vec2 ax = colB->GetAxis(i);
-
-        Projection p1 = ProjectOnAxis(ax, tempC);
-        p1.min -= colA->GetRadius();
-        p1.max += colA->GetRadius();
-        Projection p2 = ProjectOnAxis(ax, bTranslatedPoints);
-        if (!p2.Overlaps(p1)) {
+        if (!p.Overlaps(p2)) {
             return CollisionInfo(false);
         }
         else {
-            float o = p2.GetOverlap(p1);
+            float o = p.GetOverlap(p2);
             if (o < overlap) {
                 overlap = o;
-                smallest = -ax;
+                smallest = axis;
             }
 
         }
+
+        for (int i = 0; i < colB->GetVerts().size(); i++) {
+            Vec2 ax = colB->GetAxis(i);
+
+            Projection p1 = ProjectOnAxis(ax, tempC);
+            p1.min -= colA->GetRadius();
+            p1.max += colA->GetRadius();
+            Projection p2 = ProjectOnAxis(ax, bTranslatedPoints);
+            if (!p2.Overlaps(p1)) {
+                return CollisionInfo(false);
+            }
+            else {
+                float o = p2.GetOverlap(p1);
+                if (o < overlap) {
+                    overlap = o;
+                    smallest = -ax;
+                }
+
+            }
+        }
+        if (overlap < .0001f) return CollisionInfo(false);
+
+        Vec2 circleClosestPoint = (smallest * colA->GetRadius() + colA->GetPos());
+        CollisionInfo colInfo;
+        colInfo.contactPoint = (circleClosestPoint);
+
+
+        colInfo.collided = true;
+        colInfo.colliderA = colA;
+        colInfo.colliderB = colB;
+        colInfo.depth = overlap;
+        colInfo.normal = smallest;
+        return colInfo;
+
     }
-    if (overlap < .0001f) return CollisionInfo(false);
-
-    Vec2 circleClosestPoint = (smallest * colA->GetRadius() + colA->GetPos());
-    CollisionInfo colInfo;
-    colInfo.contactPoint = (circleClosestPoint);
-
-
-    colInfo.collided = true;
-    colInfo.colliderA = colA;
-    colInfo.colliderB = colB;
-    colInfo.depth = overlap;
-    colInfo.normal = smallest;
-    return colInfo;
-
-
 }
 
 CollisionInfo CollisionSolver::CircleToPlane(CircleCollider* colA, PlaneCollider* colB) const
