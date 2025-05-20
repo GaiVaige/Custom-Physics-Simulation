@@ -9,7 +9,7 @@ Plane::Plane(Vec2 normal, float displacement, float elas)
 	type = STATIC;
 	collider->SetParent(this);
 
-	momentOfIntertia = 1;
+	inverseMomentOfInertia = 0;
 	centreOfMassDisplacement = Vec2(0, 0);
 
 }
@@ -18,12 +18,12 @@ void Plane::Draw(LineRenderer* lines) const
 {
 	Vec2 start = direction.GetRotatedBy270();
 	Vec2 end = direction.GetRotatedBy90();
-
+	lines->SetColour(Colour::RED);
 	lines->AddPointToLine(position + start * 1000);
 	lines->AddPointToLine(position + end * 1000);
 	lines->FinishLineStrip();
-	lines->SetColour(Colour::BLUE);
-	lines->DrawLineWithArrow(position, position + direction);
+	//lines->SetColour(Colour::BLUE);
+	//lines->DrawLineWithArrow(position, position + direction);
 	lines->SetColour(Colour::WHITE);
 }
 
@@ -32,6 +32,5 @@ PlaneCollider::PlaneCollider(Vec2 normal, float disp)
 	direction = normal;
 	displacement = disp;
 	position = direction * displacement;
-	inverseMass = 0;
 	shape = PLANE;
 }

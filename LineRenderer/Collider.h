@@ -16,9 +16,9 @@ struct CollisionInfo {
 	CollisionInfo(bool collided) : collided(collided) {};
 	CollisionInfo(bool collided, Vec2 norm, float depth) : collided(collided), normal(norm), depth(depth) {};
 	bool collided;
+	float depth;
 	Vec2 normal;
 	Vec2 contactPoint;
-	float depth;
 	Collider* colliderA;
 	Collider* colliderB;
 };
@@ -26,22 +26,16 @@ struct CollisionInfo {
 class Collider {
 public:
 	Vec2 GetPos() const { return position; }
-	virtual Vec2& SetPos(Vec2& pos);
-	virtual Vec2 GetFurthestPoint(Vec2& direction) const { return Vec2(); };
+	virtual void SetPos(Vec2& pos);
 	COLLIDERSHAPE GetShape() const { return shape; }
 	void SetParent(PhysicsObject* p){parent = p;};
 	PhysicsObject* GetParent(){return parent;};
 
 	void Move(Vec2& offset);
 	virtual void Rotate(float amnt) = 0;
-	void SetInvMass(float m) { inverseMass = m; } 
-	float GetInvMass() { return inverseMass; }
-	std::vector<Vec2> contactPoints;
 
-	void EndTick();
 
 protected:
-	float inverseMass;
 	COLLIDERSHAPE shape;
 	Vec2 position;
 	PhysicsObject* parent;

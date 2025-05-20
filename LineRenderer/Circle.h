@@ -4,13 +4,10 @@ class LineRenderer;
 class CircleCollider : public Collider {
 public:
 	CircleCollider(Vec2 pos, float rad);
-	~CircleCollider();
 	CircleCollider(CircleCollider& c) = delete;
 	CircleCollider& operator=(CircleCollider& c) = delete;
-	Vec2 GetFurthestPoint(Vec2& direction) const override;
-	void DrawContactPoints(LineRenderer* lines);
 	float GetRadius() const { return radius; }
-	void Rotate(float amnt) override {};
+	void Rotate(float amnt) {};
 private:
 	float radius;
 };

@@ -308,6 +308,13 @@ void ApplicationHarness::SetPixelDensityScale(float scale)
 	ImGui::GetIO().FontGlobalScale = scale;
 }
 
+void ApplicationHarness::Quit()
+{
+	if (window) {
+		glfwSetWindowShouldClose(window, 1);
+	}
+}
+
 void ApplicationHarness::PopulateCameraTransform(float* matrix) const
 {
 	//Mildly hacky creation of an orthographic matrix (near/far clip at -1 to 1).

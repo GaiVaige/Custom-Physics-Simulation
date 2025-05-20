@@ -16,9 +16,15 @@ public:
 	~PhysicsSim();
 	CollisionSolver drCollision;
 	std::vector<PhysicsObject*> objects;
+	std::vector<PhysicsObject*> objectQueue;
 	void Initialise() override;
 
 	void Update(float deltaTime) override;
 
+	//Geometry Painter
+	std::vector<Vec2> storedVerts;
 	void OnLeftClick() override;
+	void OnRightClick() override;
+	
+	void OnKeyPress(Key key) override;
 };

@@ -52,4 +52,6 @@ public:
 	static Vec2 GetInputDirection(Key upKey, Key leftKey, Key downKey, Key rightKey, bool normalise = true);
 
 	void SetPixelDensityScale(float scale);
+
+	static void Quit();
 };

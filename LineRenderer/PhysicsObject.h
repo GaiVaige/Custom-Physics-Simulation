@@ -2,8 +2,7 @@
 #include "Vec2.h"
 #include "Collider.h"
 class LineRenderer;
-
-static float LINEAR_THRESHOLD = .05f;
+class Constraint;
 static Vec2 GRAVITY = Vec2(0, -9.8);
 
 enum PHYSICSTYPE {
@@ -16,51 +15,69 @@ class PhysicsObject {
 public:
 
 	PhysicsObject();
-	~PhysicsObject();
+	virtual ~PhysicsObject();
 	PhysicsObject(PhysicsObject& po) = delete;
 	PhysicsObject& operator=(PhysicsObject& po) = delete;
 
-	Collider* collider = nullptr;
-	const Vec2 GetPos() const { return position; }
-	const float GetOrientation() const { return orientation; }
-	void SetPosition(Vec2& v);
-	void OffsetPosition(Vec2& v);
-	void Update(float dt);
-	virtual void Draw(LineRenderer* lines) const = 0;
+	//General/Linear Physics
 	virtual float CalculateMass();
-	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
-	void DrawOrientingAxes(LineRenderer* lines) const;
-	virtual void Rotate(float amnt);
+	const Vec2 GetPos() const { return position; }
 
-	void SetVelocity(Vec2 force) { linearVelocity = force; }
 	void ApplyForce(Vec2 force);
 	void ApplyImpulse(Vec2 force);
-	Vec2 GetVelocity() { return linearVelocity; }
-	float GetAngularVelocity() { return angularVelocity; }
-	Vec2 GetVelocityNormalised() { return linearVelocity.GetNormalised(); }
+	Vec2 GetVelocity() const { return linearVelocity; }
+	void SetVelocity(Vec2 newVel) { linearVelocity = newVel; }
 
-	void ApplyAngularForce(Vec2 force, Vec2 pos);
-	void ApplyAngularImpulse(Vec2 force, Vec2 pos);
-	Vec2 GetVelocityAt(Vec2 pos) const;
-	void SetMOI(float f) { momentOfIntertia = f; }
-
-	unsigned int GUID;
-	PHYSICSTYPE GetType() { return type; }
-	float elasticity;
-
+	float inverseMass = 0;
 	float linearDrag = .5;
+
+	//Rotational 
+	float CalculateMomentOfInertia(Vec2 centreOfMass, std::vector<Vec2>& points, float pointWeight);
+	virtual void Rotate(float amnt);
+	void RotateAbout(float amnt, Vec2 pos);
+	const float GetOrientation() const { return orientation; }
+	
+	void ApplyImpulseAt(Vec2 force, Vec2 pos);
+	void ApplyAngularForce(Vec2 force, Vec2 pos);
+	float GetAngularVelocity() { return angularVelocity; }
+	Vec2 GetVelocityAt(Vec2 pos) const;
+	
+	float angularVelocity = 0;
+	float inverseMomentOfInertia = 0;
+	float accumulatedAngularForce = 0;
 	float angularDrag = .3;
-	float momentOfIntertia;
+	float orientation = 0;
+
+	//Engine and Collision 
+	Collider* collider = nullptr;
+	Constraint* constraint = nullptr;
+	bool constraintResolvedRotation = false;
+	bool constraintResolvedPosition = false;
+	
+	unsigned int GUID;
+	bool markedForDeletion = false;
+	bool useGravity = false;
+	
+	float elasticity = 0;
+
+	PHYSICSTYPE GetType() { return type; }
+	virtual void Update(float dt);
+	virtual void Draw(LineRenderer* lines) const = 0;
+	void SetPosition(Vec2& v);
+	void OffsetPosition(Vec2& v);
+	
+	virtual void CollisionEvent(PhysicsObject* other = nullptr) {};
+
+	Vec2 up, right, accumulatedLinearForce;
+	//Debug Functions
+	void DrawOrientingAxes(LineRenderer* lines) const;
+
+	virtual void Unload();
 
 private:
 protected:
 	PHYSICSTYPE type;
-	Vec2 position, linearVelocity, accumulatedLinearForce, centreOfMassDisplacement;
-	Vec2 up, right;
-	float inverseMass;
+	Vec2 position, linearVelocity, centreOfMassDisplacement;
 
-	float orientation;
-	float angularVelocity;
-	float accumulatedAngularForce;
 
 };

@@ -2,40 +2,39 @@
 #include "LineRenderer.h"
 #include <string>
 #include <iostream>
+#include "Constraint.h"
 PolygonCollider::PolygonCollider(Vec2& centre, float mass)
 {
 	position = centre;
-	inverseMass = 1.f/mass;
 }
 
 PolygonCollider::PolygonCollider(Vec2& centre, float mass, std::vector<Vec2> v)
 {
 	shape = POLYGON;
 	position = centre;
-	inverseMass = 1.f / mass;
 	for (Vec2 vec : v) {
 		verts.push_back(vec);
 	}
 	CalcNormals(verts);
 }
 
-PolygonCollider::~PolygonCollider()
-{
-}
 
 void PolygonCollider::DebugDrawAxis(LineRenderer* lines)
 {
+
+
+	for (Vec2 v : verts) {
+		lines->DrawCircle(v.GetRotatedBy(parent->orientation) + position, .5);
+	}
 }
 
 void PolygonCollider::Rotate(float amnt)
 {
-	std::vector<Vec2> temp;
+	std::vector<Vec2> rotatedNorms;
 	for (Vec2 v : verts) {
-		v.RotateBy(amnt);
-		v += position;
-		temp.push_back(v);
+		rotatedNorms.push_back(v.GetRotatedBy(GetParent()->GetOrientation()));
 	}
-	CalcNormals(temp);
+	CalcNormals(rotatedNorms);
 }
 
 void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
@@ -45,34 +44,32 @@ void PolygonCollider::CalcNormals(std::vector<Vec2>& vertices)
 	for (int i = 0; i < vertices.size(); i++) {
 		int j = i + 1;
 		if (j >= vertices.size())	j = 0;
-		Vec2 lineSeg = verts[j] - verts[i];
+		Vec2 lineSeg = vertices[j] - vertices[i];
 		axes.push_back(Vec2(-lineSeg.y, lineSeg.x).GetNormalised());
-		edges.push_back(std::pair<Vec2, Vec2>(verts[j], verts[i]));
+		edges.push_back(std::pair<Vec2, Vec2>(vertices[j] + position, vertices[i] + position));
 	}
 
 
 }
 
-Vec2& PolygonCollider::SetPos(Vec2& pos)
+void PolygonCollider::SetPos(Vec2& pos)
 {
 	for (std::pair<Vec2, Vec2>& v : edges) {
 		v.first -= position;
 		v.second -= position;
 	}
-
 	this->Collider::SetPos(pos);
-
 	for (std::pair<Vec2, Vec2>& v : edges) {
 		v.first += position;
 		v.second += position;
 	}
 
-	return pos;
 }
 
 Vec2 PolygonCollider::GetVert(int i)
 {
-	Vec2 v = verts[i];
+	Vec2 v = verts[i].GetRotatedBy(GetParent()->GetOrientation());
+	v += position;
 	return v;
 }
 
@@ -91,21 +88,18 @@ Polygon::Polygon(Vec2 pos, std::vector<Vec2>& v, float elas, PHYSICSTYPE t)
 	collider->SetPos(pos);
 	type = t;
 	if (type == STATIC) {
-		collider->SetInvMass(0);
+		inverseMass = 0;
+		inverseMomentOfInertia = 0;
 	}
 }
 
 void Polygon::Draw(LineRenderer* lines) const
 {
 	for (int i = 0; i < verts.size(); i++) {
-		Vec2 v = verts[i].GetRotatedBy(orientation);
-		lines->AddPointToLine(v + position);
+		lines->AddPointToLine(verts[i].GetRotatedBy(orientation) + position);
 	}
 	lines->FinishLineLoop();
-	lines->DrawCircle(position + centreOfMassDisplacement, .1, Colour::GREEN);
-	PolygonCollider* p = static_cast<PolygonCollider*>(collider);
-	p->DebugDrawAxis(lines);
-	DrawOrientingAxes(lines);
+	//static_cast<PolygonCollider*>(collider)->DebugDrawAxis(lines);
 }
 
 void Polygon::Rotate(float amnt)
@@ -178,7 +172,7 @@ float Polygon::CalculateMass()
 	}
 	overallPos /= containedVectors.size();
 	centreOfMassDisplacement = overallPos;
-	momentOfIntertia = CalculateMomentOfInertia(position + centreOfMassDisplacement, containedVectors, baseFloatWeight);
+	inverseMomentOfInertia = 1.0f / CalculateMomentOfInertia(position + centreOfMassDisplacement, containedVectors, baseFloatWeight);
 	
 
 

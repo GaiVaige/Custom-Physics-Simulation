@@ -23,9 +23,11 @@ public:
 	[[nodiscard]] Vec2 GetRotatedBy(float angle) const;
 	[[nodiscard]] Vec2 GetRotatedBy(float cosAngle, float sinAngle) const;
 
+	[[nodiscard]] Vec2 GetRotatedAboutBy(float angle, Vec2 pos) const;
+
 	void SetMagnitude(float mag);
 
-	std::string ToString();
+	std::string ToString() const;
 
 	Vec2& operator+=(Vec2 v);
 	Vec2& operator-=(Vec2 v);

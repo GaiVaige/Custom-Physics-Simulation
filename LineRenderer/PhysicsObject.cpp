@@ -2,6 +2,7 @@
 #include <chrono>
 #include "LineRenderer.h"
 #include "math.h"
+#include "Constraint.h"
 PhysicsObject::PhysicsObject()
 {
 	auto now = std::chrono::high_resolution_clock::now();
@@ -13,6 +14,9 @@ PhysicsObject::PhysicsObject()
 }
 PhysicsObject::~PhysicsObject()
 {
+	if (constraint != nullptr) {
+		delete constraint;
+	}
 	delete collider;
 }
 
@@ -30,24 +34,30 @@ void PhysicsObject::OffsetPosition(Vec2& v)
 
 void PhysicsObject::Update(float dt)
 {
-	//position
-	Vec2 accel = (accumulatedLinearForce * inverseMass);
-	position += linearVelocity * dt;
-	linearVelocity += accel * dt;
-	linearVelocity -= linearVelocity * linearDrag * dt;
-	collider->SetPos(position);
-	accumulatedLinearForce = Vec2();
+	if (constraint != nullptr) {
+		constraint->Constrain(this, dt);
+	}
+	Vec2 accel = (GRAVITY * (int)useGravity) + accumulatedLinearForce * inverseMass;
 
-	if (linearVelocity.GetMagnitude() <= .01f) {
-		linearVelocity = Vec2();
+	if (!constraintResolvedPosition) {
+		position += linearVelocity * dt;
+		linearVelocity += accel * dt;
+		linearVelocity -= linearVelocity * linearDrag * dt;
+		accumulatedLinearForce = Vec2();
 	}
 
-	//rotation
-	float rotAccel = (accumulatedAngularForce/momentOfIntertia);
-	Rotate(angularVelocity * dt);
-	angularVelocity += rotAccel * dt;
-	angularVelocity -= angularVelocity * angularDrag * dt;
-	accumulatedAngularForce = 0;
+	if (!constraintResolvedRotation) {
+		//rotation
+		float rotAccel = (accumulatedAngularForce * inverseMomentOfInertia);
+		Rotate(angularVelocity * dt);
+		angularVelocity += rotAccel * dt;
+		angularVelocity -= angularVelocity * angularDrag * dt;
+		accumulatedAngularForce = 0;
+	}
+	collider->SetPos(position);
+
+	constraintResolvedPosition = false;
+	constraintResolvedRotation = false;
 }
 
 float PhysicsObject::CalculateMass()
@@ -70,11 +80,24 @@ void PhysicsObject::DrawOrientingAxes(LineRenderer* lines) const
 	lines->DrawLineSegment(position, position + right, Colour::RED);
 }
 
+void PhysicsObject::Unload()
+{
+}
+
 void PhysicsObject::Rotate(float amnt)
 {
 	if (abs(orientation) >= DegToRad(360)) orientation = 0;
 }
 
+void PhysicsObject::RotateAbout(float amnt, Vec2 pos)
+{
+	Vec2 tP = GetPos();
+	tP -= pos;
+	tP.RotateBy(amnt);
+	tP += pos;
+	position = tP;
+	Rotate(amnt);
+}
 
 void PhysicsObject::ApplyForce(Vec2 force)
 {
@@ -88,13 +111,15 @@ void PhysicsObject::ApplyImpulse(Vec2 force)
 
 void PhysicsObject::ApplyAngularForce(Vec2 force, Vec2 pos)
 {
-	accumulatedAngularForce += (force.y * pos.x - force.x * pos.y)/momentOfIntertia;
+	accumulatedAngularForce += (force.y * pos.x - force.x * pos.y) * inverseMomentOfInertia;
 }
 
-void PhysicsObject::ApplyAngularImpulse(Vec2 force, Vec2 pos)
+void PhysicsObject::ApplyImpulseAt(Vec2 force, Vec2 pos)
 {
-	float f = (force.y * pos.x - force.x * pos.y) / momentOfIntertia;
-	angularVelocity += f;
+	//float torque = Dot(pos, force);
+	float f = (force.y * pos.x - force.x * pos.y);
+	angularVelocity += f * inverseMomentOfInertia;
+	linearVelocity += (force * inverseMass);
 }
 
 Vec2 PhysicsObject::GetVelocityAt(Vec2 pos) const

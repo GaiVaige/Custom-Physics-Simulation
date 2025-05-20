@@ -75,7 +75,21 @@
     <ClCompile Include="Polygon.cpp">
       <Filter>Engine\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Launcher.cpp">
+      <Filter>Game\Game Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Target.cpp">
+      <Filter>Game\Game Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Obstacles.cpp">
+      <Filter>Game\Game Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>Engine\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Constraint.cpp">
+      <Filter>Engine\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLFWCallbacks.h">
@@ -180,6 +194,18 @@
     <ClInclude Include="Plane.h">
       <Filter>Engine\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="Launcher.h">
+      <Filter>Game\Game Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Target.h">
+      <Filter>Game\Game Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacles.h">
+      <Filter>Game\Game Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Constraint.h">
+      <Filter>Engine\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -202,6 +228,9 @@
     </Filter>
     <Filter Include="Engine\Physics">
       <UniqueIdentifier>{056d88a8-7970-4e7a-9a84-b226edd1b7eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Game Files">
+      <UniqueIdentifier>{051ef94c-55ea-48f2-b115-b5a6138ff024}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
